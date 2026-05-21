@@ -1,0 +1,60 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "evodevops/base",
+    "description": "EvoDevOps Base — AI agents, ontology, and premium React blocks for the Laravel React Inertia starter.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "evodevops",
+        "laravel",
+        "inertia",
+        "react",
+        "ai",
+        "ontology"
+    ],
+    "require": {
+        "php": "^8.3",
+        "laravel/framework": "^13.7",
+        "laravel/ai": "^0.6.5",
+        "inertiajs/inertia-laravel": "^3.0",
+        "spatie/laravel-permission": "^7.4",
+        "spatie/laravel-activitylog": "^5.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^11.0",
+        "pestphp/pest": "^4.6",
+        "pestphp/pest-plugin-laravel": "^4.1"
+    },
+    "suggest": {
+        "spatie/laravel-medialibrary": "Required to enable contact attachment processing (set EVO_FEATURE_CONTACT_ATTACHMENTS=true).",
+        "spatie/laravel-tags": "Required to enable AI auto-tagging on form submissions.",
+        "cweagans/composer-patches": "Required for structured streaming on laravel/ai <=0.6.5. See patches/README.md."
+    },
+    "autoload": {
+        "psr-4": {
+            "EvoDevOps\\Base\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "EvoDevOps\\Base\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "EvoDevOps\\Base\\BaseServiceProvider"
+            ]
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        },
+        "sort-packages": true
+    },
+    "minimum-stability": "stable"
+}

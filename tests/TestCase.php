@@ -14,6 +14,11 @@ abstract class TestCase extends Orchestra
     protected function getPackageProviders($app): array
     {
         return [
+            \Inertia\ServiceProvider::class,
+            \Spatie\Permission\PermissionServiceProvider::class,
+            \Spatie\Activitylog\ActivitylogServiceProvider::class,
+            \Spatie\MediaLibrary\MediaLibraryServiceProvider::class,
+            \Spatie\Tags\TagsServiceProvider::class,
             BaseServiceProvider::class,
         ];
     }

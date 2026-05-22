@@ -1,0 +1,22 @@
+<?php
+
+namespace EvoDevOps\Base\Models;
+
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Model;
+
+class AiCapability extends Model
+{
+    use HasUlids;
+
+    protected $guarded = ['id'];
+
+    protected function casts(): array
+    {
+        return [
+            'probe_passed' => 'boolean',
+            'probed_at' => 'immutable_datetime',
+            'superseded_at' => 'immutable_datetime',
+        ];
+    }
+}

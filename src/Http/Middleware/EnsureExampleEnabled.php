@@ -1,0 +1,17 @@
+<?php
+
+namespace EvoDevOps\Base\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class EnsureExampleEnabled
+{
+    public function handle(Request $request, Closure $next, string $flag): Response
+    {
+        abort_unless(config("evo.examples.{$flag}"), 404);
+
+        return $next($request);
+    }
+}

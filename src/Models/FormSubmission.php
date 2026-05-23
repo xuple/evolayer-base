@@ -63,6 +63,11 @@ class FormSubmission extends Model implements HasMedia
             ->logOnly([]);
     }
 
+    protected static function newFactory(): FormSubmissionFactory
+    {
+        return FormSubmissionFactory::new();
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(config('auth.providers.users.model'));

@@ -23,6 +23,7 @@
         "spatie/laravel-tags": "^4.11"
     },
     "require-dev": {
+        "cweagans/composer-patches": "^2.0",
         "orchestra/testbench": "^11.0",
         "pestphp/pest": "^4.6",
         "pestphp/pest-plugin-laravel": "^4.1"
@@ -32,12 +33,15 @@
     },
     "autoload": {
         "psr-4": {
-            "EvoDevOps\\Base\\": "src/"
+            "EvoDevOps\\Base\\": "src/",
+            "EvoDevOps\\Base\\Database\\Factories\\": "database/factories/",
+            "EvoDevOps\\Base\\Database\\Seeders\\": "database/seeders/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "EvoDevOps\\Base\\Tests\\": "tests/"
+            "EvoDevOps\\Base\\Tests\\": "tests/",
+            "EvoDevOps\\Base\\Tests\\Fixtures\\": "tests/Fixtures/"
         }
     },
     "extra": {
@@ -45,6 +49,11 @@
             "providers": [
                 "EvoDevOps\\Base\\BaseServiceProvider"
             ]
+        },
+        "patches": {
+            "laravel/ai": {
+                "Enable structured output streaming (until upstream lands the fix)": "patches/laravel-ai-structured-streaming.patch"
+            }
         }
     },
     "scripts": {
@@ -52,7 +61,8 @@
     },
     "config": {
         "allow-plugins": {
-            "pestphp/pest-plugin": true
+            "pestphp/pest-plugin": true,
+            "cweagans/composer-patches": true
         },
         "sort-packages": true
     },

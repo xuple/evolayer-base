@@ -30,6 +30,11 @@ class ChangeEvent extends Model
         ];
     }
 
+    protected static function newFactory(): ChangeEventFactory
+    {
+        return ChangeEventFactory::new();
+    }
+
     public function actor(): BelongsTo
     {
         return $this->belongsTo(config('auth.providers.users.model'), 'actor_user_id');

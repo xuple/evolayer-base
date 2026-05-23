@@ -1,6 +1,7 @@
 /vendor/
 /.phpunit.cache/
 composer.lock
+patches.lock.json
 .DS_Store
 .idea/
 .vscode/

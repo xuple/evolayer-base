@@ -29,7 +29,8 @@ test('contact submissions record a created lineage event', function () use ($val
 
     expect($event)->not->toBeNull()
         ->and($event->subject->is($submission))->toBeTrue()
-        ->and($event->actor_user_id)->toBeNull()
+        ->and($event->actor_type)->toBeNull()
+        ->and($event->actor_id)->toBeNull()
         ->and($event->after)->toBe([
             'status' => 'new',
             'type' => 'enquiry',
@@ -37,7 +38,7 @@ test('contact submissions record a created lineage event', function () use ($val
         ->and($event->properties['has_user'])->toBeFalse();
 });
 
-test('authenticated contact submissions record the acting user', function () use ($validContactPayload) {
+test('authenticated contact submissions record the acting user via polymorphic actor', function () use ($validContactPayload) {
     Queue::fake();
 
     $user = TestUser::factory()->create();
@@ -48,11 +49,12 @@ test('authenticated contact submissions record the acting user', function () use
 
     $event = ChangeEvent::where('event_name', 'form_submission.created')->first();
 
-    expect($event->actor_user_id)->toBe($user->id)
+    expect($event->actor_type)->toBe(TestUser::class)
+        ->and((int) $event->actor_id)->toBe($user->id)
         ->and($event->properties['has_user'])->toBeTrue();
 });
 
-test('mark read records before and after lineage snapshots', function () {
+test('mark read records before and after lineage snapshots with polymorphic actor', function () {
     $user = TestUser::factory()->create();
     $submission = FormSubmission::factory()->create(['status' => 'new']);
 
@@ -64,12 +66,13 @@ test('mark read records before and after lineage snapshots', function () {
 
     expect($event)->not->toBeNull()
         ->and($event->subject->is($submission))->toBeTrue()
-        ->and($event->actor_user_id)->toBe($user->id)
+        ->and($event->actor_type)->toBe(TestUser::class)
+        ->and((int) $event->actor_id)->toBe($user->id)
         ->and($event->before)->toBe(['status' => 'new'])
         ->and($event->after)->toBe(['status' => 'read']);
 });
 
-test('archive records before and after lineage snapshots', function () {
+test('archive records before and after lineage snapshots with polymorphic actor', function () {
     $user = TestUser::factory()->create();
     $submission = FormSubmission::factory()->create(['status' => 'read']);
 
@@ -81,7 +84,8 @@ test('archive records before and after lineage snapshots', function () {
 
     expect($event)->not->toBeNull()
         ->and($event->subject->is($submission))->toBeTrue()
-        ->and($event->actor_user_id)->toBe($user->id)
+        ->and($event->actor_type)->toBe(TestUser::class)
+        ->and((int) $event->actor_id)->toBe($user->id)
         ->and($event->before)->toBe(['status' => 'read'])
         ->and($event->after)->toBe(['status' => 'archived']);
 });

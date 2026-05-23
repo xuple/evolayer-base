@@ -22,6 +22,12 @@ function makeAdmin(): TestUser
 
         public function isAdmin(?Authenticatable $user): bool
         {
+            return $this->can($user, 'evodevops.admin');
+        }
+
+        public function can(?Authenticatable $user, string $ability, mixed $resource = null): bool
+        {
+            // Test fake: only the seeded admin authorises for any ability.
             return $user !== null && $user->getAuthIdentifier() === $this->admin->getAuthIdentifier();
         }
     });

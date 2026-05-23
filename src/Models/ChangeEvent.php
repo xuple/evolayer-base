@@ -6,7 +6,6 @@ use EvoDevOps\Base\Database\Factories\ChangeEventFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class ChangeEvent extends Model
@@ -35,9 +34,13 @@ class ChangeEvent extends Model
         return ChangeEventFactory::new();
     }
 
-    public function actor(): BelongsTo
+    /**
+     * The actor that caused the change. Polymorphic — User by default; variants may
+     * record Customer / Tenant / system actors. Null for unattributed events.
+     */
+    public function actor(): MorphTo
     {
-        return $this->belongsTo(config('auth.providers.users.model'), 'actor_user_id');
+        return $this->morphTo();
     }
 
     public function subject(): MorphTo

@@ -10,8 +10,16 @@ return new class extends Migration
     {
         Schema::create('change_events', function (Blueprint $table): void {
             $table->ulid('id')->primary();
-            $table->foreignId('actor_user_id')->nullable()->constrained('users')->nullOnDelete();
+
+            // Actor polymorph (nullable) — User by default; variants may record Customer / Tenant / system.
+            // Replaces the old `actor_user_id` column; package is pre-release, no data migration needed.
+            $table->nullableMorphs('actor');
+
             $table->nullableUlidMorphs('subject');
+
+            // Tenant scope (nullable) — populated by RLS-using consumers.
+            $table->string('tenant_id', 64)->nullable()->index();
+
             $table->string('event_name');
             $table->unsignedSmallInteger('event_version')->default(1);
             $table->ulid('correlation_id')->nullable()->index();

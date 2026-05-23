@@ -18,21 +18,29 @@
         "laravel/ai": "^0.6.5",
         "inertiajs/inertia-laravel": "^3.0",
         "spatie/laravel-permission": "^7.4",
-        "spatie/laravel-activitylog": "^5.0",
-        "spatie/laravel-medialibrary": "^11.22",
-        "spatie/laravel-tags": "^4.11"
+        "spatie/laravel-activitylog": "^5.0"
     },
     "require-dev": {
         "orchestra/testbench": "^11.0",
         "pestphp/pest": "^4.6",
-        "pestphp/pest-plugin-laravel": "^4.1"
+        "pestphp/pest-plugin-laravel": "^4.1",
+        "spatie/laravel-medialibrary": "^11.22",
+        "spatie/laravel-tags": "^4.11"
+    },
+    "suggest": {
+        "spatie/laravel-medialibrary": "Required to enable contact attachment processing. Set EVO_BASE_FEATURE_CONTACT_ATTACHMENTS=true after install.",
+        "spatie/laravel-tags": "Required to enable AI auto-tagging on form submissions during triage.",
+        "cweagans/composer-patches": "Required for structured streaming on laravel/ai <=0.6.5. See patches/README.md."
     },
     "autoload": {
         "psr-4": {
             "EvoDevOps\\Base\\": "src/",
             "EvoDevOps\\Base\\Database\\Factories\\": "database/factories/",
             "EvoDevOps\\Base\\Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "src/Compat/bootstrap.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

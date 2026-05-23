@@ -27,7 +27,6 @@ class ChangeEventRecorder
         string $source = 'app',
     ): ChangeEvent {
         $event = new ChangeEvent([
-            'actor_user_id' => $actor?->getAuthIdentifier(),
             'event_name' => $eventName,
             'event_version' => 1,
             'correlation_id' => $correlationId,
@@ -42,6 +41,17 @@ class ChangeEventRecorder
 
         if ($subject) {
             $event->subject()->associate($subject);
+        }
+
+        // Authenticatable contracts don't expose morph-friendly identity, so we
+        // associate via the model interface when available.
+        if ($actor instanceof Model) {
+            $event->actor()->associate($actor);
+        } elseif ($actor !== null) {
+            // Best-effort: store the auth identifier in actor_id with a
+            // placeholder actor_type so the record is traceable.
+            $event->actor_type = $actor::class;
+            $event->actor_id = $actor->getAuthIdentifier();
         }
 
         $event->save();

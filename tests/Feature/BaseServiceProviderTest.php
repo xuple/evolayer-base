@@ -26,7 +26,27 @@ test('evodevops:doctor exits successfully in the Phase B scaffold', function () 
 });
 
 test('AdminGate returns false for a null user', function () {
-    expect(app(AdminGate::class)->isAdmin(null))->toBeFalse();
+    expect(app(AdminGate::class)->isAdmin(null))->toBeFalse()
+        ->and(app(AdminGate::class)->can(null, 'evodevops.admin'))->toBeFalse()
+        ->and(app(AdminGate::class)->can(null, 'arbitrary.ability'))->toBeFalse();
+});
+
+test('AdminGate::isAdmin delegates to can(evodevops.admin)', function () {
+    $user = \EvoDevOps\Base\Tests\Fixtures\TestUser::factory()->create();
+
+    // The default SpatieAdminGate denies because TestUser does not have HasRoles trait.
+    expect(app(AdminGate::class)->can($user, 'evodevops.admin'))->toBeFalse()
+        ->and(app(AdminGate::class)->isAdmin($user))->toBeFalse();
+});
+
+test('AdminGate::can routes arbitrary abilities through Laravel Gate', function () {
+    \Illuminate\Support\Facades\Gate::define('test-ability', fn () => true);
+    \Illuminate\Support\Facades\Gate::define('denied-ability', fn () => false);
+
+    $user = \EvoDevOps\Base\Tests\Fixtures\TestUser::factory()->create();
+
+    expect(app(AdminGate::class)->can($user, 'test-ability'))->toBeTrue()
+        ->and(app(AdminGate::class)->can($user, 'denied-ability'))->toBeFalse();
 });
 
 test('SpatieAdminGate returns false for a user without hasRole capability', function () {

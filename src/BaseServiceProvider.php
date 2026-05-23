@@ -52,6 +52,37 @@ class BaseServiceProvider extends ServiceProvider
                 OntologyCompileCommand::class,
                 PromoteUserCommand::class,
             ]);
+
+            $this->registerPublishables();
         }
+    }
+
+    private function registerPublishables(): void
+    {
+        $this->publishes([
+            __DIR__.'/../config/evodevops.php' => config_path('evodevops.php'),
+            __DIR__.'/../config/evodevops-ai.php' => config_path('evodevops-ai.php'),
+        ], 'evodevops-base-config');
+
+        $this->publishes([
+            __DIR__.'/../resources/js/blocks' => resource_path('js/blocks'),
+            __DIR__.'/../resources/js/pages/evodevops' => resource_path('js/pages/evodevops'),
+            __DIR__.'/../resources/js/hooks' => resource_path('js/hooks'),
+            __DIR__.'/../resources/js/components' => resource_path('js/components'),
+            __DIR__.'/../resources/js/providers' => resource_path('js/providers'),
+            __DIR__.'/../resources/js/layouts' => resource_path('js/layouts'),
+            __DIR__.'/../resources/js/config' => resource_path('js/config'),
+            __DIR__.'/../resources/js/types/layout.ts' => resource_path('js/types/layout.ts'),
+            __DIR__.'/../resources/js/lib/appearance.ts' => resource_path('js/lib/appearance.ts'),
+            __DIR__.'/../resources/js/lib/platform.ts' => resource_path('js/lib/platform.ts'),
+        ], 'evodevops-base-frontend');
+
+        $this->publishes([
+            __DIR__.'/../database/migrations' => database_path('migrations'),
+        ], 'evodevops-base-migrations');
+
+        $this->publishes([
+            __DIR__.'/../patches' => base_path('patches'),
+        ], 'evodevops-base-patches');
     }
 }

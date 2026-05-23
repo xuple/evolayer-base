@@ -6,8 +6,8 @@ import { CommandBar } from '@/components/command-bar';
 import { docsBaseUrl } from '@/config/docs';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
-import { about, home } from '@/routes';
 import { edit as profileEdit } from '@/routes/profile';
+import evodevops from '@/routes/evodevops';
 
 type StarterLink = {
     title: string;
@@ -54,7 +54,7 @@ const extensionPaths: ExtensionPath[] = [
         title: 'Public pages and docs',
         description:
             'Use the about page to review the public pages, docs, and first app areas before extending.',
-        href: about().url,
+        href: evodevops.about().url,
         icon: Blocks,
     },
     {
@@ -227,7 +227,7 @@ export default function Home() {
 }
 
 Home.layout = (page: ReactElement) => (
-    <AppLayout breadcrumbs={[{ title: 'Home', href: home() }]}>
+    <AppLayout breadcrumbs={[{ title: 'Home', href: evodevops.home() }]}>
         {page}
     </AppLayout>
 );

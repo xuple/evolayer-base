@@ -9,16 +9,17 @@ import {
 import { show as inboxShow } from '@/actions/EvoDevOps/Base/Http/Controllers/Admin/InboxController';
 import { show as showPrd } from '@/actions/EvoDevOps/Base/Http/Controllers/Admin/PrdController';
 import { show as showThreadStudio } from '@/actions/EvoDevOps/Base/Http/Controllers/Ai/ThreadStudioController';
-import { dashboard, home } from '@/routes';
+import { dashboard } from '@/routes';
+import evodevops from '@/routes/evodevops';
 import { edit as editAppearance } from '@/routes/appearance/index';
 import { edit as profileEdit } from '@/routes/profile';
 import { edit as editSecurity } from '@/routes/security/index';
-import type { NavItem } from '@/types';
+import type { EvoNavItem } from '@/types/evodevops';
 
-export const sidebarPrimaryNavItems: NavItem[] = [
+export const sidebarPrimaryNavItems: EvoNavItem[] = [
     {
         title: 'Home',
-        href: home(),
+        href: evodevops.home(),
         icon: Home,
         isAccent: true,
         description: 'Go to the launcher',
@@ -46,7 +47,7 @@ export const sidebarPrimaryNavItems: NavItem[] = [
     },
 ];
 
-export const sidebarSecondaryNavItems: NavItem[] = [
+export const sidebarSecondaryNavItems: EvoNavItem[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
@@ -55,12 +56,12 @@ export const sidebarSecondaryNavItems: NavItem[] = [
     },
 ];
 
-export const mainNavItems: NavItem[] = [
+export const mainNavItems: EvoNavItem[] = [
     ...sidebarPrimaryNavItems,
     ...sidebarSecondaryNavItems,
 ];
 
-export const settingsNavItems: NavItem[] = [
+export const settingsNavItems: EvoNavItem[] = [
     {
         title: 'Settings',
         href: profileEdit(),
@@ -69,7 +70,7 @@ export const settingsNavItems: NavItem[] = [
     },
 ];
 
-export const settingsSectionNavItems: NavItem[] = [
+export const settingsSectionNavItems: EvoNavItem[] = [
     {
         title: 'Profile',
         href: profileEdit(),

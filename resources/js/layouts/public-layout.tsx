@@ -1,7 +1,7 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import AppLogoIcon from '@/components/app-logo-icon';
-import { login, register, welcome } from '@/routes';
+import { login, register } from '@/routes';
 
 interface Props {
     title?: string;
@@ -24,7 +24,7 @@ export default function PublicLayout({ title, description, children }: Props) {
                 <header className="mb-6 w-full max-w-6xl text-sm not-has-[nav]:hidden">
                     <nav className="flex items-center justify-between gap-4">
                         <Link
-                            href={welcome()}
+                            href="/"
                             className="flex items-center gap-2 text-foreground"
                         >
                             <AppLogoIcon className="h-6 w-6 fill-current text-brand" />

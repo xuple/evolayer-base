@@ -3,7 +3,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import SubmissionsController from '@/actions/EvoDevOps/Base/Http/Controllers/Admin/SubmissionsController';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import admin from '@/routes/admin';
+import evodevops from '@/routes/evodevops';
 import type { AppLayoutPageProps } from '@/types/layout';
 
 type Submission = {
@@ -235,6 +235,6 @@ export default function SubmissionsIndex({ submissions }: Props) {
 
 SubmissionsIndex.layout = {
     breadcrumbs: [
-        { title: 'Submissions', href: admin.submissions.index.url() },
+        { title: 'Submissions', href: evodevops.admin.submissions.index.url() },
     ],
 } satisfies AppLayoutPageProps;

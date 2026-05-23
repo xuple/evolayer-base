@@ -25,7 +25,7 @@ class ContactController extends Controller
     public function store(ContactFormRequest $request, ChangeEventRecorder $events): RedirectResponse
     {
         if ($request->filled('honeypot')) {
-            return redirect()->route('contact.thank-you');
+            return redirect()->route('evodevops.contact.thank-you');
         }
 
         $submission = FormSubmission::create([
@@ -67,7 +67,7 @@ class ContactController extends Controller
             }
         }
 
-        return redirect()->route('contact.thank-you');
+        return redirect()->route('evodevops.contact.thank-you');
     }
 
     public function thankYou(): Response

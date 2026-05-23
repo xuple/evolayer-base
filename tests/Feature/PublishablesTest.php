@@ -57,7 +57,17 @@ test('publishing evodevops-base-frontend drops blocks, pages, hooks, components,
         ->and(File::exists(resource_path('js/layouts/public-layout.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/config/navigation.ts')))->toBeTrue()
         ->and(File::exists(resource_path('js/types/layout.ts')))->toBeTrue()
+        ->and(File::exists(resource_path('js/types/evodevops.d.ts')))->toBeTrue()
         ->and(File::exists(resource_path('js/lib/appearance.ts')))->toBeTrue();
+});
+
+test('publishing evodevops-base-npm drops the package-json additions snippet', function () {
+    $this->artisan('vendor:publish', [
+        '--tag' => 'evodevops-base-npm',
+        '--force' => true,
+    ])->assertSuccessful();
+
+    expect(File::exists(base_path('package-json-additions.evodevops.json')))->toBeTrue();
 });
 
 test('published page stubs reference the package controller namespace, not App', function () {

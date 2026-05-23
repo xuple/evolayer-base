@@ -73,6 +73,7 @@ class BaseServiceProvider extends ServiceProvider
             __DIR__.'/../resources/js/layouts' => resource_path('js/layouts'),
             __DIR__.'/../resources/js/config' => resource_path('js/config'),
             __DIR__.'/../resources/js/types/layout.ts' => resource_path('js/types/layout.ts'),
+            __DIR__.'/../resources/js/types/evodevops.d.ts' => resource_path('js/types/evodevops.d.ts'),
             __DIR__.'/../resources/js/lib/appearance.ts' => resource_path('js/lib/appearance.ts'),
             __DIR__.'/../resources/js/lib/platform.ts' => resource_path('js/lib/platform.ts'),
         ], 'evodevops-base-frontend');
@@ -84,5 +85,9 @@ class BaseServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../patches' => base_path('patches'),
         ], 'evodevops-base-patches');
+
+        $this->publishes([
+            __DIR__.'/../stubs/package-json-additions.json' => base_path('package-json-additions.evodevops.json'),
+        ], 'evodevops-base-npm');
     }
 }

@@ -9,7 +9,6 @@ import {
 import type { ReactElement } from 'react';
 import { docsBaseUrl } from '@/config/docs';
 import PublicLayout from '@/layouts/public-layout';
-import { welcome } from '@/routes';
 
 const roleBlocks = [
     {
@@ -95,7 +94,7 @@ export default function About() {
 
                             <div className="flex flex-wrap items-center gap-2">
                                 <Link
-                                    href={welcome()}
+                                    href="/"
                                     className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-neutral-900 transition hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:hover:border-neutral-700"
                                 >
                                     <ArrowLeftIcon className="size-4" />

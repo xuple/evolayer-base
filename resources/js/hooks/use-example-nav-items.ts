@@ -1,8 +1,11 @@
 import { usePage } from '@inertiajs/react';
-import type { NavItem } from '@/types';
+import type { EvoNavItem, EvoSharedProps } from '@/types/evodevops';
 
-export function useExampleNavItems(items: NavItem[]): NavItem[] {
-    const examples = usePage().props.evo?.examples;
+export function useExampleNavItems<T extends EvoNavItem = EvoNavItem>(
+    items: T[],
+): T[] {
+    const evo = (usePage().props as { evo?: EvoSharedProps }).evo;
+    const examples = evo?.examples;
 
     if (!examples) {
         return items;

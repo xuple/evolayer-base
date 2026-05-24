@@ -67,6 +67,14 @@ class BaseServiceProvider extends ServiceProvider
 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
+        // Register Base's ontology under the evo.base namespace. Variant
+        // packages register their own (evo.commerce, etc.) the same way; the
+        // compiler merges them. The host may publish + customise this copy via
+        // the evodevops-base-ontology tag — if they do, point the registry at
+        // base_path('ontology.yaml') from the host's AppServiceProvider.
+        $this->app->make(OntologyRegistry::class)
+            ->register('evo.base', __DIR__.'/../stubs/ontology.yaml');
+
         if ($this->app->runningInConsole()) {
             $this->commands([
                 DoctorCommand::class,
@@ -156,5 +164,9 @@ class BaseServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../stubs/package-json-additions.json' => base_path('package-json-additions.evodevops.json'),
         ], 'evodevops-base-npm');
+
+        $this->publishes([
+            __DIR__.'/../stubs/ontology.yaml' => base_path('ontology.yaml'),
+        ], 'evodevops-base-ontology');
     }
 }

@@ -89,19 +89,61 @@ class BaseServiceProvider extends ServiceProvider
             __DIR__.'/../config/evodevops-ai.php' => config_path('evodevops-ai.php'),
         ], 'evodevops-base-config');
 
-        $this->publishes([
+        // ── Frontend: core (always-on UI primitives, no feature flag) ──────────
+        // Blocks, command palette, shared hooks/types/config/layouts. Publish
+        // this once; it has no cross-feature route dependencies.
+        $coreFrontend = [
             __DIR__.'/../resources/js/blocks' => resource_path('js/blocks'),
-            __DIR__.'/../resources/js/pages/evodevops' => resource_path('js/pages/evodevops'),
-            __DIR__.'/../resources/js/hooks' => resource_path('js/hooks'),
             __DIR__.'/../resources/js/components' => resource_path('js/components'),
             __DIR__.'/../resources/js/providers' => resource_path('js/providers'),
             __DIR__.'/../resources/js/layouts' => resource_path('js/layouts'),
             __DIR__.'/../resources/js/config' => resource_path('js/config'),
+            __DIR__.'/../resources/js/hooks/use-evo-props.ts' => resource_path('js/hooks/use-evo-props.ts'),
+            __DIR__.'/../resources/js/hooks/use-example-nav-items.ts' => resource_path('js/hooks/use-example-nav-items.ts'),
             __DIR__.'/../resources/js/types/layout.ts' => resource_path('js/types/layout.ts'),
             __DIR__.'/../resources/js/types/evodevops.d.ts' => resource_path('js/types/evodevops.d.ts'),
             __DIR__.'/../resources/js/lib/appearance.ts' => resource_path('js/lib/appearance.ts'),
             __DIR__.'/../resources/js/lib/platform.ts' => resource_path('js/lib/platform.ts'),
-        ], 'evodevops-base-frontend');
+        ];
+        $this->publishes($coreFrontend, 'evodevops-base-frontend-core');
+
+        // ── Frontend: per-feature page sets ───────────────────────────────────
+        // Each tag mirrors a routes/features/*.php file. Publish only the tags
+        // for features you've enabled, so published pages never import a
+        // controller whose route isn't registered (which would break tsc).
+        $featureFrontend = [
+            'thread-studio' => [
+                __DIR__.'/../resources/js/pages/evodevops/ai/thread-studio.tsx' => resource_path('js/pages/evodevops/ai/thread-studio.tsx'),
+                __DIR__.'/../resources/js/hooks/use-thread-studio-stream.ts' => resource_path('js/hooks/use-thread-studio-stream.ts'),
+                __DIR__.'/../resources/js/hooks/use-typewriter.ts' => resource_path('js/hooks/use-typewriter.ts'),
+            ],
+            'prd-studio' => [
+                __DIR__.'/../resources/js/pages/evodevops/admin/prd.tsx' => resource_path('js/pages/evodevops/admin/prd.tsx'),
+            ],
+            'admin-inbox' => [
+                __DIR__.'/../resources/js/pages/evodevops/admin/inbox' => resource_path('js/pages/evodevops/admin/inbox'),
+                __DIR__.'/../resources/js/pages/evodevops/admin/submissions' => resource_path('js/pages/evodevops/admin/submissions'),
+            ],
+            'contact-ai' => [
+                __DIR__.'/../resources/js/pages/evodevops/contact.tsx' => resource_path('js/pages/evodevops/contact.tsx'),
+                __DIR__.'/../resources/js/pages/evodevops/contact-thank-you.tsx' => resource_path('js/pages/evodevops/contact-thank-you.tsx'),
+            ],
+            'marketing-pages' => [
+                __DIR__.'/../resources/js/pages/evodevops/about.tsx' => resource_path('js/pages/evodevops/about.tsx'),
+                __DIR__.'/../resources/js/pages/evodevops/home.tsx' => resource_path('js/pages/evodevops/home.tsx'),
+            ],
+        ];
+
+        $everything = $coreFrontend;
+        foreach ($featureFrontend as $feature => $paths) {
+            $this->publishes($paths, "evodevops-base-frontend-{$feature}");
+            $everything = array_merge($everything, $paths);
+        }
+
+        // Convenience meta-tag: publishes core + every feature page set at once.
+        // Intended for demos / "show me everything"; production installs should
+        // publish core + only the feature tags they've enabled.
+        $this->publishes($everything, 'evodevops-base-frontend');
 
         $this->publishes([
             __DIR__.'/../database/migrations' => database_path('migrations'),

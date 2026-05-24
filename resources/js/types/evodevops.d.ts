@@ -32,6 +32,7 @@ export interface EvoExamples {
     contact_ai: boolean;
     voice_input: boolean;
     ai_text_field: boolean;
+    marketing_pages: boolean;
 }
 
 export interface EvoFeatures {

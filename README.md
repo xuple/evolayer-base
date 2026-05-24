@@ -12,9 +12,9 @@ The package is designed to feel like a clean additive layer for a developer tran
 # 1. Install the package
 composer require evodevops/base
 
-# 2. Publish stubs to the host
+# 2. Publish the always-on bits: config, core frontend, migrations, npm deps
 php artisan vendor:publish --tag=evodevops-base-config
-php artisan vendor:publish --tag=evodevops-base-frontend
+php artisan vendor:publish --tag=evodevops-base-frontend-core
 php artisan vendor:publish --tag=evodevops-base-migrations
 php artisan vendor:publish --tag=evodevops-base-patches
 php artisan vendor:publish --tag=evodevops-base-npm
@@ -28,7 +28,32 @@ npm install cmdk
 php artisan migrate
 ```
 
-After step 4 the package is installed but **does nothing yet** — `php artisan route:list` shows no new routes. You opt in to features via env flags (see below).
+After step 4 the package is installed but **does nothing yet** — `php artisan route:list` shows no new routes. You opt in to features via env flags + per-feature publish tags (see below).
+
+### Enabling a feature (two coupled steps)
+
+Each opt-in feature is two things that must match: an **env flag** (registers its routes) and a **frontend publish tag** (drops its pages). Do both together — a published page whose route isn't registered will fail `tsc`, and an enabled route with no page is a dead link.
+
+```bash
+# Example: enable ThreadStudio
+echo 'EVO_BASE_EXAMPLE_THREAD_STUDIO=true' >> .env
+php artisan vendor:publish --tag=evodevops-base-frontend-thread-studio
+php artisan wayfinder:generate --with-form
+```
+
+| Feature | Env flag | Frontend publish tag |
+| --- | --- | --- |
+| ThreadStudio | `EVO_BASE_EXAMPLE_THREAD_STUDIO` | `evodevops-base-frontend-thread-studio` |
+| PRD Studio | `EVO_BASE_EXAMPLE_PRD_STUDIO` | `evodevops-base-frontend-prd-studio` |
+| Admin Inbox | `EVO_BASE_EXAMPLE_ADMIN_INBOX` | `evodevops-base-frontend-admin-inbox` |
+| Contact + AI | `EVO_BASE_EXAMPLE_CONTACT_AI` | `evodevops-base-frontend-contact-ai` |
+| Marketing pages | `EVO_BASE_EXAMPLE_MARKETING_PAGES` | `evodevops-base-frontend-marketing-pages` |
+| Voice input | `EVO_BASE_EXAMPLE_VOICE_INPUT` | (block ships in core; no page tag) |
+| AI text field | `EVO_BASE_EXAMPLE_AI_TEXT_FIELD` | (block ships in core; no page tag) |
+
+`voice_input` and `ai_text_field` are blocks consumed by other pages (ThreadStudio, PRD), not standalone pages. Enabling their flags registers their endpoints; the consuming page receives the endpoint URL as a server prop and shows the relevant control only when the flag is on — so no cross-feature compile-time dependency exists.
+
+To publish everything at once (demo / kitchen-sink), use the meta tag `evodevops-base-frontend` and enable all flags.
 
 ---
 

@@ -7,6 +7,7 @@ use EvoDevOps\Base\Http\Requests\Ai\ComposeThreadStudioRequest;
 use EvoDevOps\Base\Support\ThreadStudioAiConfig;
 use EvoDevOps\Base\Support\ThreadStudioComposer;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -22,6 +23,12 @@ class ThreadStudioController extends Controller
         return Inertia::render('evodevops/ai/thread-studio', [
             'aiProvider' => $aiConfig->metadata(),
             'aiProviders' => $aiConfig->providerOptions(),
+            // Cross-feature URL passed at runtime so the page never compile-time
+            // depends on the voice_input feature's Wayfinder controller. Null
+            // when voice_input isn't enabled — the page hides the Dictate button.
+            'voiceInputUrl' => Route::has('evodevops.base.ai.voice-input.transcribe')
+                ? route('evodevops.base.ai.voice-input.transcribe')
+                : null,
         ]);
     }
 

@@ -6,6 +6,7 @@ use EvoDevOps\Base\Http\Controllers\Controller;
 use EvoDevOps\Base\Http\Requests\Admin\GeneratePrdRequest;
 use EvoDevOps\Base\Support\PrdGenerator;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 use Throwable;
@@ -17,7 +18,17 @@ class PrdController extends Controller
 {
     public function show(): Response
     {
-        return Inertia::render('evodevops/admin/prd');
+        return Inertia::render('evodevops/admin/prd', [
+            // Cross-feature URLs passed at runtime so the page never compile-time
+            // depends on the ai_text_field / voice_input features' Wayfinder
+            // controllers. Null when those features aren't enabled.
+            'aiTextAssistUrl' => Route::has('evodevops.base.ai.text-assist.stream')
+                ? route('evodevops.base.ai.text-assist.stream')
+                : null,
+            'voiceInputUrl' => Route::has('evodevops.base.ai.voice-input.transcribe')
+                ? route('evodevops.base.ai.voice-input.transcribe')
+                : null,
+        ]);
     }
 
     public function generate(GeneratePrdRequest $request, PrdGenerator $generator): JsonResponse

@@ -6,41 +6,48 @@ import {
     Settings,
     Sparkles,
 } from 'lucide-react';
-import { show as inboxShow } from '@/actions/EvoDevOps/Base/Http/Controllers/Admin/InboxController';
-import { show as showPrd } from '@/actions/EvoDevOps/Base/Http/Controllers/Admin/PrdController';
-import { show as showThreadStudio } from '@/actions/EvoDevOps/Base/Http/Controllers/Ai/ThreadStudioController';
 import { dashboard } from '@/routes';
-import evodevops from '@/routes/evodevops';
 import { edit as editAppearance } from '@/routes/appearance/index';
 import { edit as profileEdit } from '@/routes/profile';
 import { edit as editSecurity } from '@/routes/security/index';
 import type { EvoNavItem } from '@/types/evodevops';
 
+/*
+ * EvoDevOps feature URLs are stable string paths rather than Wayfinder
+ * controller imports. This keeps the always-published `navigation.ts` (core)
+ * free of compile-time dependencies on any single feature's routes — a feature
+ * you haven't enabled won't have a Wayfinder-generated controller, and core
+ * must compile regardless. `useExampleNavItems()` filters these by
+ * `exampleKey` against the enabled flags, so disabled features never render.
+ * Host/starter routes (dashboard, profile, etc.) keep their typed Wayfinder
+ * imports since the starter always ships them.
+ */
 export const sidebarPrimaryNavItems: EvoNavItem[] = [
     {
         title: 'Home',
-        href: evodevops.base.home(),
+        href: '/home',
         icon: Home,
         isAccent: true,
         description: 'Go to the launcher',
+        exampleKey: 'marketing_pages',
     },
     {
         title: 'ThreadStudio',
-        href: showThreadStudio(),
+        href: '/ai/thread-studio',
         icon: Sparkles,
         description: 'Shape threaded work into reviewed outputs',
         exampleKey: 'thread_studio',
     },
     {
         title: 'Inbox',
-        href: inboxShow(),
+        href: '/admin/inbox',
         icon: Inbox,
         description: 'Review and respond to contact form submissions',
         exampleKey: 'admin_inbox',
     },
     {
         title: 'PRD Studio',
-        href: showPrd(),
+        href: '/admin/prd',
         icon: FileText,
         description: 'Turn product notes into scoped requirements',
         exampleKey: 'prd_studio',

@@ -1,11 +1,8 @@
 import { Head } from '@inertiajs/react';
-import { useEvoProps } from '@/hooks/use-evo-props';
 import { AlertCircle, FileText, LoaderCircle } from 'lucide-react';
 import { useState } from 'react';
 import type { FormEvent, ReactElement } from 'react';
 import { generate } from '@/actions/EvoDevOps/Base/Http/Controllers/Admin/PrdController';
-import AiTextAssistController from '@/actions/EvoDevOps/Base/Http/Controllers/Ai/AiTextAssistController';
-import VoiceInputController from '@/actions/EvoDevOps/Base/Http/Controllers/Ai/VoiceInputController';
 import { AiTextField } from '@/blocks/ai-text-field';
 import { VoiceInput } from '@/blocks/voice-input';
 import InputError from '@/components/input-error';
@@ -75,8 +72,15 @@ function priorityVariant(priority: PrdRequirement['priority']) {
           : 'outline';
 }
 
-export default function PrdPage(): ReactElement {
-    const evo = useEvoProps();
+type PrdPageProps = {
+    aiTextAssistUrl: string | null;
+    voiceInputUrl: string | null;
+};
+
+export default function PrdPage({
+    aiTextAssistUrl,
+    voiceInputUrl,
+}: PrdPageProps): ReactElement {
     const [form, setForm] = useState<PrdForm>({
         product_context: '',
         audience: '',
@@ -177,7 +181,7 @@ export default function PrdPage(): ReactElement {
                         </CardHeader>
                         <CardContent>
                             <form className="space-y-5" onSubmit={submit}>
-                                {evo.base.examples.ai_text_field ? (
+                                {aiTextAssistUrl ? (
                                     <>
                                         <AiTextField
                                             id="product_context"
@@ -189,7 +193,7 @@ export default function PrdPage(): ReactElement {
                                                     value,
                                                 );
                                             }}
-                                            suggestUrl={AiTextAssistController.streamAssist.url()}
+                                            suggestUrl={aiTextAssistUrl}
                                             buildPayload={() => ({
                                                 field_hint:
                                                     'Product context for a PRD document — describe what the product does, who it is for, and the core problem it solves',
@@ -206,12 +210,12 @@ export default function PrdPage(): ReactElement {
                                             placeholder="Describe the product, workflow, customer pain, business goal, and any existing system context."
                                             disabled={processing}
                                             labelActions={
-                                                evo.base.examples.voice_input ? (
+                                                voiceInputUrl ? (
                                                     <VoiceInput
                                                         size="sm"
                                                         label="Dictate"
                                                         disabled={processing}
-                                                        transcribeUrl={VoiceInputController.transcribe.url()}
+                                                        transcribeUrl={voiceInputUrl}
                                                         onTranscribed={(
                                                             text,
                                                         ) => {
@@ -249,12 +253,12 @@ export default function PrdPage(): ReactElement {
                                             <Label htmlFor="product_context">
                                                 Product context
                                             </Label>
-                                            {evo.base.examples.voice_input && (
+                                            {voiceInputUrl && (
                                                 <VoiceInput
                                                     size="sm"
                                                     label="Dictate"
                                                     disabled={processing}
-                                                    transcribeUrl={VoiceInputController.transcribe.url()}
+                                                    transcribeUrl={voiceInputUrl}
                                                     onTranscribed={(text) => {
                                                         setForm((current) => ({
                                                             ...current,

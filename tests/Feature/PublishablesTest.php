@@ -34,31 +34,65 @@ test('publishing evodevops-base-config drops both config files into the host con
         ->and(File::exists(config_path('evodevops-ai.php')))->toBeTrue();
 });
 
-test('publishing evodevops-base-frontend drops blocks, pages, hooks, components, providers, layouts, config, and lib', function () {
+test('publishing evodevops-base-frontend-core drops blocks, components, shared hooks, providers, layouts, config, types, lib — and NO feature pages', function () {
+    $this->artisan('vendor:publish', [
+        '--tag' => 'evodevops-base-frontend-core',
+        '--force' => true,
+    ])->assertSuccessful();
+
+    expect(File::exists(resource_path('js/blocks/ai-text-field/index.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/blocks/streaming-card/index.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/components/command-bar.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/components/ui/command.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/providers/command-palette-provider.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/layouts/public-layout.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/config/navigation.ts')))->toBeTrue()
+        ->and(File::exists(resource_path('js/hooks/use-evo-props.ts')))->toBeTrue()
+        ->and(File::exists(resource_path('js/hooks/use-example-nav-items.ts')))->toBeTrue()
+        ->and(File::exists(resource_path('js/types/evodevops.d.ts')))->toBeTrue()
+        ->and(File::exists(resource_path('js/lib/appearance.ts')))->toBeTrue()
+        // Core must NOT carry feature pages or feature-specific hooks:
+        ->and(File::exists(resource_path('js/pages/evodevops/ai/thread-studio.tsx')))->toBeFalse()
+        ->and(File::exists(resource_path('js/hooks/use-thread-studio-stream.ts')))->toBeFalse();
+});
+
+test('per-feature frontend tags publish only their own page sets', function () {
+    $this->artisan('vendor:publish', [
+        '--tag' => 'evodevops-base-frontend-thread-studio',
+        '--force' => true,
+    ])->assertSuccessful();
+
+    expect(File::exists(resource_path('js/pages/evodevops/ai/thread-studio.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/hooks/use-thread-studio-stream.ts')))->toBeTrue()
+        ->and(File::exists(resource_path('js/hooks/use-typewriter.ts')))->toBeTrue()
+        // thread-studio tag must NOT pull in inbox/prd/contact pages:
+        ->and(File::exists(resource_path('js/pages/evodevops/admin/prd.tsx')))->toBeFalse()
+        ->and(File::exists(resource_path('js/pages/evodevops/contact.tsx')))->toBeFalse();
+
+    $this->artisan('vendor:publish', [
+        '--tag' => 'evodevops-base-frontend-admin-inbox',
+        '--force' => true,
+    ])->assertSuccessful();
+
+    expect(File::exists(resource_path('js/pages/evodevops/admin/inbox/index.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/pages/evodevops/admin/submissions/index.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/pages/evodevops/admin/submissions/show.tsx')))->toBeTrue();
+});
+
+test('the evodevops-base-frontend meta tag publishes core plus every feature page set', function () {
     $this->artisan('vendor:publish', [
         '--tag' => 'evodevops-base-frontend',
         '--force' => true,
     ])->assertSuccessful();
 
     expect(File::exists(resource_path('js/blocks/ai-text-field/index.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/blocks/ai-triage/index.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/blocks/semantic-search/index.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/blocks/streaming-card/index.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/blocks/voice-input/index.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/pages/evodevops/ai/thread-studio.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/pages/evodevops/admin/inbox/index.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/pages/evodevops/admin/prd.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/pages/evodevops/contact.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/pages/evodevops/home.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/hooks/use-thread-studio-stream.ts')))->toBeTrue()
-        ->and(File::exists(resource_path('js/components/command-bar.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/components/ui/command.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/providers/command-palette-provider.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/layouts/public-layout.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/config/navigation.ts')))->toBeTrue()
-        ->and(File::exists(resource_path('js/types/layout.ts')))->toBeTrue()
-        ->and(File::exists(resource_path('js/types/evodevops.d.ts')))->toBeTrue()
-        ->and(File::exists(resource_path('js/lib/appearance.ts')))->toBeTrue();
+        ->and(File::exists(resource_path('js/types/evodevops.d.ts')))->toBeTrue();
 });
 
 test('publishing evodevops-base-npm drops the package-json additions snippet', function () {

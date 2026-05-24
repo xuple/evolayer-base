@@ -1,10 +1,8 @@
 import { Head } from '@inertiajs/react';
-import { useEvoProps } from '@/hooks/use-evo-props';
 import { AlertCircle, LoaderCircle, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import type { ReactElement } from 'react';
 import ThreadStudioController from '@/actions/EvoDevOps/Base/Http/Controllers/Ai/ThreadStudioController';
-import VoiceInputController from '@/actions/EvoDevOps/Base/Http/Controllers/Ai/VoiceInputController';
 import { StreamingCard } from '@/blocks/streaming-card';
 import { VoiceInput } from '@/blocks/voice-input';
 import Heading from '@/components/heading';
@@ -78,6 +76,7 @@ const capabilityBadgeClass: Record<ThreadStudioCapability['status'], string> = {
 type ThreadStudioPageProps = {
     aiProvider: ThreadStudioProvider;
     aiProviders: ThreadStudioProvider[];
+    voiceInputUrl: string | null;
 };
 
 const toneOptions: Array<ThreadStudioForm['tone']> = [
@@ -211,6 +210,7 @@ function StreamErrorAlert({
 export default function ThreadStudioPage({
     aiProvider,
     aiProviders,
+    voiceInputUrl,
 }: ThreadStudioPageProps) {
     const stream = useThreadStudioStream();
     const [formData, setFormData] = useState<ThreadStudioForm>({
@@ -229,7 +229,6 @@ export default function ThreadStudioPage({
         clearResult,
     } = stream;
 
-    const evo = useEvoProps();
     const [copiedText, copy] = useClipboard();
     const selectedProvider =
         aiProviders.find((provider) => provider.name === formData.provider) ??
@@ -494,12 +493,12 @@ export default function ThreadStudioPage({
                                     >
                                         Customer message
                                     </label>
-                                    {evo.base.examples.voice_input && (
+                                    {voiceInputUrl && (
                                         <VoiceInput
                                             size="sm"
                                             label="Dictate"
                                             disabled={processing}
-                                            transcribeUrl={VoiceInputController.transcribe.url()}
+                                            transcribeUrl={voiceInputUrl}
                                             onTranscribed={(text) =>
                                                 setFormData((prev) => ({
                                                     ...prev,

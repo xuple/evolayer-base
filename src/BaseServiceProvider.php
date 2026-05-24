@@ -9,6 +9,7 @@ use EvoDevOps\Base\Console\Commands\AiProbeCommand;
 use EvoDevOps\Base\Console\Commands\AiSmokeTest;
 use EvoDevOps\Base\Console\Commands\DoctorCommand;
 use EvoDevOps\Base\Console\Commands\FontsSelfHost;
+use EvoDevOps\Base\Console\Commands\InstallCommand;
 use EvoDevOps\Base\Console\Commands\OntologyCompileCommand;
 use EvoDevOps\Base\Console\Commands\PromoteUserCommand;
 use EvoDevOps\Base\Contracts\AdminGate;
@@ -77,6 +78,7 @@ class BaseServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->commands([
+                InstallCommand::class,
                 DoctorCommand::class,
                 AiProbeCommand::class,
                 AiSmokeTest::class,

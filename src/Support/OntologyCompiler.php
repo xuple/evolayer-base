@@ -30,12 +30,11 @@ class OntologyCompiler
             if (! is_file($hostSource)) {
                 throw new RuntimeException("Host ontology not found: {$hostSource}");
             }
+            // A host ontology whose declared namespace matches a registered
+            // package OVERRIDES that package's copy — this is how a host
+            // customises e.g. evo.base after publishing it. A novel namespace
+            // (typically "app") is merged additively.
             $hostNamespace = $this->declaredNamespace($hostSource) ?? 'app';
-            if (isset($sources[$hostNamespace])) {
-                throw new RuntimeException(
-                    "Host ontology namespace [{$hostNamespace}] collides with a registered package."
-                );
-            }
             $sources[$hostNamespace] = $hostSource;
         }
 

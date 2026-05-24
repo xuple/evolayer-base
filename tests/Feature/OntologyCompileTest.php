@@ -20,19 +20,44 @@ test('compileAll merges the registered Base ontology and validates structurally'
         ->and($compiled['namespaces']['evo.base']['ontology']['entities'])->toHaveKey('form_submission');
 });
 
-test('route/file references for enabled features produce no warnings, disabled features warn', function () {
-    // All example flags are enabled in the test environment, and the frontend
-    // is not published into the testbench app — so block-path references warn
-    // (files absent) but route references do not (routes registered).
+test('enabled features produce no route warnings (advisory validation)', function () {
+    // Every example flag is enabled in the test environment, so all endpoints
+    // are registered — there should be zero route-existence warnings.
     $compiled = app(OntologyCompiler::class)->compileAll(app(OntologyRegistry::class));
     $warnings = $compiled['namespaces']['evo.base']['warnings'];
 
-    // Block path warnings are expected (frontend not published in test app).
-    expect(collect($warnings)->filter(fn ($w) => str_contains($w, 'path'))->isNotEmpty())->toBeTrue();
-
-    // No route warnings — every feature flag is on in the test environment, so
-    // the endpoints are registered.
     expect(collect($warnings)->filter(fn ($w) => str_contains($w, 'route')))->toBeEmpty();
+});
+
+test('a block whose file is absent produces an advisory warning, not a failure', function () {
+    // Compile a controlled fixture referencing a definitely-absent block path.
+    // This must warn, not throw — design-time vs runtime: an unpublished
+    // frontend is not an authoring error.
+    $dir = sys_get_temp_dir().'/evo-onto-'.uniqid();
+    mkdir($dir);
+    file_put_contents($dir.'/ontology.yaml', <<<'YAML'
+        version: 1
+        namespace: evo.test
+        name: Test
+        entities: {}
+        events: {}
+        jobs: {}
+        agents: {}
+        projections: {}
+        lanes: {}
+        blocks:
+          ghost:
+            path: resources/js/blocks/definitely-not-here/index.tsx
+        YAML);
+
+    $compiled = app(OntologyCompiler::class)->compile($dir.'/ontology.yaml');
+
+    expect($compiled['warnings'])
+        ->toHaveCount(1)
+        ->and($compiled['warnings'][0])->toContain('definitely-not-here');
+
+    unlink($dir.'/ontology.yaml');
+    rmdir($dir);
 });
 
 test('the ontology:compile command writes the cache and TypeScript artifacts', function () {

@@ -25,7 +25,7 @@ export default function ContactThankYou() {
 
             <div className="mt-8 flex flex-wrap justify-center gap-3">
                 <Button asChild variant="outline">
-                    <Link href={evodevops.contact()}>Send another message</Link>
+                    <Link href={evodevops.base.contact()}>Send another message</Link>
                 </Button>
                 <Button asChild>
                     <Link href="/">Back to home</Link>

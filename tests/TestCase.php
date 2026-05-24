@@ -53,6 +53,7 @@ abstract class TestCase extends Orchestra
             'contact_ai' => true,
             'voice_input' => true,
             'ai_text_field' => true,
+            'marketing_pages' => true,
         ]);
         $app['config']->set('evo.base.features', [
             'contact_attachments' => true,

@@ -22,6 +22,20 @@ use Illuminate\Support\ServiceProvider;
 
 class BaseServiceProvider extends ServiceProvider
 {
+    /**
+     * EVO_BASE_EXAMPLE_* flags that gate per-feature route files under routes/features/.
+     * Order matters only for route:list display; each file is independent.
+     */
+    private const FEATURE_ROUTES = [
+        'marketing_pages',
+        'contact_ai',
+        'admin_inbox',
+        'prd_studio',
+        'thread_studio',
+        'voice_input',
+        'ai_text_field',
+    ];
+
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/evodevops.php', 'evo');
@@ -40,7 +54,16 @@ class BaseServiceProvider extends ServiceProvider
         $router->aliasMiddleware('evo.admin', RequireAdmin::class);
 
         $router->middlewareGroup('evo', (array) config('evo.base.route.middleware', ['web']));
-        Route::middleware('evo')->group(__DIR__.'/../routes/web.php');
+
+        // Per-feature route files — each only loads when its EVO_BASE_EXAMPLE_*
+        // flag is true. With all flags default-false, installing the package
+        // adds zero routes to the host's route:list (the "zero routes on
+        // install" principle).
+        foreach (self::FEATURE_ROUTES as $feature) {
+            if (config("evo.base.examples.{$feature}")) {
+                Route::middleware('evo')->group(__DIR__."/../routes/features/{$feature}.php");
+            }
+        }
 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 

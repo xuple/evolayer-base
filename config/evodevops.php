@@ -21,6 +21,7 @@ return [
             'contact_ai' => env('EVO_BASE_EXAMPLE_CONTACT_AI', false),
             'voice_input' => env('EVO_BASE_EXAMPLE_VOICE_INPUT', false),
             'ai_text_field' => env('EVO_BASE_EXAMPLE_AI_TEXT_FIELD', false),
+            'marketing_pages' => env('EVO_BASE_EXAMPLE_MARKETING_PAGES', false),
         ],
 
         'features' => [

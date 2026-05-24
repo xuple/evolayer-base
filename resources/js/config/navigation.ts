@@ -19,7 +19,7 @@ import type { EvoNavItem } from '@/types/evodevops';
 export const sidebarPrimaryNavItems: EvoNavItem[] = [
     {
         title: 'Home',
-        href: evodevops.home(),
+        href: evodevops.base.home(),
         icon: Home,
         isAccent: true,
         description: 'Go to the launcher',

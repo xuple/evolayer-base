@@ -54,7 +54,7 @@ const extensionPaths: ExtensionPath[] = [
         title: 'Public pages and docs',
         description:
             'Use the about page to review the public pages, docs, and first app areas before extending.',
-        href: evodevops.about().url,
+        href: evodevops.base.about().url,
         icon: Blocks,
     },
     {
@@ -227,7 +227,7 @@ export default function Home() {
 }
 
 Home.layout = (page: ReactElement) => (
-    <AppLayout breadcrumbs={[{ title: 'Home', href: evodevops.home() }]}>
+    <AppLayout breadcrumbs={[{ title: 'Home', href: evodevops.base.home() }]}>
         {page}
     </AppLayout>
 );

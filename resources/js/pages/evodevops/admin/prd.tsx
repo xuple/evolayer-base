@@ -1,11 +1,11 @@
-import { Head, usePage } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
+import { useEvoProps } from '@/hooks/use-evo-props';
 import { AlertCircle, FileText, LoaderCircle } from 'lucide-react';
 import { useState } from 'react';
 import type { FormEvent, ReactElement } from 'react';
 import { generate } from '@/actions/EvoDevOps/Base/Http/Controllers/Admin/PrdController';
 import AiTextAssistController from '@/actions/EvoDevOps/Base/Http/Controllers/Ai/AiTextAssistController';
 import VoiceInputController from '@/actions/EvoDevOps/Base/Http/Controllers/Ai/VoiceInputController';
-import type { EvoSharedProps } from '@/types/evodevops';
 import { AiTextField } from '@/blocks/ai-text-field';
 import { VoiceInput } from '@/blocks/voice-input';
 import InputError from '@/components/input-error';
@@ -76,7 +76,7 @@ function priorityVariant(priority: PrdRequirement['priority']) {
 }
 
 export default function PrdPage(): ReactElement {
-    const { evo } = usePage().props as { evo: EvoSharedProps };
+    const evo = useEvoProps();
     const [form, setForm] = useState<PrdForm>({
         product_context: '',
         audience: '',

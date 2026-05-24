@@ -2,75 +2,76 @@
 
 EvoDevOps Base is a composer package that adds the EvoDevOps AI / ontology / blocks layer to a Laravel 13 React Inertia starter. It is the foundation for the EvoDevOps family of sibling packages — **Commerce** (product sales), **SaaS** (subscriptions / tenants), **RLS** (PostgreSQL row-level security, composable).
 
-The package is designed to feel like a clean additive layer for a developer transitioning from `laravel/react-starter-kit`. Installing it adds **zero routes, zero middleware, zero shared props** by default. Each feature is opt-in via a flag.
+The package is designed to feel like a clean additive layer for a developer transitioning from `laravel/react-starter-kit`. **Installing it adds zero routes, zero middleware, zero shared props by default.** Each feature is opt-in via a flag.
 
-## Install
+---
+
+## Quick start
 
 ```bash
+# 1. Install the package
 composer require evodevops/base
 
+# 2. Publish stubs to the host
 php artisan vendor:publish --tag=evodevops-base-config
 php artisan vendor:publish --tag=evodevops-base-frontend
 php artisan vendor:publish --tag=evodevops-base-migrations
 php artisan vendor:publish --tag=evodevops-base-patches
 php artisan vendor:publish --tag=evodevops-base-npm
 
+# 3. Install the npm deps that the published frontend needs
+# (cmdk powers the standard command palette — required if you use the
+# published frontend at all)
+npm install cmdk
+
+# 4. Run package migrations
 php artisan migrate
-php artisan db:seed --class="EvoDevOps\\Base\\Database\\Seeders\\AiCapabilitySeeder"
 ```
 
-## Enable features (opt-in)
+After step 4 the package is installed but **does nothing yet** — `php artisan route:list` shows no new routes. You opt in to features via env flags (see below).
 
-All features default to `false`. Enable per-feature with env flags:
+---
 
-```env
-# Examples — turn on individual showcase features
-EVO_BASE_EXAMPLE_THREAD_STUDIO=true
-EVO_BASE_EXAMPLE_PRD_STUDIO=true
-EVO_BASE_EXAMPLE_ADMIN_INBOX=true
-EVO_BASE_EXAMPLE_CONTACT_AI=true
-EVO_BASE_EXAMPLE_VOICE_INPUT=true
-EVO_BASE_EXAMPLE_AI_TEXT_FIELD=true
+## Standard features (installed once, always on)
 
-# Capabilities — turn on infrastructural features
-EVO_BASE_FEATURE_CONTACT_ATTACHMENTS=true
-```
+These ship as part of the package's frontend stubs and don't need a flag. They're "table-stakes" UX that every starter should have.
+
+| Feature | What it gives you |
+| --- | --- |
+| **Command palette (⌘K)** | `cmdk`-powered fast nav and feature discovery; published to `resources/js/components/command-bar.tsx` and `command-palette-dialog.tsx`. Requires `cmdk` (installed at step 3 above). |
+| **Block primitives** | `streaming-card`, `ai-triage`, `ai-text-field`, `voice-input`, `semantic-search` — composable React blocks under `resources/js/blocks/`. |
+| **Type contracts** | `EvoSharedProps`, `EvoExamples`, `EvoFeatures`, `EvoNavItem` published to `resources/js/types/evodevops.d.ts`. |
+| **`useEvoProps()` hook** | Type-safe access to the `evo` shared prop. Pages call this instead of destructuring `usePage().props` directly. |
+
+---
+
+## Opt-in features (enable per env flag)
+
+Every feature defaults to **off**. Set the corresponding env flag to `true` to enable. Each flag also gates the route file for that feature — the routes only appear in `route:list` when their flag is on.
+
+| Env flag | What it enables |
+| --- | --- |
+| `EVO_BASE_EXAMPLE_THREAD_STUDIO=true` | `/ai/thread-studio` — AI customer-reply composer with structured streaming |
+| `EVO_BASE_EXAMPLE_PRD_STUDIO=true` | `/admin/prd` — AI-assisted PRD generator |
+| `EVO_BASE_EXAMPLE_ADMIN_INBOX=true` | `/admin/inbox` + `/admin/submissions` — form-submission inbox UI |
+| `EVO_BASE_EXAMPLE_CONTACT_AI=true` | `/contact` + AI subject hints + AI triage on submission |
+| `EVO_BASE_EXAMPLE_VOICE_INPUT=true` | `/ai/voice-input/transcribe` — speech-to-text endpoint for the `<VoiceInput>` block |
+| `EVO_BASE_EXAMPLE_AI_TEXT_FIELD=true` | `/ai/text-assist/stream` — text-suggestion streaming endpoint for the `<AiTextField>` block |
+| `EVO_BASE_EXAMPLE_MARKETING_PAGES=true` | `/about` + `/home` — showcase landing pages mapped to the published `evodevops/about.tsx` and `evodevops/home.tsx` |
+| `EVO_BASE_FEATURE_CONTACT_ATTACHMENTS=true` | File-upload handling on the contact form. Requires `composer require spatie/laravel-medialibrary` (see "Opt-in extras" below) |
 
 After enabling, run `php artisan route:list` to confirm only the routes you asked for are registered.
 
-## After install — manual steps
+---
 
-The integration points below cannot be cleanly automated. They are stable and small.
-
-### 1. Apply the `laravel/ai` patch
-
-Until upstream lifts the structured-output streaming guard, structured streaming requires patching `vendor/laravel/ai/src/Providers/Concerns/StreamsText.php`. The patch ships at `patches/laravel-ai-structured-streaming.patch` after `vendor:publish --tag=evodevops-base-patches`. Apply it:
-
-```bash
-patch -p1 -d vendor/laravel/ai --forward < patches/laravel-ai-structured-streaming.patch
-```
-
-The recommended production setup is to declare this patch in your starter template's `composer.json` so it survives every `composer install`. See `patches/README.md` for the revisit policy.
-
-### 2. Install opt-in npm dependencies
-
-The frontend stubs use a small number of npm packages that the starter does not ship. After `vendor:publish --tag=evodevops-base-npm` you'll find `package-json-additions.evodevops.json` at your project root. Merge its `dependencies` block into your own `package.json` and re-install:
-
-```bash
-# Add the dependencies from package-json-additions.evodevops.json to package.json, then:
-npm install      # or pnpm install
-```
-
-Currently: `cmdk@^1.0.0` (used by the command palette).
-
-### 3. Install opt-in Spatie packages (if you want media or tags)
+## Opt-in extras (composer packages)
 
 Base requires `spatie/laravel-permission` and `spatie/laravel-activitylog` as core dependencies. The other two Spatie packages are optional and only required when you enable the related features:
 
-| Spatie package | Feature it enables | Env flag |
+| Spatie package | Feature it enables | Required when |
 | --- | --- | --- |
 | `spatie/laravel-medialibrary` | Contact form file attachments + AI media analysis | `EVO_BASE_FEATURE_CONTACT_ATTACHMENTS=true` |
-| `spatie/laravel-tags` | AI auto-tagging on form submissions during triage | (enabled when `EVO_BASE_EXAMPLE_CONTACT_AI=true` if the package is installed) |
+| `spatie/laravel-tags` | AI auto-tagging on form submissions during triage | `EVO_BASE_EXAMPLE_CONTACT_AI=true` (only if you want auto-tagging) |
 
 To enable contact attachments:
 
@@ -80,9 +81,25 @@ php artisan vendor:publish --provider="Spatie\\MediaLibrary\\MediaLibraryService
 php artisan migrate
 ```
 
-Set `EVO_BASE_FEATURE_CONTACT_ATTACHMENTS=true` in `.env`. The package's `FormSubmission` model loads either way — a compat polyfill in `EvoDevOps\Base\Compat\*` shadows the Spatie interfaces and traits when the Spatie packages aren't installed, throwing only when mutation methods are reached (which the call sites gate on the feature flag).
+Set `EVO_BASE_FEATURE_CONTACT_ATTACHMENTS=true` in `.env`. The package's `FormSubmission` model loads either way — a compat polyfill in `EvoDevOps\Base\Compat\*` shadows the Spatie interfaces and traits when the Spatie packages aren't installed.
 
-### 4. Wire EvoDevOps shared props into Inertia
+---
+
+## Host integration steps
+
+A handful of host-owned files need small edits the package cannot publish over. They are small and stable.
+
+### 1. Apply the `laravel/ai` patch
+
+Until upstream lifts the structured-output streaming guard, structured streaming requires patching `vendor/laravel/ai/src/Providers/Concerns/StreamsText.php`. The patch ships at `patches/laravel-ai-structured-streaming.patch` after `vendor:publish --tag=evodevops-base-patches`:
+
+```bash
+patch -p1 -d vendor/laravel/ai --forward < patches/laravel-ai-structured-streaming.patch
+```
+
+The recommended production setup is to declare this patch in your starter template's `composer.json` so it survives every `composer install`. See `patches/README.md` for the revisit policy.
+
+### 2. Wire EvoDevOps shared props into Inertia
 
 In `app/Http/Middleware/HandleInertiaRequests.php`:
 
@@ -102,9 +119,9 @@ public function share(Request $request): array
 }
 ```
 
-For TypeScript autocomplete on `usePage().props.evo.base`, the package publishes `resources/js/types/evodevops.d.ts` with the `EvoSharedProps`, `EvoBaseSharedProps`, `EvoExamples`, and `EvoFeatures` types. Import from `@/types/evodevops`.
+The package's pages access `evo` via the published `useEvoProps()` hook — it throws a helpful error if the shared prop is missing, so misconfigurations surface immediately.
 
-### 5. Map EvoDevOps public pages onto `PublicLayout`
+### 3. Map EvoDevOps public pages onto `PublicLayout` (if you enable `MARKETING_PAGES`)
 
 In `resources/js/app.tsx`:
 
@@ -126,7 +143,7 @@ createInertiaApp({
 });
 ```
 
-### 6. Surface EvoDevOps nav entries in your sidebar
+### 4. Surface EvoDevOps nav entries in your sidebar
 
 In `resources/js/components/app-sidebar.tsx`:
 
@@ -143,9 +160,11 @@ export function AppSidebar() {
 
 `useExampleNavItems()` filters items by the `EVO_BASE_EXAMPLE_*` flags so disabled features don't appear.
 
+---
+
 ## Invariant contracts (for variant authors)
 
-These are the stable surfaces that sibling EvoDevOps packages (Commerce, SaaS, RLS) and host apps can depend on. Breaking changes are versioned.
+These are the stable surfaces sibling EvoDevOps packages (Commerce, SaaS, RLS) and host apps can depend on. Breaking changes are versioned.
 
 ### Namespacing convention
 
@@ -182,7 +201,7 @@ Toast::success('Done.');
 Inertia::flash('toast', ['type' => 'success', 'message' => 'Done.']);
 ```
 
-Payload shape: `{type: 'success'|'error'|'warning'|'info', message: string, ...}`. Consumers read via the host's flash hook.
+Payload shape: `{type: 'success'|'error'|'warning'|'info', message: string, ...}`.
 
 ### Schema invariants
 
@@ -212,7 +231,9 @@ app(\EvoDevOps\Base\Support\OntologyRegistry::class)
     ->register('evo.commerce', __DIR__.'/../ontology.yaml');
 ```
 
-The compiler reads the registry plus the host's own `ontology.yaml` and produces a namespace-keyed merged output. Each ontology file declares its own `namespace:` and `entities/events/blocks/etc.` are scoped under it.
+The compiler reads the registry plus the host's own `ontology.yaml` and produces a namespace-keyed merged output.
+
+---
 
 ## Pluggable admin gate
 
@@ -222,12 +243,16 @@ The package ships an `AdminGate` contract with a default `SpatieAdminGate` imple
 $this->app->singleton(\EvoDevOps\Base\Contracts\AdminGate::class, MyAdminGate::class);
 ```
 
+---
+
 ## Known constraints (v1)
 
 - Assumes `laravel/fortify` for authentication when using the default `SpatieAdminGate`. Other auth setups require a custom `AdminGate` binding.
 - Assumes the host `users` table uses the default Laravel convention (integer PK, table name `users`).
 - Structured-output streaming requires the manual `laravel/ai` patch above until upstream lands the fix. Tracked in `patches/README.md`.
 - The package does not automatically declare its patch in the host's composer.json — the `cweagans/composer-patches` plugin v2 cannot resolve dependency-relative patch paths at install time. The starter template (or your `composer.json`) handles this.
+
+---
 
 ## Tests
 

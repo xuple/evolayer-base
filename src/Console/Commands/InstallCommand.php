@@ -2,6 +2,7 @@
 
 namespace EvoDevOps\Base\Console\Commands;
 
+use EvoDevOps\Base\Database\Seeders\AiCapabilitySeeder;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -18,10 +19,14 @@ class InstallCommand extends Command
 
         // Always-on publishes. Per-feature frontend tags are intentionally NOT
         // published here — the dev opts into those alongside each feature flag.
+        // Migrations are intentionally NOT published: the service provider
+        // loads them from the package via loadMigrationsFrom(), so `migrate`
+        // picks them up without copying. Hosts who want to OWN and customise the
+        // schema can opt in explicitly with
+        // `vendor:publish --tag=evodevops-base-migrations`.
         foreach ([
             'evodevops-base-config' => 'config',
             'evodevops-base-frontend-core' => 'core frontend',
-            'evodevops-base-migrations' => 'migrations',
             'evodevops-base-patches' => 'vendor patches',
             'evodevops-base-npm' => 'npm additions',
             'evodevops-base-ontology' => 'ontology',
@@ -40,7 +45,7 @@ class InstallCommand extends Command
 
         if (! $this->option('no-seed')) {
             $this->components->task('Seeding AI capability ledger', fn () => $this->callSilent('db:seed', [
-                '--class' => \EvoDevOps\Base\Database\Seeders\AiCapabilitySeeder::class,
+                '--class' => AiCapabilitySeeder::class,
                 '--force' => true,
             ]) === self::SUCCESS);
         }

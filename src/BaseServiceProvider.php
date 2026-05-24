@@ -13,6 +13,7 @@ use EvoDevOps\Base\Console\Commands\OntologyCompileCommand;
 use EvoDevOps\Base\Console\Commands\PromoteUserCommand;
 use EvoDevOps\Base\Contracts\AdminGate;
 use EvoDevOps\Base\Contracts\UserResolver;
+use EvoDevOps\Base\Support\OntologyRegistry;
 use EvoDevOps\Base\Http\Middleware\EnsureExampleEnabled;
 use EvoDevOps\Base\Http\Middleware\RequireAdmin;
 use Illuminate\Routing\Router;
@@ -28,6 +29,7 @@ class BaseServiceProvider extends ServiceProvider
 
         $this->app->singleton(AdminGate::class, SpatieAdminGate::class);
         $this->app->singleton(UserResolver::class, DefaultUserResolver::class);
+        $this->app->singleton(OntologyRegistry::class);
     }
 
     public function boot(): void
@@ -37,7 +39,7 @@ class BaseServiceProvider extends ServiceProvider
         $router->aliasMiddleware('example', EnsureExampleEnabled::class);
         $router->aliasMiddleware('evo.admin', RequireAdmin::class);
 
-        $router->middlewareGroup('evo', (array) config('evo.route.middleware', ['web']));
+        $router->middlewareGroup('evo', (array) config('evo.base.route.middleware', ['web']));
         Route::middleware('evo')->group(__DIR__.'/../routes/web.php');
 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');

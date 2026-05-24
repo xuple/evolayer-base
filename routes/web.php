@@ -15,30 +15,29 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 |
 | Loaded by EvoDevOps\Base\BaseServiceProvider inside the middleware group
-| declared in config('evo.route.middleware') (default ['web']).
+| declared in config('evo.base.route.middleware') (default ['web']).
 |
-| All route NAMES are prefixed with `evodevops.` so they never collide with
-| host or other-package routes (e.g. starter's `home` / `about`). URLs are
-| not prefixed — the host can override the URL prefix via config('evo.route.prefix')
-| if they need a `/evo/...` namespace.
+| All route NAMES are prefixed with `evodevops.base.*` to reserve
+| `evodevops.commerce.*`, `evodevops.saas.*`, `evodevops.rls.*` for
+| sibling packages. URLs are not prefixed by default.
 |
 */
 
-Route::inertia('/about', 'evodevops/about')->name('evodevops.about');
+Route::inertia('/about', 'evodevops/about')->name('evodevops.base.about');
 
-Route::get('/contact', [ContactController::class, 'show'])->name('evodevops.contact');
+Route::get('/contact', [ContactController::class, 'show'])->name('evodevops.base.contact');
 Route::post('/contact', [ContactController::class, 'store'])
     ->middleware('throttle:5,1')
-    ->name('evodevops.contact.store');
-Route::get('/contact/thank-you', [ContactController::class, 'thankYou'])->name('evodevops.contact.thank-you');
+    ->name('evodevops.base.contact.store');
+Route::get('/contact/thank-you', [ContactController::class, 'thankYou'])->name('evodevops.base.contact.thank-you');
 Route::get('/contact/subject-hints', [ContactController::class, 'subjectHints'])
     ->middleware(['example:contact_ai', 'throttle:20,1'])
-    ->name('evodevops.contact.subject-hints');
+    ->name('evodevops.base.contact.subject-hints');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('home', 'evodevops/home')->name('evodevops.home');
+    Route::inertia('home', 'evodevops/home')->name('evodevops.base.home');
 
-    Route::prefix('admin')->name('evodevops.admin.')->group(function () {
+    Route::prefix('admin')->name('evodevops.base.admin.')->group(function () {
         Route::middleware('example:admin_inbox')->group(function () {
             Route::get('inbox', [InboxController::class, 'show'])->name('inbox.show');
             Route::get('inbox/search', [InboxController::class, 'search'])
@@ -62,20 +61,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::middleware(['example:thread_studio', 'evo.admin'])->group(function () {
         Route::get('ai/thread-studio', [ThreadStudioController::class, 'show'])
-            ->name('evodevops.ai.thread-studio.show');
+            ->name('evodevops.base.ai.thread-studio.show');
         Route::post('ai/thread-studio', [ThreadStudioController::class, 'store'])
             ->middleware('throttle:10,1')
-            ->name('evodevops.ai.thread-studio.store');
+            ->name('evodevops.base.ai.thread-studio.store');
         Route::post('ai/thread-studio/stream', [ThreadStudioController::class, 'streamCompose'])
             ->middleware('throttle:10,1')
-            ->name('evodevops.ai.thread-studio.stream');
+            ->name('evodevops.base.ai.thread-studio.stream');
     });
 
     Route::post('ai/voice-input/transcribe', [VoiceInputController::class, 'transcribe'])
         ->middleware(['example:voice_input', 'evo.admin', 'throttle:30,1'])
-        ->name('evodevops.ai.voice-input.transcribe');
+        ->name('evodevops.base.ai.voice-input.transcribe');
 
     Route::post('ai/text-assist/stream', [AiTextAssistController::class, 'streamAssist'])
         ->middleware(['example:ai_text_field', 'evo.admin', 'throttle:20,1'])
-        ->name('evodevops.ai.text-assist.stream');
+        ->name('evodevops.base.ai.text-assist.stream');
 });

@@ -25,7 +25,7 @@ class InboxController extends Controller
             'attachments' => [],
             'activity' => [],
             'canCompose' => app(AdminGate::class)->isAdmin($request->user())
-                && (bool) config('evo.examples.thread_studio'),
+                && (bool) config('evo.base.examples.thread_studio'),
         ]);
     }
 
@@ -59,7 +59,7 @@ class InboxController extends Controller
                 'created_at' => $log->created_at->toISOString(),
             ]),
             'canCompose' => app(AdminGate::class)->isAdmin($request->user())
-                && (bool) config('evo.examples.thread_studio'),
+                && (bool) config('evo.base.examples.thread_studio'),
         ]);
     }
 }

@@ -41,6 +41,22 @@ abstract class TestCase extends Orchestra
             'prefix' => '',
             'foreign_key_constraints' => true,
         ]);
+
+        // Enable every EvoDevOps Base feature for the package's own tests.
+        // The package's production default is `false` (opt-in per the "doesn't
+        // come with features wired in" principle); tests need them all on to
+        // exercise the full surface.
+        $app['config']->set('evo.base.examples', [
+            'thread_studio' => true,
+            'prd_studio' => true,
+            'admin_inbox' => true,
+            'contact_ai' => true,
+            'voice_input' => true,
+            'ai_text_field' => true,
+        ]);
+        $app['config']->set('evo.base.features', [
+            'contact_attachments' => true,
+        ]);
     }
 
     protected function defineDatabaseMigrations(): void

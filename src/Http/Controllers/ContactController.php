@@ -25,7 +25,7 @@ class ContactController extends Controller
     public function store(ContactFormRequest $request, ChangeEventRecorder $events): RedirectResponse
     {
         if ($request->filled('honeypot')) {
-            return redirect()->route('evodevops.contact.thank-you');
+            return redirect()->route('evodevops.base.contact.thank-you');
         }
 
         $submission = FormSubmission::create([
@@ -53,13 +53,13 @@ class ContactController extends Controller
             ],
         );
 
-        if (config('evo.features.contact_attachments', true) && $request->hasFile('attachments')) {
+        if (config('evo.base.features.contact_attachments') && $request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $submission->addMedia($file)->toMediaCollection('attachments');
             }
         }
 
-        if (config('evo.examples.contact_ai', true)) {
+        if (config('evo.base.examples.contact_ai')) {
             TriageFormSubmissionJob::dispatch($submission);
 
             if ($submission->getMedia('attachments')->isNotEmpty()) {
@@ -67,7 +67,7 @@ class ContactController extends Controller
             }
         }
 
-        return redirect()->route('evodevops.contact.thank-you');
+        return redirect()->route('evodevops.base.contact.thank-you');
     }
 
     public function thankYou(): Response

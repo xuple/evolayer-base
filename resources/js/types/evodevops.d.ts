@@ -4,14 +4,22 @@
  * pages, hooks, and config files without depending on the host's existing
  * shared-props or NavItem definitions.
  *
+ * Shared-prop shape:
+ *   usePage().props.evo.base.{examples, features}
+ *
+ * The `evo.base.*` sub-tree reserves room for sibling packages
+ * (`evo.commerce.*`, `evo.saas.*`, `evo.rls.*`) to coexist under the same
+ * top-level `evo` namespace without collision.
+ *
  * Host integration:
  *   - To use EvoDevOps nav items inside your existing sidebar, either
  *     widen your own `NavItem` type with the fields below, or render the
  *     EvoDevOps items separately via `useExampleNavItems()`.
- *   - To get autocomplete on `usePage().props.evo`, augment your
+ *   - To get autocomplete on `usePage().props.evo.base`, augment your
  *     `InertiaConfig.sharedPageProps` declaration to include
- *     `evo: EvoSharedProps`. The package does not augment Inertia
- *     automatically (would conflict with the host's own declaration).
+ *     `evo: { base: EvoBaseSharedProps }`. The package does not augment
+ *     Inertia automatically (would conflict with the host's own
+ *     declaration).
  */
 
 import type { InertiaLinkProps } from '@inertiajs/react';
@@ -30,9 +38,17 @@ export interface EvoFeatures {
     contact_attachments: boolean;
 }
 
-export interface EvoSharedProps {
+export interface EvoBaseSharedProps {
     examples: EvoExamples;
     features: EvoFeatures;
+}
+
+/**
+ * The full `evo` shared-props tree. Variants extend with their own
+ * sub-namespace (e.g. `evo.commerce`, `evo.saas`, `evo.rls`).
+ */
+export interface EvoSharedProps {
+    base: EvoBaseSharedProps;
 }
 
 /**

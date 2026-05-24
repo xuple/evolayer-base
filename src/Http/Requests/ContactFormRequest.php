@@ -29,7 +29,7 @@ class ContactFormRequest extends FormRequest
             'message' => ['required', 'string', 'min:10', 'max:10000'],
         ];
 
-        if (config('evo.features.contact_attachments', true)) {
+        if (config('evo.base.features.contact_attachments')) {
             $rules['attachments'] = ['nullable', 'array', 'max:5'];
             $rules['attachments.*'] = ['file', 'max:10240', 'mimes:jpg,jpeg,png,gif,webp,pdf,doc,docx,txt,csv,mp3,wav,m4a,ogg'];
         }

@@ -10,6 +10,54 @@ use Symfony\Component\Yaml\Yaml;
 class OntologyCompiler
 {
     /**
+     * Compile multiple ontology files from a registry, merging by declared namespace.
+     *
+     * Each registered file declares its own `namespace` (e.g. `evo.base`,
+     * `evo.commerce`). The merged output is keyed by namespace, so sibling
+     * packages can declare overlapping entity/event/block names without
+     * collision — they're scoped under their own namespace.
+     *
+     * Throws if two registered sources declare the same namespace, or if a
+     * file's declared `namespace` doesn't match its registered key.
+     *
+     * @return array<string, mixed>
+     */
+    public function compileAll(OntologyRegistry $registry, ?string $hostSource = null): array
+    {
+        $sources = $registry->all();
+
+        if ($hostSource !== null) {
+            if (! is_file($hostSource)) {
+                throw new RuntimeException("Host ontology not found: {$hostSource}");
+            }
+            $hostNamespace = $this->declaredNamespace($hostSource) ?? 'app';
+            if (isset($sources[$hostNamespace])) {
+                throw new RuntimeException(
+                    "Host ontology namespace [{$hostNamespace}] collides with a registered package."
+                );
+            }
+            $sources[$hostNamespace] = $hostSource;
+        }
+
+        if (empty($sources)) {
+            throw new RuntimeException(
+                'No ontology sources registered. Either call OntologyRegistry::register() '.
+                'from a service provider, or pass --source= explicitly.'
+            );
+        }
+
+        $compiled = [];
+        foreach ($sources as $namespace => $path) {
+            $compiled[$namespace] = $this->compile($path);
+        }
+
+        return [
+            'compiled_at' => now()->toISOString(),
+            'namespaces' => $compiled,
+        ];
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function compile(string $sourcePath): array
@@ -139,6 +187,15 @@ TS;
     /**
      * @param  array<string, mixed>  $ontology
      */
+    private function declaredNamespace(string $path): ?string
+    {
+        $parsed = Yaml::parseFile($path);
+
+        return is_array($parsed) && isset($parsed['namespace']) && is_string($parsed['namespace'])
+            ? $parsed['namespace']
+            : null;
+    }
+
     private function validate(array $ontology): void
     {
         foreach (['version', 'namespace', 'entities', 'events', 'jobs', 'blocks'] as $key) {

@@ -494,7 +494,7 @@ export default function ThreadStudioPage({
                                     >
                                         Customer message
                                     </label>
-                                    {evo.examples.voice_input && (
+                                    {evo.base.examples.voice_input && (
                                         <VoiceInput
                                             size="sm"
                                             label="Dictate"

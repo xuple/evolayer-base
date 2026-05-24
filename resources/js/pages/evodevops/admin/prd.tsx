@@ -177,7 +177,7 @@ export default function PrdPage(): ReactElement {
                         </CardHeader>
                         <CardContent>
                             <form className="space-y-5" onSubmit={submit}>
-                                {evo.examples.ai_text_field ? (
+                                {evo.base.examples.ai_text_field ? (
                                     <>
                                         <AiTextField
                                             id="product_context"
@@ -206,7 +206,7 @@ export default function PrdPage(): ReactElement {
                                             placeholder="Describe the product, workflow, customer pain, business goal, and any existing system context."
                                             disabled={processing}
                                             labelActions={
-                                                evo.examples.voice_input ? (
+                                                evo.base.examples.voice_input ? (
                                                     <VoiceInput
                                                         size="sm"
                                                         label="Dictate"
@@ -249,7 +249,7 @@ export default function PrdPage(): ReactElement {
                                             <Label htmlFor="product_context">
                                                 Product context
                                             </Label>
-                                            {evo.examples.voice_input && (
+                                            {evo.base.examples.voice_input && (
                                                 <VoiceInput
                                                     size="sm"
                                                     label="Dictate"

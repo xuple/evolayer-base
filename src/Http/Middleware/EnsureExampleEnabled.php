@@ -10,7 +10,7 @@ class EnsureExampleEnabled
 {
     public function handle(Request $request, Closure $next, string $flag): Response
     {
-        abort_unless(config("evo.examples.{$flag}"), 404);
+        abort_unless(config("evo.base.examples.{$flag}"), 404);
 
         return $next($request);
     }

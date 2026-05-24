@@ -149,7 +149,7 @@ test('file exceeding 10 MB is rejected', function () use ($validPayload) {
 
 test('no attachments are stored when contact_attachments feature is disabled', function () use ($validPayload) {
     Storage::fake('public');
-    config()->set('evo.features.contact_attachments', false);
+    config()->set('evo.base.features.contact_attachments', false);
 
     $file = UploadedFile::fake()->create('document.pdf', 512, 'application/pdf');
 

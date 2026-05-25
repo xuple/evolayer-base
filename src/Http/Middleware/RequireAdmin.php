@@ -3,9 +3,9 @@
 namespace Xuple\EvoLayer\Base\Http\Middleware;
 
 use Closure;
-use Xuple\EvoLayer\Base\Contracts\AdminGate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Xuple\EvoLayer\Base\Contracts\AdminGate;
 
 class RequireAdmin
 {

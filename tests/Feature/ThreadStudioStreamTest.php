@@ -1,9 +1,9 @@
 <?php
 
+use Laravel\Ai\Prompts\AgentPrompt;
 use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
 use Xuple\EvoLayer\Base\Models\AiInvocation;
 use Xuple\EvoLayer\Base\Tests\Fixtures\TestUser;
-use Laravel\Ai\Prompts\AgentPrompt;
 
 $fakeResult = [
     'summary' => 'Customer cannot download invoices after their plan changed.',

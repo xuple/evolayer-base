@@ -2,9 +2,6 @@
 
 namespace Xuple\EvoLayer\Base\Console\Commands;
 
-use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
-use Xuple\EvoLayer\Base\Support\ThreadStudioAiConfig;
-use Xuple\EvoLayer\Base\Support\ThreadStudioResult;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -12,8 +9,11 @@ use Illuminate\Http\Client\RequestException;
 use Laravel\Ai\AiManager;
 use RuntimeException;
 use Throwable;
+use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
+use Xuple\EvoLayer\Base\Support\ThreadStudioAiConfig;
+use Xuple\EvoLayer\Base\Support\ThreadStudioResult;
 
-#[Signature('ai:smoke-test {provider?} {--model=} {--timeout=45}')]
+#[Signature('evolayer:ai:smoke-test {provider?} {--model=} {--timeout=45}')]
 #[Description('Smoke-test AI provider connectivity and structured-output compatibility using the thread-studio schema')]
 class AiSmokeTest extends Command
 {

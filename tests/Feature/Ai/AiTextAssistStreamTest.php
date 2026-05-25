@@ -1,8 +1,8 @@
 <?php
 
+use Laravel\Ai\Prompts\AgentPrompt;
 use Xuple\EvoLayer\Base\Ai\Agents\TextAssistAgent;
 use Xuple\EvoLayer\Base\Tests\Fixtures\TestUser;
-use Laravel\Ai\Prompts\AgentPrompt;
 
 $validPayload = [
     'field_hint' => 'Product context for a PRD document',

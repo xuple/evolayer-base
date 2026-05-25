@@ -19,14 +19,14 @@ test('the thread studio prompt dogfoods evodevops base support context', functio
     $instructions = ThreadStudioAgent::make()->instructions();
 
     expect($instructions)
-        ->toContain('EvoDevOps Base is a Laravel 13 + Inertia React starter')
+        ->toContain('EvoLayer Base is a Laravel 13 + Inertia React starter')
         ->toContain('https://docs.evodevops.com/base')
         ->toContain('Fortify authentication')
         ->toContain('Wayfinder-generated route helpers')
         ->toContain('using the SQLite fast-start lane with `nvm use` and `composer setup`')
         ->toContain('Do not tell users to run `npm run dev` as a blind fix')
         ->toContain('nginx + PHP-FPM reverse-proxied Vite/HMR lane')
-        ->toContain('treat it as EvoDevOps Base');
+        ->toContain('treat it as EvoLayer Base');
 });
 
 test('the thread studio agent disables streaming for openai compatible router paths', function () {

@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\File;
 beforeEach(function () {
     // Clean any prior publish artifacts in the testbench app workspace.
     foreach ([
-        config_path('evodevops.php'),
-        config_path('evodevops-ai.php'),
+        config_path('evolayer.php'),
+        config_path('evolayer-ai.php'),
         resource_path('js/blocks'),
         resource_path('js/pages/evodevops'),
         resource_path('js/hooks'),
@@ -24,19 +24,19 @@ beforeEach(function () {
     }
 });
 
-test('publishing evodevops-base-config drops both config files into the host config path', function () {
+test('publishing evolayer-base-config drops both config files into the host config path', function () {
     $this->artisan('vendor:publish', [
-        '--tag' => 'evodevops-base-config',
+        '--tag' => 'evolayer-base-config',
         '--force' => true,
     ])->assertSuccessful();
 
-    expect(File::exists(config_path('evodevops.php')))->toBeTrue()
-        ->and(File::exists(config_path('evodevops-ai.php')))->toBeTrue();
+    expect(File::exists(config_path('evolayer.php')))->toBeTrue()
+        ->and(File::exists(config_path('evolayer-ai.php')))->toBeTrue();
 });
 
-test('publishing evodevops-base-frontend-core drops blocks, components, shared hooks, providers, layouts, config, types, lib — and NO feature pages', function () {
+test('publishing evolayer-base-frontend-core drops blocks, components, shared hooks, providers, layouts, config, types, lib — and NO feature pages', function () {
     $this->artisan('vendor:publish', [
-        '--tag' => 'evodevops-base-frontend-core',
+        '--tag' => 'evolayer-base-frontend-core',
         '--force' => true,
     ])->assertSuccessful();
 
@@ -58,7 +58,7 @@ test('publishing evodevops-base-frontend-core drops blocks, components, shared h
 
 test('per-feature frontend tags publish only their own page sets', function () {
     $this->artisan('vendor:publish', [
-        '--tag' => 'evodevops-base-frontend-thread-studio',
+        '--tag' => 'evolayer-base-frontend-thread-studio',
         '--force' => true,
     ])->assertSuccessful();
 
@@ -70,7 +70,7 @@ test('per-feature frontend tags publish only their own page sets', function () {
         ->and(File::exists(resource_path('js/pages/evodevops/contact.tsx')))->toBeFalse();
 
     $this->artisan('vendor:publish', [
-        '--tag' => 'evodevops-base-frontend-admin-inbox',
+        '--tag' => 'evolayer-base-frontend-admin-inbox',
         '--force' => true,
     ])->assertSuccessful();
 
@@ -79,9 +79,9 @@ test('per-feature frontend tags publish only their own page sets', function () {
         ->and(File::exists(resource_path('js/pages/evodevops/admin/submissions/show.tsx')))->toBeTrue();
 });
 
-test('the evodevops-base-frontend meta tag publishes core plus every feature page set', function () {
+test('the evolayer-base-frontend meta tag publishes core plus every feature page set', function () {
     $this->artisan('vendor:publish', [
-        '--tag' => 'evodevops-base-frontend',
+        '--tag' => 'evolayer-base-frontend',
         '--force' => true,
     ])->assertSuccessful();
 
@@ -95,18 +95,18 @@ test('the evodevops-base-frontend meta tag publishes core plus every feature pag
         ->and(File::exists(resource_path('js/types/evodevops.d.ts')))->toBeTrue();
 });
 
-test('publishing evodevops-base-npm drops the package-json additions snippet', function () {
+test('publishing evolayer-base-npm drops the package-json additions snippet', function () {
     $this->artisan('vendor:publish', [
-        '--tag' => 'evodevops-base-npm',
+        '--tag' => 'evolayer-base-npm',
         '--force' => true,
     ])->assertSuccessful();
 
-    expect(File::exists(base_path('package-json-additions.evodevops.json')))->toBeTrue();
+    expect(File::exists(base_path('package-json-additions.evolayer.json')))->toBeTrue();
 });
 
 test('published page stubs reference the package controller namespace, not App', function () {
     $this->artisan('vendor:publish', [
-        '--tag' => 'evodevops-base-frontend',
+        '--tag' => 'evolayer-base-frontend',
         '--force' => true,
     ])->assertSuccessful();
 
@@ -116,9 +116,9 @@ test('published page stubs reference the package controller namespace, not App',
         ->and($thread)->not->toContain('@/actions/App/Http/Controllers/');
 });
 
-test('publishing evodevops-base-patches drops the structured streaming patch into the host', function () {
+test('publishing evolayer-base-patches drops the structured streaming patch into the host', function () {
     $this->artisan('vendor:publish', [
-        '--tag' => 'evodevops-base-patches',
+        '--tag' => 'evolayer-base-patches',
         '--force' => true,
     ])->assertSuccessful();
 

@@ -2,15 +2,17 @@
 
 namespace Xuple\EvoLayer\Base\Console\Commands;
 
-use Xuple\EvoLayer\Base\Auth\SpatieAdminGate;
-use Xuple\EvoLayer\Base\Contracts\AdminGate;
-use Xuple\EvoLayer\Base\Contracts\UserResolver;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\Tags\HasTags;
+use Xuple\EvoLayer\Base\Auth\SpatieAdminGate;
+use Xuple\EvoLayer\Base\Contracts\AdminGate;
+use Xuple\EvoLayer\Base\Contracts\UserResolver;
 
-#[Signature('evodevops:doctor')]
-#[Description('Check the EvoDevOps Base installation for common configuration problems.')]
+#[Signature('evolayer:doctor')]
+#[Description('Check the EvoLayer Base installation for common configuration problems.')]
 class DoctorCommand extends Command
 {
     public function handle(): int
@@ -92,7 +94,7 @@ class DoctorCommand extends Command
         return [
             $compiled,
             'Ontology compiled (bootstrap/cache/ontology.php)',
-            $compiled ? null : 'Run: php artisan ontology:compile',
+            $compiled ? null : 'Run: php artisan evolayer:ontology:compile',
         ];
     }
 
@@ -101,8 +103,8 @@ class DoctorCommand extends Command
     {
         $rows = [];
 
-        $contactAttachments = (bool) config('evo.base.features.contact_attachments');
-        $mediaInstalled = interface_exists(\Spatie\MediaLibrary\HasMedia::class);
+        $contactAttachments = (bool) config('evolayer.base.features.contact_attachments');
+        $mediaInstalled = interface_exists(HasMedia::class);
         $rows[] = [
             ! $contactAttachments || $mediaInstalled,
             'Contact attachments: '.($contactAttachments ? 'enabled' : 'disabled')
@@ -112,8 +114,8 @@ class DoctorCommand extends Command
                 : null,
         ];
 
-        $contactAi = (bool) config('evo.base.examples.contact_ai');
-        $tagsInstalled = trait_exists(\Spatie\Tags\HasTags::class);
+        $contactAi = (bool) config('evolayer.base.examples.contact_ai');
+        $tagsInstalled = trait_exists(HasTags::class);
         $rows[] = [
             ! $contactAi || $tagsInstalled,
             'AI auto-tagging: contact_ai '.($contactAi ? 'enabled' : 'disabled')

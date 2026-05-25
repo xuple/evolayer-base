@@ -2,10 +2,10 @@
 
 namespace Xuple\EvoLayer\Base\Support;
 
-use Xuple\EvoLayer\Base\Models\FormSubmission;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Throwable;
+use Xuple\EvoLayer\Base\Models\FormSubmission;
 
 class FormSubmissionSearch
 {

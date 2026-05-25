@@ -1,10 +1,10 @@
 <?php
 
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Xuple\EvoLayer\Base\Contracts\AdminGate;
 use Xuple\EvoLayer\Base\Tests\Fixtures\TestUser;
 use Xuple\EvoLayer\Base\Tests\TestCase;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(TestCase::class, RefreshDatabase::class)->in('Feature');
 uses(TestCase::class)->in('Unit');
@@ -17,12 +17,13 @@ function makeAdmin(): TestUser
 {
     $admin = TestUser::factory()->create();
 
-    app()->instance(AdminGate::class, new class($admin) implements AdminGate {
+    app()->instance(AdminGate::class, new class($admin) implements AdminGate
+    {
         public function __construct(private readonly TestUser $admin) {}
 
         public function isAdmin(?Authenticatable $user): bool
         {
-            return $this->can($user, 'evodevops.admin');
+            return $this->can($user, 'evolayer.admin');
         }
 
         public function can(?Authenticatable $user, string $ability, mixed $resource = null): bool

@@ -1,8 +1,8 @@
-# EvoDevOps Base — Port Inventory
+# EvoLayer Base — Port Inventory
 
 Produced 2026-05-21 against:
 
-- **Source**: `/opt/projects/evodevops-base-l14-i3` @ `feature/ai-provider-platform` (commit `95d2a33`)
+- **Source**: `/opt/projects/evolayer-base-l14-i3` @ `feature/ai-provider-platform` (commit `95d2a33`)
 - **Target**: `laravel/react-starter-kit` `main` @ `37ec697` ("Fix Teams email verification redirect")
 
 Methodology: walked both file trees (excluding `vendor/`, `node_modules/`, `storage/`, `bootstrap/cache/`, `bootstrap/ssr/` build output, `public/build/`, `public/fonts/`, generated Wayfinder helpers, `.git/`, `.claude/skills/`, `.agents/skills/`). 516 source files in this repo vs 174 in upstream.
@@ -119,7 +119,7 @@ The sidebar/header/branding layer the EvoDevOps shell sits on:
 - A service provider that registers routes (under prefix), middleware aliases, console commands, publishable assets
 - PHP tests covering the package surface
 
-**Publishes to host (`vendor:publish --tag=evodevops-base-frontend`):**
+**Publishes to host (`vendor:publish --tag=evolayer-base-frontend`):**
 - All of `resources/js/blocks/`
 - The four EvoDevOps pages (`pages/ai/thread-studio.tsx`, `pages/admin/{inbox,prd,submissions}/`, `pages/contact*`, `pages/home`, `pages/about`)
 - Hooks (`use-thread-studio-stream`, `use-typewriter`, `use-example-nav-items`)
@@ -153,6 +153,6 @@ The sidebar/header/branding layer the EvoDevOps shell sits on:
 2. **Phase C1 — Move backend** (2-3 sessions): Migrate `app/Ai/`, `app/Support/`, `app/Models/`, `app/Jobs/`, controllers, requests, middleware with namespace rewrites (`App\` → `Xuple\EvoLayer\Base\`). Move migrations, seeders, factories, config. Run tests.
 3. **Phase C2 — Move frontend** (1-2 sessions): Move blocks, pages, hooks, providers as publishable assets. Document the host-side wiring (app.tsx layout resolver, sidebar nav entries, HandleInertiaRequests additions).
 4. **Phase C3 — Ontology + patches** (1 session): Move `ontology.yaml`, the compiler, and the composer-patches setup. Decide whether the ontology compiler runs from host or package.
-5. **Phase D — Integration test** (1 session): `laravel new evo-test --react` on the latest starter. `composer require evodevops/base` via path repository. `php artisan evodevops:install`. Verify a full thread-studio compose works end to end.
+5. **Phase D — Integration test** (1 session): `laravel new evo-test --react` on the latest starter. `composer require evodevops/base` via path repository. `php artisan evolayer:install`. Verify a full thread-studio compose works end to end.
 
 Estimated total: **6-9 focused sessions** — possibly more depending on what falls out of the modified-starter list.

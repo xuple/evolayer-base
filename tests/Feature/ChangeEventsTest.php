@@ -1,10 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\Queue;
 use Xuple\EvoLayer\Base\Jobs\TriageFormSubmissionJob;
 use Xuple\EvoLayer\Base\Models\ChangeEvent;
 use Xuple\EvoLayer\Base\Models\FormSubmission;
 use Xuple\EvoLayer\Base\Tests\Fixtures\TestUser;
-use Illuminate\Support\Facades\Queue;
 
 $validContactPayload = [
     'type' => 'enquiry',

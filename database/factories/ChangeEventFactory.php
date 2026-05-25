@@ -2,8 +2,8 @@
 
 namespace Xuple\EvoLayer\Base\Database\Factories;
 
-use Xuple\EvoLayer\Base\Models\ChangeEvent;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Xuple\EvoLayer\Base\Models\ChangeEvent;
 
 /**
  * @extends Factory<ChangeEvent>

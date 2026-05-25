@@ -2,16 +2,16 @@
 
 namespace Xuple\EvoLayer\Base\Console\Commands\Ai;
 
-use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
-use Xuple\EvoLayer\Base\Support\PartialJsonExtractor;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Laravel\Ai\Enums\Lab;
 use Laravel\Ai\Streaming\Events\TextDelta;
 use Throwable;
+use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
+use Xuple\EvoLayer\Base\Support\PartialJsonExtractor;
 
-#[Signature('ai:stream-smoke {provider=gemini : Provider key (gemini, openai, anthropic, ...)}')]
+#[Signature('evolayer:ai:stream-smoke {provider=gemini : Provider key (gemini, openai, anthropic, ...)}')]
 #[Description('Live smoke test of structured streaming through ThreadStudioAgent. Use to verify a provider supports field-level streaming end-to-end.')]
 class AiStreamSmokeTest extends Command
 {
@@ -29,7 +29,7 @@ class AiStreamSmokeTest extends Command
         $agent = ThreadStudioAgent::make();
         $extractor = new PartialJsonExtractor;
 
-        $prompt = "Preferred reply tone: warm\n\nSupport product: EvoDevOps Base Laravel + Inertia starter kit.\n\nCustomer message:\nI upgraded my plan this morning and now I cannot download any of my invoices. This is blocking finance.";
+        $prompt = "Preferred reply tone: warm\n\nSupport product: EvoLayer Base Laravel + Inertia starter kit.\n\nCustomer message:\nI upgraded my plan this morning and now I cannot download any of my invoices. This is blocking finance.";
 
         $this->info("Starting live stream via {$provider->value}...");
 

@@ -9,6 +9,8 @@ class AiCapability extends Model
 {
     use HasUlids;
 
+    protected $table = 'evolayer_base_ai_capabilities';
+
     protected $guarded = ['id'];
 
     protected function casts(): array

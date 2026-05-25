@@ -39,8 +39,8 @@ export default function Contact() {
     );
     const fetchHintsRef = useRef<AbortController | null>(null);
 
-    const contactAiEnabled = evo.base.examples.contact_ai;
-    const contactAttachmentsEnabled = evo.base.features.contact_attachments;
+    const contactAiEnabled = evolayer.base.examples.contact_ai;
+    const contactAttachmentsEnabled = evolayer.base.features.contact_attachments;
 
     const fetchHints = useCallback(
         async (type: string): Promise<void> => {

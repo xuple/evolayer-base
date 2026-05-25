@@ -2,6 +2,9 @@
 
 namespace Xuple\EvoLayer\Base;
 
+use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\ServiceProvider;
 use Xuple\EvoLayer\Base\Auth\DefaultUserResolver;
 use Xuple\EvoLayer\Base\Auth\SpatieAdminGate;
 use Xuple\EvoLayer\Base\Console\Commands\Ai\AiStreamSmokeTest;
@@ -14,17 +17,14 @@ use Xuple\EvoLayer\Base\Console\Commands\OntologyCompileCommand;
 use Xuple\EvoLayer\Base\Console\Commands\PromoteUserCommand;
 use Xuple\EvoLayer\Base\Contracts\AdminGate;
 use Xuple\EvoLayer\Base\Contracts\UserResolver;
-use Xuple\EvoLayer\Base\Support\OntologyRegistry;
 use Xuple\EvoLayer\Base\Http\Middleware\EnsureExampleEnabled;
 use Xuple\EvoLayer\Base\Http\Middleware\RequireAdmin;
-use Illuminate\Routing\Router;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\ServiceProvider;
+use Xuple\EvoLayer\Base\Support\OntologyRegistry;
 
 class BaseServiceProvider extends ServiceProvider
 {
     /**
-     * EVO_BASE_EXAMPLE_* flags that gate per-feature route files under routes/features/.
+     * EVOLAYER_BASE_EXAMPLE_* flags that gate per-feature route files under routes/features/.
      * Order matters only for route:list display; each file is independent.
      */
     private const FEATURE_ROUTES = [
@@ -39,8 +39,8 @@ class BaseServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/evodevops.php', 'evo');
-        $this->mergeConfigFrom(__DIR__.'/../config/evodevops-ai.php', 'ai');
+        $this->mergeConfigFrom(__DIR__.'/../config/evolayer.php', 'evolayer');
+        $this->mergeConfigFrom(__DIR__.'/../config/evolayer-ai.php', 'ai');
 
         $this->app->singleton(AdminGate::class, SpatieAdminGate::class);
         $this->app->singleton(UserResolver::class, DefaultUserResolver::class);
@@ -52,29 +52,29 @@ class BaseServiceProvider extends ServiceProvider
         /** @var Router $router */
         $router = $this->app->make(Router::class);
         $router->aliasMiddleware('example', EnsureExampleEnabled::class);
-        $router->aliasMiddleware('evo.admin', RequireAdmin::class);
+        $router->aliasMiddleware('evolayer.admin', RequireAdmin::class);
 
-        $router->middlewareGroup('evo', (array) config('evo.base.route.middleware', ['web']));
+        $router->middlewareGroup('evolayer', (array) config('evolayer.base.route.middleware', ['web']));
 
-        // Per-feature route files — each only loads when its EVO_BASE_EXAMPLE_*
+        // Per-feature route files — each only loads when its EVOLAYER_BASE_EXAMPLE_*
         // flag is true. With all flags default-false, installing the package
         // adds zero routes to the host's route:list (the "zero routes on
         // install" principle).
         foreach (self::FEATURE_ROUTES as $feature) {
-            if (config("evo.base.examples.{$feature}")) {
-                Route::middleware('evo')->group(__DIR__."/../routes/features/{$feature}.php");
+            if (config("evolayer.base.examples.{$feature}")) {
+                Route::middleware('evolayer')->group(__DIR__."/../routes/features/{$feature}.php");
             }
         }
 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
-        // Register Base's ontology under the evo.base namespace. Variant
+        // Register Base's ontology under the evolayer.base namespace. Variant
         // packages register their own (evo.commerce, etc.) the same way; the
         // compiler merges them. The host may publish + customise this copy via
-        // the evodevops-base-ontology tag — if they do, point the registry at
+        // the evolayer-base-ontology tag — if they do, point the registry at
         // base_path('ontology.yaml') from the host's AppServiceProvider.
         $this->app->make(OntologyRegistry::class)
-            ->register('evo.base', __DIR__.'/../stubs/ontology.yaml');
+            ->register('evolayer.base', __DIR__.'/../stubs/ontology.yaml');
 
         if ($this->app->runningInConsole()) {
             $this->commands([
@@ -95,9 +95,9 @@ class BaseServiceProvider extends ServiceProvider
     private function registerPublishables(): void
     {
         $this->publishes([
-            __DIR__.'/../config/evodevops.php' => config_path('evodevops.php'),
-            __DIR__.'/../config/evodevops-ai.php' => config_path('evodevops-ai.php'),
-        ], 'evodevops-base-config');
+            __DIR__.'/../config/evolayer.php' => config_path('evolayer.php'),
+            __DIR__.'/../config/evolayer-ai.php' => config_path('evolayer-ai.php'),
+        ], 'evolayer-base-config');
 
         // ── Frontend: core (always-on UI primitives, no feature flag) ──────────
         // Blocks, command palette, shared hooks/types/config/layouts. Publish
@@ -115,7 +115,7 @@ class BaseServiceProvider extends ServiceProvider
             __DIR__.'/../resources/js/lib/appearance.ts' => resource_path('js/lib/appearance.ts'),
             __DIR__.'/../resources/js/lib/platform.ts' => resource_path('js/lib/platform.ts'),
         ];
-        $this->publishes($coreFrontend, 'evodevops-base-frontend-core');
+        $this->publishes($coreFrontend, 'evolayer-base-frontend-core');
 
         // ── Frontend: per-feature page sets ───────────────────────────────────
         // Each tag mirrors a routes/features/*.php file. Publish only the tags
@@ -146,29 +146,29 @@ class BaseServiceProvider extends ServiceProvider
 
         $everything = $coreFrontend;
         foreach ($featureFrontend as $feature => $paths) {
-            $this->publishes($paths, "evodevops-base-frontend-{$feature}");
+            $this->publishes($paths, "evolayer-base-frontend-{$feature}");
             $everything = array_merge($everything, $paths);
         }
 
         // Convenience meta-tag: publishes core + every feature page set at once.
         // Intended for demos / "show me everything"; production installs should
         // publish core + only the feature tags they've enabled.
-        $this->publishes($everything, 'evodevops-base-frontend');
+        $this->publishes($everything, 'evolayer-base-frontend');
 
         $this->publishes([
             __DIR__.'/../database/migrations' => database_path('migrations'),
-        ], 'evodevops-base-migrations');
+        ], 'evolayer-base-migrations');
 
         $this->publishes([
             __DIR__.'/../patches' => base_path('patches'),
-        ], 'evodevops-base-patches');
+        ], 'evolayer-base-patches');
 
         $this->publishes([
-            __DIR__.'/../stubs/package-json-additions.json' => base_path('package-json-additions.evodevops.json'),
-        ], 'evodevops-base-npm');
+            __DIR__.'/../stubs/package-json-additions.json' => base_path('package-json-additions.evolayer.json'),
+        ], 'evolayer-base-npm');
 
         $this->publishes([
             __DIR__.'/../stubs/ontology.yaml' => base_path('ontology.yaml'),
-        ], 'evodevops-base-ontology');
+        ], 'evolayer-base-ontology');
     }
 }

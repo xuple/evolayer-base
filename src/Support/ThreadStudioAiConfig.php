@@ -2,9 +2,9 @@
 
 namespace Xuple\EvoLayer\Base\Support;
 
+use InvalidArgumentException;
 use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
 use Xuple\EvoLayer\Base\Models\AiCapability;
-use InvalidArgumentException;
 
 /**
  * @evo-example thread_studio

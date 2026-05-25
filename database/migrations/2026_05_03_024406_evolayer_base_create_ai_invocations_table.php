@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('ai_invocations', function (Blueprint $table): void {
+        Schema::create('evolayer_base_ai_invocations', function (Blueprint $table): void {
             $table->ulid('id')->primary();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
 
@@ -49,6 +49,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('ai_invocations');
+        Schema::dropIfExists('evolayer_base_ai_invocations');
     }
 };

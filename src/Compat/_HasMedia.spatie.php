@@ -7,6 +7,4 @@ namespace Xuple\EvoLayer\Base\Compat;
  * Inherits Spatie's contract verbatim — models implementing our
  * Compat\HasMedia also satisfy Spatie\MediaLibrary\HasMedia.
  */
-interface HasMedia extends \Spatie\MediaLibrary\HasMedia
-{
-}
+interface HasMedia extends \Spatie\MediaLibrary\HasMedia {}

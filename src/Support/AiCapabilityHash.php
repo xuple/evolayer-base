@@ -8,7 +8,7 @@ use Laravel\Ai\Contracts\HasStructuredOutput;
 /**
  * Centralised schema-hash and probe-schema derivation for the AI capability ledger.
  *
- * All write sites (ai:probe --persist, AiCapabilitySeeder) must call these
+ * All write sites (evolayer:ai:probe --persist, AiCapabilitySeeder) must call these
  * helpers — never compute the hash or probe_schema label ad-hoc at call sites.
  */
 final class AiCapabilityHash

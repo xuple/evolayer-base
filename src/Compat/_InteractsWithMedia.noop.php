@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * Provides minimal stubs so model autoload doesn't fail and read-only paths
  * (getMedia, media(), hasMedia) return empty collections gracefully. Mutation
  * methods (addMedia, etc.) intentionally throw — call sites must gate on
- * config('evo.base.features.contact_attachments') before invoking these.
+ * config('evolayer.base.features.contact_attachments') before invoking these.
  */
 trait InteractsWithMedia
 {
@@ -33,9 +33,9 @@ trait InteractsWithMedia
     public function addMedia($file): never
     {
         throw new \RuntimeException(
-            'EvoDevOps Base: addMedia() called without spatie/laravel-medialibrary installed. '.
+            'EvoLayer Base: addMedia() called without spatie/laravel-medialibrary installed. '.
             'Install it via `composer require spatie/laravel-medialibrary` and set '.
-            'EVO_BASE_FEATURE_CONTACT_ATTACHMENTS=true.'
+            'EVOLAYER_BASE_FEATURE_CONTACT_ATTACHMENTS=true.'
         );
     }
 }

@@ -8,9 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('ai_invocation_attempts', function (Blueprint $table): void {
+        Schema::create('evolayer_base_ai_invocation_attempts', function (Blueprint $table): void {
             $table->ulid('id')->primary();
-            $table->foreignUlid('ai_invocation_id')->constrained('ai_invocations')->cascadeOnDelete();
+            $table->foreignUlid('ai_invocation_id')->constrained('evolayer_base_ai_invocations')->cascadeOnDelete();
 
             $table->unsignedSmallInteger('attempt')->default(1);
 
@@ -39,6 +39,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('ai_invocation_attempts');
+        Schema::dropIfExists('evolayer_base_ai_invocation_attempts');
     }
 };

@@ -1,30 +1,30 @@
 <?php
 
+use Illuminate\Support\Facades\File;
 use Xuple\EvoLayer\Base\Support\OntologyCompiler;
 use Xuple\EvoLayer\Base\Support\OntologyRegistry;
-use Illuminate\Support\Facades\File;
 
-test('Base registers its ontology under the evo.base namespace', function () {
+test('Base registers its ontology under the evolayer.base namespace', function () {
     $registry = app(OntologyRegistry::class);
 
-    expect($registry->has('evo.base'))->toBeTrue()
-        ->and($registry->get('evo.base'))->toEndWith('stubs/ontology.yaml');
+    expect($registry->has('evolayer.base'))->toBeTrue()
+        ->and($registry->get('evolayer.base'))->toEndWith('stubs/ontology.yaml');
 });
 
 test('compileAll merges the registered Base ontology and validates structurally', function () {
     $compiled = app(OntologyCompiler::class)->compileAll(app(OntologyRegistry::class));
 
     expect($compiled)->toHaveKey('namespaces')
-        ->and($compiled['namespaces'])->toHaveKey('evo.base')
-        ->and($compiled['namespaces']['evo.base']['namespace'])->toBe('evo.base')
-        ->and($compiled['namespaces']['evo.base']['ontology']['entities'])->toHaveKey('form_submission');
+        ->and($compiled['namespaces'])->toHaveKey('evolayer.base')
+        ->and($compiled['namespaces']['evolayer.base']['namespace'])->toBe('evolayer.base')
+        ->and($compiled['namespaces']['evolayer.base']['ontology']['entities'])->toHaveKey('form_submission');
 });
 
 test('enabled features produce no route warnings (advisory validation)', function () {
     // Every example flag is enabled in the test environment, so all endpoints
     // are registered — there should be zero route-existence warnings.
     $compiled = app(OntologyCompiler::class)->compileAll(app(OntologyRegistry::class));
-    $warnings = $compiled['namespaces']['evo.base']['warnings'];
+    $warnings = $compiled['namespaces']['evolayer.base']['warnings'];
 
     expect(collect($warnings)->filter(fn ($w) => str_contains($w, 'route')))->toBeEmpty();
 });
@@ -60,7 +60,7 @@ test('a block whose file is absent produces an advisory warning, not a failure',
     rmdir($dir);
 });
 
-test('the ontology:compile command writes the cache and TypeScript artifacts', function () {
+test('the evolayer:ontology:compile command writes the cache and TypeScript artifacts', function () {
     $output = base_path('bootstrap/cache/ontology.php');
     $types = base_path('resources/js/types/ontology.ts');
 
@@ -70,12 +70,12 @@ test('the ontology:compile command writes the cache and TypeScript artifacts', f
         }
     }
 
-    $this->artisan('ontology:compile', [
+    $this->artisan('evolayer:ontology:compile', [
         '--no-erd' => true,
     ])->assertSuccessful();
 
     expect(File::exists($output))->toBeTrue()
         ->and(File::exists($types))->toBeTrue()
         ->and(File::get($types))->toContain('export const ontology')
-        ->and(File::get($types))->toContain('evo.base');
+        ->and(File::get($types))->toContain('evolayer.base');
 });

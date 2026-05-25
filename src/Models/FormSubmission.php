@@ -2,10 +2,6 @@
 
 namespace Xuple\EvoLayer\Base\Models;
 
-use Xuple\EvoLayer\Base\Compat\HasMedia;
-use Xuple\EvoLayer\Base\Compat\HasTags;
-use Xuple\EvoLayer\Base\Compat\InteractsWithMedia;
-use Xuple\EvoLayer\Base\Database\Factories\FormSubmissionFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,11 +9,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
+use Xuple\EvoLayer\Base\Compat\HasMedia;
+use Xuple\EvoLayer\Base\Compat\HasTags;
+use Xuple\EvoLayer\Base\Compat\InteractsWithMedia;
+use Xuple\EvoLayer\Base\Database\Factories\FormSubmissionFactory;
 
 class FormSubmission extends Model implements HasMedia
 {
     /** @use HasFactory<FormSubmissionFactory> */
     use HasFactory, HasTags, HasUlids, InteractsWithMedia, LogsActivity, SoftDeletes;
+
+    protected $table = 'evolayer_base_form_submissions';
 
     protected $guarded = ['id'];
 

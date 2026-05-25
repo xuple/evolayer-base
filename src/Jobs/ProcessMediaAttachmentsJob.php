@@ -2,8 +2,6 @@
 
 namespace Xuple\EvoLayer\Base\Jobs;
 
-use Xuple\EvoLayer\Base\Ai\Agents\MediaAnalysisAgent;
-use Xuple\EvoLayer\Base\Models\FormSubmission;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Laravel\Ai\Files\Document;
@@ -11,6 +9,8 @@ use Laravel\Ai\Files\Image;
 use Laravel\Ai\Transcription;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Throwable;
+use Xuple\EvoLayer\Base\Ai\Agents\MediaAnalysisAgent;
+use Xuple\EvoLayer\Base\Models\FormSubmission;
 
 class ProcessMediaAttachmentsJob implements ShouldQueue
 {

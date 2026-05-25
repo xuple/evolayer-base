@@ -2,9 +2,9 @@
 
 namespace Xuple\EvoLayer\Base\Http\Requests\Ai;
 
-use Xuple\EvoLayer\Base\Contracts\AdminGate;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Xuple\EvoLayer\Base\Contracts\AdminGate;
 
 class StreamTextAssistRequest extends FormRequest
 {
@@ -13,7 +13,7 @@ class StreamTextAssistRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Route already enforces evo.admin; delegate here too so request-level
+        // Route already enforces evolayer.admin; delegate here too so request-level
         // authorization stays consistent with the AdminGate contract (ADR-004).
         return app(AdminGate::class)->isAdmin($this->user());
     }

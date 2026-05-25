@@ -20,17 +20,17 @@ afterEach(function () {
 
 test('OntologyRegistry::register stores a namespace-to-path mapping', function () {
     $path = $this->fixturesDir.'/base.yaml';
-    file_put_contents($path, "version: 1\nnamespace: evo.base\nentities: {}\nevents: {}\nblocks: {}\njobs: {}\nagents: {}\nprojections: {}\nlanes: {}\n");
+    file_put_contents($path, "version: 1\nnamespace: evolayer.base\nentities: {}\nevents: {}\nblocks: {}\njobs: {}\nagents: {}\nprojections: {}\nlanes: {}\n");
 
-    $this->registry->register('evo.base', $path);
+    $this->registry->register('evolayer.base', $path);
 
-    expect($this->registry->all())->toBe(['evo.base' => $path])
-        ->and($this->registry->has('evo.base'))->toBeTrue()
-        ->and($this->registry->get('evo.base'))->toBe($path);
+    expect($this->registry->all())->toBe(['evolayer.base' => $path])
+        ->and($this->registry->has('evolayer.base'))->toBeTrue()
+        ->and($this->registry->get('evolayer.base'))->toBe($path);
 });
 
 test('OntologyRegistry rejects registering a missing file', function () {
-    expect(fn () => $this->registry->register('evo.base', '/nonexistent/ontology.yaml'))
+    expect(fn () => $this->registry->register('evolayer.base', '/nonexistent/ontology.yaml'))
         ->toThrow(RuntimeException::class, 'file not found');
 });
 
@@ -50,7 +50,7 @@ test('OntologyRegistry rejects mismatched declared vs registered namespace', fun
     $path = $this->fixturesDir.'/mismatched.yaml';
     file_put_contents($path, "version: 1\nnamespace: evo.commerce\n");
 
-    expect(fn () => $this->registry->register('evo.base', $path))
+    expect(fn () => $this->registry->register('evolayer.base', $path))
         ->toThrow(RuntimeException::class, 'namespace mismatch');
 });
 
@@ -62,17 +62,17 @@ test('OntologyCompiler::compileAll merges registered ontologies by namespace', f
 
     $baseFile = $this->fixturesDir.'/base.yaml';
     $commerceFile = $this->fixturesDir.'/commerce.yaml';
-    file_put_contents($baseFile, $minimalSpec('evo.base'));
+    file_put_contents($baseFile, $minimalSpec('evolayer.base'));
     file_put_contents($commerceFile, $minimalSpec('evo.commerce'));
 
-    $this->registry->register('evo.base', $baseFile);
+    $this->registry->register('evolayer.base', $baseFile);
     $this->registry->register('evo.commerce', $commerceFile);
 
     $compiled = (new OntologyCompiler)->compileAll($this->registry);
 
     expect($compiled)->toHaveKey('compiled_at')
         ->toHaveKey('namespaces')
-        ->and($compiled['namespaces'])->toHaveKeys(['evo.base', 'evo.commerce'])
-        ->and($compiled['namespaces']['evo.base']['namespace'])->toBe('evo.base')
+        ->and($compiled['namespaces'])->toHaveKeys(['evolayer.base', 'evo.commerce'])
+        ->and($compiled['namespaces']['evolayer.base']['namespace'])->toBe('evolayer.base')
         ->and($compiled['namespaces']['evo.commerce']['namespace'])->toBe('evo.commerce');
 });

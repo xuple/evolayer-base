@@ -2,15 +2,15 @@
 
 namespace Xuple\EvoLayer\Base\Http\Controllers\Admin;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 use Xuple\EvoLayer\Base\Contracts\AdminGate;
 use Xuple\EvoLayer\Base\Http\Controllers\Controller;
 use Xuple\EvoLayer\Base\Http\Requests\Admin\SearchInboxRequest;
 use Xuple\EvoLayer\Base\Models\FormSubmission;
 use Xuple\EvoLayer\Base\Support\FormSubmissionSearch;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Inertia\Response;
 
 /**
  * @evo-example admin_inbox
@@ -25,7 +25,7 @@ class InboxController extends Controller
             'attachments' => [],
             'activity' => [],
             'canCompose' => app(AdminGate::class)->isAdmin($request->user())
-                && (bool) config('evo.base.examples.thread_studio'),
+                && (bool) config('evolayer.base.examples.thread_studio'),
         ]);
     }
 
@@ -59,7 +59,7 @@ class InboxController extends Controller
                 'created_at' => $log->created_at->toISOString(),
             ]),
             'canCompose' => app(AdminGate::class)->isAdmin($request->user())
-                && (bool) config('evo.base.examples.thread_studio'),
+                && (bool) config('evolayer.base.examples.thread_studio'),
         ]);
     }
 }

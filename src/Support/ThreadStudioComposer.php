@@ -2,13 +2,13 @@
 
 namespace Xuple\EvoLayer\Base\Support;
 
-use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
 use Generator;
 use Illuminate\JsonSchema\JsonSchemaTypeFactory;
 use InvalidArgumentException;
 use Laravel\Ai\Responses\StructuredAgentResponse;
 use Laravel\Ai\Streaming\Events\TextDelta;
 use Throwable;
+use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
 
 /**
  * @evo-example thread_studio
@@ -352,7 +352,7 @@ class ThreadStudioComposer
         return <<<PROMPT
 Preferred reply tone: {$tone}
 
-Support product: EvoDevOps Base Laravel + Inertia starter kit.
+Support product: EvoLayer Base Laravel + Inertia starter kit.
 
 Customer message:
 {$customerMessage}

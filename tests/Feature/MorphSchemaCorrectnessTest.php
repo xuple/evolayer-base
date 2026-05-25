@@ -1,14 +1,14 @@
 <?php
 
-use Xuple\EvoLayer\Base\Models\AiInvocation;
-use Xuple\EvoLayer\Base\Models\AiInvocationAttempt;
-use Xuple\EvoLayer\Base\Models\FormSubmission;
-use Xuple\EvoLayer\Base\Tests\Fixtures\TestUser;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Activitylog\Models\Activity;
+use Xuple\EvoLayer\Base\Models\AiInvocation;
+use Xuple\EvoLayer\Base\Models\AiInvocationAttempt;
+use Xuple\EvoLayer\Base\Models\FormSubmission;
+use Xuple\EvoLayer\Base\Tests\Fixtures\TestUser;
 
 test('taggable_id stores the ulid of a tagged form submission', function () {
     $submission = FormSubmission::factory()->create();
@@ -116,7 +116,7 @@ test('change_events subject_id stores and resolves the ulid of a form submission
 
     $submission = FormSubmission::first();
 
-    $row = DB::table('change_events')
+    $row = DB::table('evolayer_base_change_events')
         ->where('event_name', 'form_submission.created')
         ->first();
 

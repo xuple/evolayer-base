@@ -2,12 +2,12 @@
 
 namespace Xuple\EvoLayer\Base\Http\Controllers\Ai;
 
-use Xuple\EvoLayer\Base\Ai\Agents\TextAssistAgent;
-use Xuple\EvoLayer\Base\Http\Controllers\Controller;
-use Xuple\EvoLayer\Base\Http\Requests\Ai\StreamTextAssistRequest;
 use Laravel\Ai\Streaming\Events\TextDelta;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
+use Xuple\EvoLayer\Base\Ai\Agents\TextAssistAgent;
+use Xuple\EvoLayer\Base\Http\Controllers\Controller;
+use Xuple\EvoLayer\Base\Http\Requests\Ai\StreamTextAssistRequest;
 
 /**
  * @evo-example ai_text_field

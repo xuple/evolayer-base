@@ -5,9 +5,9 @@
  * shared-props or NavItem definitions.
  *
  * Shared-prop shape:
- *   usePage().props.evo.base.{examples, features}
+ *   usePage().props.evolayer.base.{examples, features}
  *
- * The `evo.base.*` sub-tree reserves room for sibling packages
+ * The `evolayer.base.*` sub-tree reserves room for sibling packages
  * (`evo.commerce.*`, `evo.saas.*`, `evo.rls.*`) to coexist under the same
  * top-level `evo` namespace without collision.
  *
@@ -15,7 +15,7 @@
  *   - To use EvoDevOps nav items inside your existing sidebar, either
  *     widen your own `NavItem` type with the fields below, or render the
  *     EvoDevOps items separately via `useExampleNavItems()`.
- *   - To get autocomplete on `usePage().props.evo.base`, augment your
+ *   - To get autocomplete on `usePage().props.evolayer.base`, augment your
  *     `InertiaConfig.sharedPageProps` declaration to include
  *     `evo: { base: EvoBaseSharedProps }`. The package does not augment
  *     Inertia automatically (would conflict with the host's own

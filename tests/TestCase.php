@@ -2,10 +2,16 @@
 
 namespace Xuple\EvoLayer\Base\Tests;
 
+use Illuminate\Foundation\Application;
+use Inertia\ServiceProvider;
+use Laravel\Ai\AiServiceProvider;
+use Orchestra\Testbench\TestCase as Orchestra;
+use Spatie\Activitylog\ActivitylogServiceProvider;
+use Spatie\MediaLibrary\MediaLibraryServiceProvider;
+use Spatie\Permission\PermissionServiceProvider;
+use Spatie\Tags\TagsServiceProvider;
 use Xuple\EvoLayer\Base\BaseServiceProvider;
 use Xuple\EvoLayer\Base\Tests\Fixtures\TestUser;
-use Illuminate\Foundation\Application;
-use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
 {
@@ -16,12 +22,12 @@ abstract class TestCase extends Orchestra
     protected function getPackageProviders($app): array
     {
         return [
-            \Inertia\ServiceProvider::class,
-            \Laravel\Ai\AiServiceProvider::class,
-            \Spatie\Permission\PermissionServiceProvider::class,
-            \Spatie\Activitylog\ActivitylogServiceProvider::class,
-            \Spatie\MediaLibrary\MediaLibraryServiceProvider::class,
-            \Spatie\Tags\TagsServiceProvider::class,
+            ServiceProvider::class,
+            AiServiceProvider::class,
+            PermissionServiceProvider::class,
+            ActivitylogServiceProvider::class,
+            MediaLibraryServiceProvider::class,
+            TagsServiceProvider::class,
             BaseServiceProvider::class,
         ];
     }
@@ -42,11 +48,11 @@ abstract class TestCase extends Orchestra
             'foreign_key_constraints' => true,
         ]);
 
-        // Enable every EvoDevOps Base feature for the package's own tests.
+        // Enable every EvoLayer Base feature for the package's own tests.
         // The package's production default is `false` (opt-in per the "doesn't
         // come with features wired in" principle); tests need them all on to
         // exercise the full surface.
-        $app['config']->set('evo.base.examples', [
+        $app['config']->set('evolayer.base.examples', [
             'thread_studio' => true,
             'prd_studio' => true,
             'admin_inbox' => true,
@@ -55,7 +61,7 @@ abstract class TestCase extends Orchestra
             'ai_text_field' => true,
             'marketing_pages' => true,
         ]);
-        $app['config']->set('evo.base.features', [
+        $app['config']->set('evolayer.base.features', [
             'contact_attachments' => true,
         ]);
     }

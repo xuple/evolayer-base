@@ -2,14 +2,14 @@
 
 namespace Xuple\EvoLayer\Base\Http\Controllers\Admin;
 
-use Xuple\EvoLayer\Base\Http\Controllers\Controller;
-use Xuple\EvoLayer\Base\Http\Requests\Admin\GeneratePrdRequest;
-use Xuple\EvoLayer\Base\Support\PrdGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 use Throwable;
+use Xuple\EvoLayer\Base\Http\Controllers\Controller;
+use Xuple\EvoLayer\Base\Http\Requests\Admin\GeneratePrdRequest;
+use Xuple\EvoLayer\Base\Support\PrdGenerator;
 
 /**
  * @evo-example prd_studio
@@ -22,11 +22,11 @@ class PrdController extends Controller
             // Cross-feature URLs passed at runtime so the page never compile-time
             // depends on the ai_text_field / voice_input features' Wayfinder
             // controllers. Null when those features aren't enabled.
-            'aiTextAssistUrl' => Route::has('evodevops.base.ai.text-assist.stream')
-                ? route('evodevops.base.ai.text-assist.stream')
+            'aiTextAssistUrl' => Route::has('evolayer.base.ai.text-assist.stream')
+                ? route('evolayer.base.ai.text-assist.stream')
                 : null,
-            'voiceInputUrl' => Route::has('evodevops.base.ai.voice-input.transcribe')
-                ? route('evodevops.base.ai.voice-input.transcribe')
+            'voiceInputUrl' => Route::has('evolayer.base.ai.voice-input.transcribe')
+                ? route('evolayer.base.ai.voice-input.transcribe')
                 : null,
         ]);
     }

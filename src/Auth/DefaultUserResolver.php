@@ -2,9 +2,9 @@
 
 namespace Xuple\EvoLayer\Base\Auth;
 
-use Xuple\EvoLayer\Base\Contracts\UserResolver;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use Xuple\EvoLayer\Base\Contracts\UserResolver;
 
 class DefaultUserResolver implements UserResolver
 {

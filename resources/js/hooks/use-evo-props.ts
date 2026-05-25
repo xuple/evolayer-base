@@ -18,7 +18,7 @@ export function useEvoProps(): EvoSharedProps {
 
     if (!props.evo) {
         throw new Error(
-            'EvoDevOps Base: usePage().props.evo is missing. Add the evo shared prop to '
+            'EvoLayer Base: usePage().props.evo is missing. Add the evo shared prop to '
                 + "HandleInertiaRequests::share() — see the package README's 'Wire EvoDevOps shared props into Inertia' step."
         );
     }

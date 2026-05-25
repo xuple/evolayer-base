@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Models\Role;
 
-#[Signature('evodevops:user:promote {email : The email address of the user to promote}')]
+#[Signature('evolayer:user:promote {email : The email address of the user to promote}')]
 #[Description('Grant the admin role to a user (uses the host\'s configured auth user model).')]
 class PromoteUserCommand extends Command
 {

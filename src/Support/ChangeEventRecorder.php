@@ -2,9 +2,9 @@
 
 namespace Xuple\EvoLayer\Base\Support;
 
-use Xuple\EvoLayer\Base\Models\ChangeEvent;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Xuple\EvoLayer\Base\Models\ChangeEvent;
 
 class ChangeEventRecorder
 {

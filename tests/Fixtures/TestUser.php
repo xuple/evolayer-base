@@ -2,7 +2,6 @@
 
 namespace Xuple\EvoLayer\Base\Tests\Fixtures;
 
-use Xuple\EvoLayer\Base\Tests\Fixtures\TestUserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 

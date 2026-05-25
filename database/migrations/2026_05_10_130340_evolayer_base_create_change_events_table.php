@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('change_events', function (Blueprint $table): void {
+        Schema::create('evolayer_base_change_events', function (Blueprint $table): void {
             $table->ulid('id')->primary();
 
             // Actor polymorph (nullable) — User by default; variants may record Customer / Tenant / system.
@@ -38,6 +38,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('change_events');
+        Schema::dropIfExists('evolayer_base_change_events');
     }
 };

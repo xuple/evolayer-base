@@ -11,7 +11,7 @@ use Xuple\EvoLayer\Base\Tests\Fixtures\TestUser;
 /*
 | Regression coverage for the admin authorization contract (ADR-004 / ADR-009).
 | Two issues motivated these tests:
-|   1. The admin inbox/submission routes lacked the `evo.admin` middleware, so
+|   1. The admin inbox/submission routes lacked the `evolayer.admin` middleware, so
 |      any authenticated, verified user could read and mutate private
 |      submissions.
 |   2. Several FormRequests authorized admin actions directly (hardcoded
@@ -21,7 +21,7 @@ use Xuple\EvoLayer\Base\Tests\Fixtures\TestUser;
 
 test('admin inbox and submission routes deny a non-admin authenticated user', function (string $method, string $uri) {
     // No makeAdmin() here: the default SpatieAdminGate sees a user model
-    // without hasRole() and denies, so evo.admin aborts 403.
+    // without hasRole() and denies, so evolayer.admin aborts 403.
     $user = TestUser::factory()->create();
     $submission = FormSubmission::factory()->create();
 
@@ -41,7 +41,7 @@ test('admin inbox and submission routes deny a non-admin authenticated user', fu
 test('an admin user passes the gate on admin inbox routes', function () {
     $admin = makeAdmin();
 
-    // search returns JSON, so this asserts the admin gets past evo.admin AND
+    // search returns JSON, so this asserts the admin gets past evolayer.admin AND
     // the request-level authorize() without depending on Inertia rendering.
     $this->actingAs($admin)
         ->getJson('/admin/inbox/search?q=test')

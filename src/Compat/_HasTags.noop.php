@@ -27,7 +27,7 @@ trait HasTags
     public function attachTag(string|array $tags, ?string $type = null): never
     {
         throw new \RuntimeException(
-            'EvoDevOps Base: attachTag() called without spatie/laravel-tags installed. '.
+            'EvoLayer Base: attachTag() called without spatie/laravel-tags installed. '.
             'Install it via `composer require spatie/laravel-tags`.'
         );
     }
@@ -35,7 +35,7 @@ trait HasTags
     public function syncTagsWithType(array|\ArrayAccess $tags, ?string $type = null): never
     {
         throw new \RuntimeException(
-            'EvoDevOps Base: syncTagsWithType() called without spatie/laravel-tags installed. '.
+            'EvoLayer Base: syncTagsWithType() called without spatie/laravel-tags installed. '.
             'Install it via `composer require spatie/laravel-tags`.'
         );
     }

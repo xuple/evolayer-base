@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('form_submissions', function (Blueprint $table): void {
+        Schema::create('evolayer_base_form_submissions', function (Blueprint $table): void {
             $table->ulid('id')->primary();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
 
@@ -31,6 +31,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('form_submissions');
+        Schema::dropIfExists('evolayer_base_form_submissions');
     }
 };

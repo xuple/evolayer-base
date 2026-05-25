@@ -1,54 +1,55 @@
 <?php
 
-use Xuple\EvoLayer\Base\Contracts\AdminGate;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\File;
+use Xuple\EvoLayer\Base\Contracts\AdminGate;
 
-test('evodevops:install publishes assets, migrates, and compiles the ontology', function () {
+test('evolayer:install publishes assets, migrates, and compiles the ontology', function () {
     // Clean prior artifacts in the testbench workspace.
-    foreach ([config_path('evodevops.php'), base_path('bootstrap/cache/ontology.php')] as $p) {
+    foreach ([config_path('evolayer.php'), base_path('bootstrap/cache/ontology.php')] as $p) {
         if (File::exists($p)) {
             File::delete($p);
         }
     }
 
-    $this->artisan('evodevops:install', ['--no-seed' => true])
+    $this->artisan('evolayer:install', ['--no-seed' => true])
         ->assertSuccessful();
 
-    expect(File::exists(config_path('evodevops.php')))->toBeTrue()
+    expect(File::exists(config_path('evolayer.php')))->toBeTrue()
         ->and(File::exists(base_path('bootstrap/cache/ontology.php')))->toBeTrue();
 });
 
-test('evodevops:install --no-migrate skips migration', function () {
-    $this->artisan('evodevops:install', ['--no-migrate' => true, '--no-seed' => true])
+test('evolayer:install --no-migrate skips migration', function () {
+    $this->artisan('evolayer:install', ['--no-migrate' => true, '--no-seed' => true])
         ->assertSuccessful();
 });
 
-test('evodevops:doctor reports the AdminGate, UserResolver, and ontology checks', function () {
+test('evolayer:doctor reports the AdminGate, UserResolver, and ontology checks', function () {
     // Ensure ontology is compiled so that check passes.
-    $this->artisan('ontology:compile', ['--no-erd' => true])->assertSuccessful();
+    $this->artisan('evolayer:ontology:compile', ['--no-erd' => true])->assertSuccessful();
 
-    $this->artisan('evodevops:doctor')
+    $this->artisan('evolayer:doctor')
         ->expectsOutputToContain('AdminGate is bound')
         ->expectsOutputToContain('UserResolver is bound')
         ->expectsOutputToContain('Ontology compiled')
         ->assertSuccessful();
 });
 
-test('evodevops:doctor flags a custom AdminGate binding distinctly from the default', function () {
+test('evolayer:doctor flags a custom AdminGate binding distinctly from the default', function () {
     app()->instance(AdminGate::class, new class implements AdminGate
     {
-        public function isAdmin(?\Illuminate\Contracts\Auth\Authenticatable $user): bool
+        public function isAdmin(?Authenticatable $user): bool
         {
             return false;
         }
 
-        public function can(?\Illuminate\Contracts\Auth\Authenticatable $user, string $ability, mixed $resource = null): bool
+        public function can(?Authenticatable $user, string $ability, mixed $resource = null): bool
         {
             return false;
         }
     });
 
-    $this->artisan('evodevops:doctor')
+    $this->artisan('evolayer:doctor')
         ->expectsOutputToContain('custom implementation')
         ->assertSuccessful();
 });

@@ -1,6 +1,6 @@
-# EvoDevOps Base — Decision Record
+# EvoLayer Base — Decision Record
 
-ADR-style log of the significant decisions behind extracting EvoDevOps Base into a composer package and shaping it as the foundation for a family of starters (Commerce, SaaS, RLS). Each entry: the decision, the alternatives, the choice, and the side effects it set in motion.
+ADR-style log of the significant decisions behind extracting EvoLayer Base into a composer package and shaping it as the foundation for a family of starters (Commerce, SaaS, RLS). Each entry: the decision, the alternatives, the choice, and the side effects it set in motion.
 
 Status legend: **Accepted** · **Superseded** · **Open**
 
@@ -10,14 +10,14 @@ Status legend: **Accepted** · **Superseded** · **Open**
 
 **Status:** Accepted
 
-**Context.** EvoDevOps Base lived as a long-running fork of `laravel/react-starter-kit`. Upstream had moved on (Chisel, Passkeys, pnpm, PHPUnit). Three commercial variants (Commerce, SaaS, RLS) are planned, plus paid client projects deliberately scoped to receive EvoDevOps as a clean dependency.
+**Context.** EvoLayer Base lived as a long-running fork of `laravel/react-starter-kit`. Upstream had moved on (Chisel, Passkeys, pnpm, PHPUnit). Three commercial variants (Commerce, SaaS, RLS) are planned, plus paid client projects deliberately scoped to receive EvoDevOps as a clean dependency.
 
 **Alternatives.**
 - **In-place rebase** of the source repo onto upstream/main — rejected: 67 modified-starter files = high conflict surface, and it welds one repo to one starter snapshot.
 - **Greenfield** fresh starter + manual port — partially absorbed.
 - **Hybrid: extract a composer package first** — chosen.
 
-**Decision.** Build `evodevops/base` as a composer library in a sibling directory (`/opt/projects/evodevops-base-pkg`), namespace `Xuple\EvoLayer\Base\`.
+**Decision.** Build `evodevops/base` as a composer library in a sibling directory (`/opt/projects/evolayer-base-pkg`), namespace `Xuple\EvoLayer\Base\`.
 
 **Side effects.**
 - Created the package repo + `PORT_INVENTORY.md` discovery doc.
@@ -59,7 +59,7 @@ Status legend: **Accepted** · **Superseded** · **Open**
 
 **Status:** Accepted
 
-**Decision.** Define `Xuple\EvoLayer\Base\Contracts\AdminGate`; ship `SpatieAdminGate` as the default. No hardcoded `hasRole('admin')` in package logic; routes use an `evo.admin` middleware that delegates to the bound gate.
+**Decision.** Define `Xuple\EvoLayer\Base\Contracts\AdminGate`; ship `SpatieAdminGate` as the default. No hardcoded `hasRole('admin')` in package logic; routes use an `evolayer.admin` middleware that delegates to the bound gate.
 
 **Side effects.**
 - Enabled "clients without Spatie permission" — which forced ADR-005 and the compat polyfill.
@@ -134,23 +134,23 @@ Status legend: **Accepted** · **Superseded** · **Open**
 
 **Status:** Accepted
 
-**Decision.** Add `can(?Authenticatable, string $ability, mixed $resource = null): bool`. `isAdmin()` becomes a convenience alias for `can($user, 'evodevops.admin')`. Default routes the canonical ability through `hasRole`, arbitrary abilities through Laravel's Gate facade.
+**Decision.** Add `can(?Authenticatable, string $ability, mixed $resource = null): bool`. `isAdmin()` becomes a convenience alias for `can($user, 'evolayer.admin')`. Default routes the canonical ability through `hasRole`, arbitrary abilities through Laravel's Gate facade.
 
 **Side effects.**
 - Commerce (per-resource auth) and SaaS (per-tenant auth) have a seam without re-versioning the contract later.
-- The `evodevops.admin` ability is special-cased (not routed through Gate) to stay loadable for users that don't implement `Authorizable` — a documented, deliberate non-overridable.
+- The `evolayer.admin` ability is special-cased (not routed through Gate) to stay loadable for users that don't implement `Authorizable` — a documented, deliberate non-overridable.
 
 ---
 
-## ADR-010 — Namespacing: `evodevops.base.*` / `EVO_BASE_*` / `evo.base.*`
+## ADR-010 — Namespacing: `evolayer.base.*` / `EVOLAYER_BASE_*` / `evolayer.base.*`
 
 **Status:** Accepted
 
-**Decision.** Reserve clean room for variants: route names `evodevops.base.*`, env vars `EVO_BASE_*`, shared props `evo.base.{examples,features}`, config under `evo.base.*`, migration filenames include `evodevops_base_`.
+**Decision.** Reserve clean room for variants: route names `evolayer.base.*`, env vars `EVOLAYER_BASE_*`, shared props `evolayer.base.{examples,features}`, config under `evolayer.base.*`, migration filenames include `evodevops_base_`.
 
 **Side effects (the big cascade).**
 - Wayfinder regenerated controllers at new paths → published-page `@/routes` imports broke → page rewrites.
-- `use-example-nav-items` had to read `evo.base.examples`.
+- `use-example-nav-items` had to read `evolayer.base.examples`.
 - Shared-prop types re-nested: `EvoSharedProps` wraps `EvoBaseSharedProps`.
 
 ---
@@ -161,7 +161,7 @@ Status legend: **Accepted** · **Superseded** · **Open**
 
 **Context.** Product principle: a dev coming from `laravel/react-starter-kit` should not get features wired in they didn't ask for. `route:list` should not change on install.
 
-**Decision.** Every `EVO_BASE_EXAMPLE_*` flag defaults `false`. Routes are split into per-feature files loaded only when their flag is on.
+**Decision.** Every `EVOLAYER_BASE_EXAMPLE_*` flag defaults `false`. Routes are split into per-feature files loaded only when their flag is on.
 
 **Side effects.**
 - Broke ~35 tests that assumed default-true → the test environment now explicitly enables all flags.
@@ -176,7 +176,7 @@ Status legend: **Accepted** · **Superseded** · **Open**
 **Context.** Thin Phase D on a *real* fresh starter (not Testbench) found that a single-feature install failed `tsc`: published pages imported controllers from features whose routes weren't registered, so Wayfinder hadn't generated them.
 
 **Decision.**
-- Split frontend publish into `evodevops-base-frontend-core` + per-feature tags mirroring the route files (+ a meta tag for demos).
+- Split frontend publish into `evolayer-base-frontend-core` + per-feature tags mirroring the route files (+ a meta tag for demos).
 - Decouple cross-feature usage: `ThreadStudio`/`PRD` receive `voiceInputUrl`/`aiTextAssistUrl` as **server props** (`Route::has()`-guarded, null when disabled) instead of importing the other feature's Wayfinder controller.
 - `navigation.ts` (core) uses stable string URLs, not feature-controller imports, so core compiles regardless of enabled features.
 
@@ -195,7 +195,7 @@ Status legend: **Accepted** · **Superseded** · **Open**
 **Decision.** Two-tier validation: structural integrity (required keys, entity/event/workflow cross-refs, `class_exists`) hard-fails; environmental references (`Route::has`, `is_file`) become advisory warnings.
 
 **Side effects.**
-- `ontology:compile` succeeds on a partially-enabled host, reporting disabled features as warnings rather than failing.
+- `evolayer:ontology:compile` succeeds on a partially-enabled host, reporting disabled features as warnings rather than failing.
 - The multi-file `OntologyRegistry` (variants register their own `ontology.yaml` by namespace) became live, wired into the compile command.
 
 ---
@@ -204,7 +204,7 @@ Status legend: **Accepted** · **Superseded** · **Open**
 
 **Status:** Accepted
 
-**Context.** `evodevops:install` publishes `ontology.yaml` to the host root; `ontology:compile` then picks it up as `--host-source`, whose declared `namespace: evo.base` collided with the registered package ontology and threw.
+**Context.** `evolayer:install` publishes `ontology.yaml` to the host root; `evolayer:ontology:compile` then picks it up as `--host-source`, whose declared `namespace: evolayer.base` collided with the registered package ontology and threw.
 
 **Decision.** A host ontology whose declared namespace matches a registered package **overrides** that package's copy (publishing-to-customise is the intended workflow). A novel namespace (`app`) merges additively.
 
@@ -212,13 +212,13 @@ Status legend: **Accepted** · **Superseded** · **Open**
 
 ---
 
-## ADR-015 — Migrations auto-load; `evodevops:install` does not publish them
+## ADR-015 — Migrations auto-load; `evolayer:install` does not publish them
 
 **Status:** Accepted
 
-**Context.** The service provider both `loadMigrationsFrom()` the package *and* offered an `evodevops-base-migrations` publish tag, and `InstallCommand` published that tag by default. Publishing copied the same-named migration files into the host's `database/migrations`, so the schema was registered from two paths. Laravel dedupes by basename so `migrate` still ran, but the duplicate files shadowed the vendor copies — fragile (path order decides which wins) and noisy in a committed starter.
+**Context.** The service provider both `loadMigrationsFrom()` the package *and* offered an `evolayer-base-migrations` publish tag, and `InstallCommand` published that tag by default. Publishing copied the same-named migration files into the host's `database/migrations`, so the schema was registered from two paths. Laravel dedupes by basename so `migrate` still ran, but the duplicate files shadowed the vendor copies — fragile (path order decides which wins) and noisy in a committed starter.
 
-**Decision.** Migrations auto-load from the package via `loadMigrationsFrom()` and are **not** published by `evodevops:install`. The `evodevops-base-migrations` tag remains available for hosts who explicitly want to own and customise the schema (`vendor:publish --tag=evodevops-base-migrations`).
+**Decision.** Migrations auto-load from the package via `loadMigrationsFrom()` and are **not** published by `evolayer:install`. The `evolayer-base-migrations` tag remains available for hosts who explicitly want to own and customise the schema (`vendor:publish --tag=evolayer-base-migrations`).
 
 **Side effects.** Surfaced while building the Phase E starter (the duplicate files appeared in the host's `database/migrations`). The created app now depends on the pinned package version for its EvoDevOps schema, which `composer.lock` makes deterministic. Variant packages (Commerce, SaaS) should follow the same convention. Full package suite stayed green (129 tests / 487 assertions).
 
@@ -228,11 +228,11 @@ Status legend: **Accepted** · **Superseded** · **Open**
 
 **Status:** Accepted
 
-**Context.** `evodevops/base-starter` is the `composer create-project` target. Two axes had to be settled: (1) which features are on — the user chose **kitchen-sink** (every `EVO_BASE_EXAMPLE_*` flag on) so the template shows the full surface; (2) whether the published React frontend is committed to the starter repo or republished on create. The original plan sketched publish-on-create (a thin starter), but publishing into directories that also hold host files (`resources/js/components`, `hooks`, …) is fragile, and `--force` re-publishing on create can clobber a user's edits.
+**Context.** `evodevops/base-starter` is the `composer create-project` target. Two axes had to be settled: (1) which features are on — the user chose **kitchen-sink** (every `EVOLAYER_BASE_EXAMPLE_*` flag on) so the template shows the full surface; (2) whether the published React frontend is committed to the starter repo or republished on create. The original plan sketched publish-on-create (a thin starter), but publishing into directories that also hold host files (`resources/js/components`, `hooks`, …) is fragile, and `--force` re-publishing on create can clobber a user's edits.
 
-**Decision.** Commit the published EvoDevOps frontend, the Spatie config + migrations, and the host-side patches — so the repo is clone-and-build (verified: `npm install && npm run build`, `types:check` 0 errors). Keep only genuinely generated artifacts out of git (Wayfinder `actions`/`routes`, `bootstrap/cache/*`, `resources/js/types/ontology.ts`), regenerated by a **minimal** post-create hook: `key:generate`, sqlite, `migrate --seed`, `wayfinder:generate`, `ontology:compile`. No re-publish at create-time. `composer evodevops:resync` re-publishes the frontend to a newer package version on demand.
+**Decision.** Commit the published EvoDevOps frontend, the Spatie config + migrations, and the host-side patches — so the repo is clone-and-build (verified: `npm install && npm run build`, `types:check` 0 errors). Keep only genuinely generated artifacts out of git (Wayfinder `actions`/`routes`, `bootstrap/cache/*`, `resources/js/types/ontology.ts`), regenerated by a **minimal** post-create hook: `key:generate`, sqlite, `migrate --seed`, `wayfinder:generate`, `evolayer:ontology:compile`. No re-publish at create-time. `composer evolayer:resync` re-publishes the frontend to a newer package version on demand.
 
-**Side effects.** This is the conventional starter-kit posture (matches `laravel/react-starter-kit`, Jetstream). Future family starters (Commerce, SaaS) should mirror it. Host-side integration that can't be published is pre-applied: the `evo` shared prop, `User` `HasRoles` (so `SpatieAdminGate` resolves admin), `useExampleNavItems()` in the sidebar, the `evo` prop type, the `|` title separator, and a `DatabaseSeeder` that seeds the AI ledger + an admin demo user. The laravel/ai patch ships committed to the starter root and applies via `cweagans/composer-patches` (`extra.patches`, root-relative) — Option 1, chosen because composer-patches cannot resolve dependency-relative paths at install time. Verified live end-to-end: install applies the patch, migrate+seed, admin gate resolves, build, `evodevops:doctor` all-green, 39 upstream tests pass.
+**Side effects.** This is the conventional starter-kit posture (matches `laravel/react-starter-kit`, Jetstream). Future family starters (Commerce, SaaS) should mirror it. Host-side integration that can't be published is pre-applied: the `evo` shared prop, `User` `HasRoles` (so `SpatieAdminGate` resolves admin), `useExampleNavItems()` in the sidebar, the `evo` prop type, the `|` title separator, and a `DatabaseSeeder` that seeds the AI ledger + an admin demo user. The laravel/ai patch ships committed to the starter root and applies via `cweagans/composer-patches` (`extra.patches`, root-relative) — Option 1, chosen because composer-patches cannot resolve dependency-relative paths at install time. Verified live end-to-end: install applies the patch, migrate+seed, admin gate resolves, build, `evolayer:doctor` all-green, 39 upstream tests pass.
 
 ---
 

@@ -2,10 +2,6 @@
 
 namespace Xuple\EvoLayer\Base\Console\Commands;
 
-use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
-use Xuple\EvoLayer\Base\Models\AiCapability;
-use Xuple\EvoLayer\Base\Support\AiCapabilityHash;
-use Xuple\EvoLayer\Base\Support\ThreadStudioAiConfig;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -15,8 +11,12 @@ use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Contracts\HasStructuredOutput;
 use RuntimeException;
 use Throwable;
+use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
+use Xuple\EvoLayer\Base\Models\AiCapability;
+use Xuple\EvoLayer\Base\Support\AiCapabilityHash;
+use Xuple\EvoLayer\Base\Support\ThreadStudioAiConfig;
 
-#[Signature('ai:probe {--agent=} {--provider=} {--model=} {--all-models} {--reprobe-stale} {--max-models=} {--max-probes=} {--budget-cents=} {--persist} {--force}')]
+#[Signature('evolayer:ai:probe {--agent=} {--provider=} {--model=} {--all-models} {--reprobe-stale} {--max-models=} {--max-probes=} {--budget-cents=} {--persist} {--force}')]
 #[Description('Probe AI provider connectivity and structured-output compatibility')]
 class AiProbeCommand extends Command
 {

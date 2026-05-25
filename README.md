@@ -1,6 +1,6 @@
-# EvoDevOps Base
+# EvoLayer Base
 
-EvoDevOps Base is a composer package that adds the EvoDevOps AI / ontology / blocks layer to a Laravel 13 React Inertia starter. It is the foundation for the EvoDevOps family of sibling packages — **Commerce** (product sales), **SaaS** (subscriptions / tenants), **RLS** (PostgreSQL row-level security, composable).
+EvoLayer Base is a composer package that adds the EvoDevOps AI / ontology / blocks layer to a Laravel 13 React Inertia starter. It is the foundation for the EvoDevOps family of sibling packages — **Commerce** (product sales), **SaaS** (subscriptions / tenants), **RLS** (PostgreSQL row-level security, composable).
 
 The package is designed to feel like a clean additive layer for a developer transitioning from `laravel/react-starter-kit`. **Installing it adds zero routes, zero middleware, zero shared props by default.** Each feature is opt-in via a flag.
 
@@ -13,11 +13,11 @@ The package is designed to feel like a clean additive layer for a developer tran
 composer require evodevops/base
 
 # 2. Publish the always-on bits: config, core frontend, migrations, npm deps
-php artisan vendor:publish --tag=evodevops-base-config
-php artisan vendor:publish --tag=evodevops-base-frontend-core
-php artisan vendor:publish --tag=evodevops-base-migrations
-php artisan vendor:publish --tag=evodevops-base-patches
-php artisan vendor:publish --tag=evodevops-base-npm
+php artisan vendor:publish --tag=evolayer-base-config
+php artisan vendor:publish --tag=evolayer-base-frontend-core
+php artisan vendor:publish --tag=evolayer-base-migrations
+php artisan vendor:publish --tag=evolayer-base-patches
+php artisan vendor:publish --tag=evolayer-base-npm
 
 # 3. Install the npm deps that the published frontend needs
 # (cmdk powers the standard command palette — required if you use the
@@ -36,24 +36,24 @@ Each opt-in feature is two things that must match: an **env flag** (registers it
 
 ```bash
 # Example: enable ThreadStudio
-echo 'EVO_BASE_EXAMPLE_THREAD_STUDIO=true' >> .env
-php artisan vendor:publish --tag=evodevops-base-frontend-thread-studio
+echo 'EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO=true' >> .env
+php artisan vendor:publish --tag=evolayer-base-frontend-thread-studio
 php artisan wayfinder:generate --with-form
 ```
 
 | Feature | Env flag | Frontend publish tag |
 | --- | --- | --- |
-| ThreadStudio | `EVO_BASE_EXAMPLE_THREAD_STUDIO` | `evodevops-base-frontend-thread-studio` |
-| PRD Studio | `EVO_BASE_EXAMPLE_PRD_STUDIO` | `evodevops-base-frontend-prd-studio` |
-| Admin Inbox | `EVO_BASE_EXAMPLE_ADMIN_INBOX` | `evodevops-base-frontend-admin-inbox` |
-| Contact + AI | `EVO_BASE_EXAMPLE_CONTACT_AI` | `evodevops-base-frontend-contact-ai` |
-| Marketing pages | `EVO_BASE_EXAMPLE_MARKETING_PAGES` | `evodevops-base-frontend-marketing-pages` |
-| Voice input | `EVO_BASE_EXAMPLE_VOICE_INPUT` | (block ships in core; no page tag) |
-| AI text field | `EVO_BASE_EXAMPLE_AI_TEXT_FIELD` | (block ships in core; no page tag) |
+| ThreadStudio | `EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO` | `evolayer-base-frontend-thread-studio` |
+| PRD Studio | `EVOLAYER_BASE_EXAMPLE_PRD_STUDIO` | `evolayer-base-frontend-prd-studio` |
+| Admin Inbox | `EVOLAYER_BASE_EXAMPLE_ADMIN_INBOX` | `evolayer-base-frontend-admin-inbox` |
+| Contact + AI | `EVOLAYER_BASE_EXAMPLE_CONTACT_AI` | `evolayer-base-frontend-contact-ai` |
+| Marketing pages | `EVOLAYER_BASE_EXAMPLE_MARKETING_PAGES` | `evolayer-base-frontend-marketing-pages` |
+| Voice input | `EVOLAYER_BASE_EXAMPLE_VOICE_INPUT` | (block ships in core; no page tag) |
+| AI text field | `EVOLAYER_BASE_EXAMPLE_AI_TEXT_FIELD` | (block ships in core; no page tag) |
 
 `voice_input` and `ai_text_field` are blocks consumed by other pages (ThreadStudio, PRD), not standalone pages. Enabling their flags registers their endpoints; the consuming page receives the endpoint URL as a server prop and shows the relevant control only when the flag is on — so no cross-feature compile-time dependency exists.
 
-To publish everything at once (demo / kitchen-sink), use the meta tag `evodevops-base-frontend` and enable all flags.
+To publish everything at once (demo / kitchen-sink), use the meta tag `evolayer-base-frontend` and enable all flags.
 
 ---
 
@@ -76,14 +76,14 @@ Every feature defaults to **off**. Set the corresponding env flag to `true` to e
 
 | Env flag | What it enables |
 | --- | --- |
-| `EVO_BASE_EXAMPLE_THREAD_STUDIO=true` | `/ai/thread-studio` — AI customer-reply composer with structured streaming |
-| `EVO_BASE_EXAMPLE_PRD_STUDIO=true` | `/admin/prd` — AI-assisted PRD generator |
-| `EVO_BASE_EXAMPLE_ADMIN_INBOX=true` | `/admin/inbox` + `/admin/submissions` — form-submission inbox UI |
-| `EVO_BASE_EXAMPLE_CONTACT_AI=true` | `/contact` + AI subject hints + AI triage on submission |
-| `EVO_BASE_EXAMPLE_VOICE_INPUT=true` | `/ai/voice-input/transcribe` — speech-to-text endpoint for the `<VoiceInput>` block |
-| `EVO_BASE_EXAMPLE_AI_TEXT_FIELD=true` | `/ai/text-assist/stream` — text-suggestion streaming endpoint for the `<AiTextField>` block |
-| `EVO_BASE_EXAMPLE_MARKETING_PAGES=true` | `/about` + `/home` — showcase landing pages mapped to the published `evodevops/about.tsx` and `evodevops/home.tsx` |
-| `EVO_BASE_FEATURE_CONTACT_ATTACHMENTS=true` | File-upload handling on the contact form. Requires `composer require spatie/laravel-medialibrary` (see "Opt-in extras" below) |
+| `EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO=true` | `/ai/thread-studio` — AI customer-reply composer with structured streaming |
+| `EVOLAYER_BASE_EXAMPLE_PRD_STUDIO=true` | `/admin/prd` — AI-assisted PRD generator |
+| `EVOLAYER_BASE_EXAMPLE_ADMIN_INBOX=true` | `/admin/inbox` + `/admin/submissions` — form-submission inbox UI |
+| `EVOLAYER_BASE_EXAMPLE_CONTACT_AI=true` | `/contact` + AI subject hints + AI triage on submission |
+| `EVOLAYER_BASE_EXAMPLE_VOICE_INPUT=true` | `/ai/voice-input/transcribe` — speech-to-text endpoint for the `<VoiceInput>` block |
+| `EVOLAYER_BASE_EXAMPLE_AI_TEXT_FIELD=true` | `/ai/text-assist/stream` — text-suggestion streaming endpoint for the `<AiTextField>` block |
+| `EVOLAYER_BASE_EXAMPLE_MARKETING_PAGES=true` | `/about` + `/home` — showcase landing pages mapped to the published `evodevops/about.tsx` and `evodevops/home.tsx` |
+| `EVOLAYER_BASE_FEATURE_CONTACT_ATTACHMENTS=true` | File-upload handling on the contact form. Requires `composer require spatie/laravel-medialibrary` (see "Opt-in extras" below) |
 
 After enabling, run `php artisan route:list` to confirm only the routes you asked for are registered.
 
@@ -95,8 +95,8 @@ Base requires `spatie/laravel-permission` and `spatie/laravel-activitylog` as co
 
 | Spatie package | Feature it enables | Required when |
 | --- | --- | --- |
-| `spatie/laravel-medialibrary` | Contact form file attachments + AI media analysis | `EVO_BASE_FEATURE_CONTACT_ATTACHMENTS=true` |
-| `spatie/laravel-tags` | AI auto-tagging on form submissions during triage | `EVO_BASE_EXAMPLE_CONTACT_AI=true` (only if you want auto-tagging) |
+| `spatie/laravel-medialibrary` | Contact form file attachments + AI media analysis | `EVOLAYER_BASE_FEATURE_CONTACT_ATTACHMENTS=true` |
+| `spatie/laravel-tags` | AI auto-tagging on form submissions during triage | `EVOLAYER_BASE_EXAMPLE_CONTACT_AI=true` (only if you want auto-tagging) |
 
 To enable contact attachments:
 
@@ -106,7 +106,7 @@ php artisan vendor:publish --provider="Spatie\\MediaLibrary\\MediaLibraryService
 php artisan migrate
 ```
 
-Set `EVO_BASE_FEATURE_CONTACT_ATTACHMENTS=true` in `.env`. The package's `FormSubmission` model loads either way — a compat polyfill in `Xuple\EvoLayer\Base\Compat\*` shadows the Spatie interfaces and traits when the Spatie packages aren't installed.
+Set `EVOLAYER_BASE_FEATURE_CONTACT_ATTACHMENTS=true` in `.env`. The package's `FormSubmission` model loads either way — a compat polyfill in `Xuple\EvoLayer\Base\Compat\*` shadows the Spatie interfaces and traits when the Spatie packages aren't installed.
 
 ---
 
@@ -116,7 +116,7 @@ A handful of host-owned files need small edits the package cannot publish over. 
 
 ### 1. Apply the `laravel/ai` patch
 
-Until upstream lifts the structured-output streaming guard, structured streaming requires patching `vendor/laravel/ai/src/Providers/Concerns/StreamsText.php`. The patch ships at `patches/laravel-ai-structured-streaming.patch` after `vendor:publish --tag=evodevops-base-patches`:
+Until upstream lifts the structured-output streaming guard, structured streaming requires patching `vendor/laravel/ai/src/Providers/Concerns/StreamsText.php`. The patch ships at `patches/laravel-ai-structured-streaming.patch` after `vendor:publish --tag=evolayer-base-patches`:
 
 ```bash
 patch -p1 -d vendor/laravel/ai --forward < patches/laravel-ai-structured-streaming.patch
@@ -136,8 +136,8 @@ public function share(Request $request): array
         // ...your existing shared props
         'evo' => [
             'base' => [
-                'examples' => config('evo.base.examples'),
-                'features' => config('evo.base.features'),
+                'examples' => config('evolayer.base.examples'),
+                'features' => config('evolayer.base.features'),
             ],
         ],
     ];
@@ -183,7 +183,7 @@ export function AppSidebar() {
 }
 ```
 
-`useExampleNavItems()` filters items by the `EVO_BASE_EXAMPLE_*` flags so disabled features don't appear.
+`useExampleNavItems()` filters items by the `EVOLAYER_BASE_EXAMPLE_*` flags so disabled features don't appear.
 
 ---
 
@@ -195,11 +195,11 @@ These are the stable surfaces sibling EvoDevOps packages (Commerce, SaaS, RLS) a
 
 | Surface | Convention |
 | --- | --- |
-| Route names | `evodevops.base.*` (variants use `evodevops.commerce.*`, etc.) |
-| Env vars | `EVO_BASE_EXAMPLE_*`, `EVO_BASE_FEATURE_*` (variants use `EVO_COMMERCE_*`, etc.) |
-| Shared props | `evo.base.{examples, features}` (variants own `evo.commerce.*`, etc.) |
-| Config | `config/evodevops.php`; access via `evo.base.*` |
-| Publish tags | `evodevops-base-*` (variants use `evodevops-commerce-*`, etc.) |
+| Route names | `evolayer.base.*` (variants use `evodevops.commerce.*`, etc.) |
+| Env vars | `EVOLAYER_BASE_EXAMPLE_*`, `EVOLAYER_BASE_FEATURE_*` (variants use `EVO_COMMERCE_*`, etc.) |
+| Shared props | `evolayer.base.{examples, features}` (variants own `evo.commerce.*`, etc.) |
+| Config | `config/evolayer.php`; access via `evolayer.base.*` |
+| Publish tags | `evolayer-base-*` (variants use `evodevops-commerce-*`, etc.) |
 | Migration filenames | Include `evodevops_base_` segment (variants include `evodevops_commerce_`, etc.) |
 
 ### SSE streaming vocabulary
@@ -244,7 +244,7 @@ interface AdminGate {
 }
 ```
 
-Default impl (`SpatieAdminGate`) routes `evodevops.admin` through `hasRole('admin')` and arbitrary abilities through Laravel's `Gate` facade. Replace via container binding to plug in a different model.
+Default impl (`SpatieAdminGate`) routes `evolayer.admin` through `hasRole('admin')` and arbitrary abilities through Laravel's `Gate` facade. Replace via container binding to plug in a different model.
 
 ### Ontology multi-file architecture
 

@@ -7,7 +7,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 interface AdminGate
 {
     /**
-     * Shortcut for the most common check. Equivalent to `can($user, 'evodevops.admin')`.
+     * Shortcut for the most common check. Equivalent to `can($user, 'evolayer.admin')`.
      */
     public function isAdmin(?Authenticatable $user): bool;
 
@@ -15,7 +15,7 @@ interface AdminGate
      * Per-ability and optionally per-resource authorisation.
      *
      * Examples:
-     *   `can($user, 'evodevops.admin')`          // role-style check
+     *   `can($user, 'evolayer.admin')`          // role-style check
      *   `can($user, 'edit', $order)`              // policy-style check on a model
      *   `can($user, 'evodevops.commerce.orders.edit')`  // namespaced ability
      *

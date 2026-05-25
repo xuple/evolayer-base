@@ -2,11 +2,11 @@
 
 namespace Xuple\EvoLayer\Base\Database\Seeders;
 
+use Illuminate\Database\Seeder;
 use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
 use Xuple\EvoLayer\Base\Models\AiCapability;
 use Xuple\EvoLayer\Base\Support\AiCapabilityHash;
 use Xuple\EvoLayer\Base\Support\ThreadStudioAiConfig;
-use Illuminate\Database\Seeder;
 
 /**
  * Bootstraps ai_capabilities from the static ThreadStudioAiConfig::opencodeModelCompatibility() array.

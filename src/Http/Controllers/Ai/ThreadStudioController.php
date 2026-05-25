@@ -2,16 +2,16 @@
 
 namespace Xuple\EvoLayer\Base\Http\Controllers\Ai;
 
-use Xuple\EvoLayer\Base\Http\Controllers\Controller;
-use Xuple\EvoLayer\Base\Http\Requests\Ai\ComposeThreadStudioRequest;
-use Xuple\EvoLayer\Base\Support\ThreadStudioAiConfig;
-use Xuple\EvoLayer\Base\Support\ThreadStudioComposer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
+use Xuple\EvoLayer\Base\Http\Controllers\Controller;
+use Xuple\EvoLayer\Base\Http\Requests\Ai\ComposeThreadStudioRequest;
+use Xuple\EvoLayer\Base\Support\ThreadStudioAiConfig;
+use Xuple\EvoLayer\Base\Support\ThreadStudioComposer;
 
 /**
  * @evo-example thread_studio
@@ -26,8 +26,8 @@ class ThreadStudioController extends Controller
             // Cross-feature URL passed at runtime so the page never compile-time
             // depends on the voice_input feature's Wayfinder controller. Null
             // when voice_input isn't enabled — the page hides the Dictate button.
-            'voiceInputUrl' => Route::has('evodevops.base.ai.voice-input.transcribe')
-                ? route('evodevops.base.ai.voice-input.transcribe')
+            'voiceInputUrl' => Route::has('evolayer.base.ai.voice-input.transcribe')
+                ? route('evolayer.base.ai.voice-input.transcribe')
                 : null,
         ]);
     }

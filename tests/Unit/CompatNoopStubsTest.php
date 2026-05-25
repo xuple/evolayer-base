@@ -1,5 +1,9 @@
 <?php
 
+use Xuple\EvoLayer\Base\Compat\HasMedia;
+use Xuple\EvoLayer\Base\Compat\HasTags;
+use Xuple\EvoLayer\Base\Compat\InteractsWithMedia;
+
 /**
  * Verifies the no-op variants of the Compat layer behave correctly.
  *
@@ -23,7 +27,7 @@ test('the no-op InteractsWithMedia trait file is syntactically valid and defines
         ->toContain('public function getMedia(')
         ->toContain('public function hasMedia(')
         ->toContain('public function addMedia(')
-        ->toContain('EVO_BASE_FEATURE_CONTACT_ATTACHMENTS');
+        ->toContain('EVOLAYER_BASE_FEATURE_CONTACT_ATTACHMENTS');
 });
 
 test('the no-op HasTags trait file is syntactically valid and defines the expected method surface', function () {
@@ -60,7 +64,7 @@ test('the Compat bootstrap loads conditionally based on installed packages', fun
 test('the Compat namespace exposes HasMedia, InteractsWithMedia, and HasTags symbols', function () {
     // In this test environment Spatie IS installed, so the symbols resolve
     // via the Spatie-backed variants. Either way the symbols must exist.
-    expect(interface_exists(\Xuple\EvoLayer\Base\Compat\HasMedia::class))->toBeTrue()
-        ->and(trait_exists(\Xuple\EvoLayer\Base\Compat\InteractsWithMedia::class))->toBeTrue()
-        ->and(trait_exists(\Xuple\EvoLayer\Base\Compat\HasTags::class))->toBeTrue();
+    expect(interface_exists(HasMedia::class))->toBeTrue()
+        ->and(trait_exists(InteractsWithMedia::class))->toBeTrue()
+        ->and(trait_exists(HasTags::class))->toBeTrue();
 });

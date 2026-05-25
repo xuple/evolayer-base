@@ -2,17 +2,17 @@
 
 namespace Xuple\EvoLayer\Base\Http\Requests\Admin;
 
-use Xuple\EvoLayer\Base\Contracts\AdminGate;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Xuple\EvoLayer\Base\Contracts\AdminGate;
 
 class GeneratePrdRequest extends FormRequest
 {
     public function authorize(): bool
     {
         // Delegate to the pluggable AdminGate contract rather than hardcoding
-        // a Spatie role check (the route already enforces evo.admin; this keeps
+        // a Spatie role check (the route already enforces evolayer.admin; this keeps
         // request-level authorization consistent for custom gate bindings).
         return app(AdminGate::class)->isAdmin($this->user());
     }

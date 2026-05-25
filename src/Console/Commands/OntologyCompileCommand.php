@@ -2,15 +2,15 @@
 
 namespace Xuple\EvoLayer\Base\Console\Commands;
 
-use Xuple\EvoLayer\Base\Support\OntologyCompiler;
-use Xuple\EvoLayer\Base\Support\OntologyRegistry;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use RuntimeException;
+use Xuple\EvoLayer\Base\Support\OntologyCompiler;
+use Xuple\EvoLayer\Base\Support\OntologyRegistry;
 
-#[Signature('ontology:compile
+#[Signature('evolayer:ontology:compile
     {--source= : Compile a single ontology file (legacy mode). Omit to merge all registered package ontologies + the host ontology.}
     {--host-source=ontology.yaml : Host ontology YAML path merged under the "app" namespace when present}
     {--output=bootstrap/cache/ontology.php : Compiled PHP cache path}

@@ -1,6 +1,6 @@
 version: 1
-namespace: evo.base
-name: EvoDevOps Base
+namespace: evolayer.base
+name: EvoLayer Base
 
 lanes:
   sqlite:
@@ -43,7 +43,7 @@ entities:
 
   form_submission:
     model: Xuple\EvoLayer\Base\Models\FormSubmission
-    table: form_submissions
+    table: evolayer_base_form_submissions
     key: id
     key_type: ulid
     traits:
@@ -132,7 +132,7 @@ entities:
 
   ai_invocation:
     model: Xuple\EvoLayer\Base\Models\AiInvocation
-    table: ai_invocations
+    table: evolayer_base_ai_invocations
     key: id
     key_type: ulid
     traits:
@@ -168,7 +168,7 @@ entities:
 
   ai_invocation_attempt:
     model: Xuple\EvoLayer\Base\Models\AiInvocationAttempt
-    table: ai_invocation_attempts
+    table: evolayer_base_ai_invocation_attempts
     key: id
     key_type: ulid
     fields:
@@ -194,7 +194,7 @@ entities:
 
   ai_capability:
     model: Xuple\EvoLayer\Base\Models\AiCapability
-    table: ai_capabilities
+    table: evolayer_base_ai_capabilities
     key: id
     key_type: ulid
     note: per-agent observability storage for capability probes
@@ -259,7 +259,7 @@ entities:
 
   change_event:
     model: Xuple\EvoLayer\Base\Models\ChangeEvent
-    table: change_events
+    table: evolayer_base_change_events
     key: id
     key_type: ulid
     fields:
@@ -288,7 +288,7 @@ entities:
 
 projections:
   admin_inbox:
-    route: evodevops.base.admin.inbox.show
+    route: evolayer.base.admin.inbox.show
     source: form_submission
     includes:
       - tags
@@ -298,18 +298,18 @@ projections:
       - thread_studio_compose
       - semantic_search
   admin_submissions:
-    route: evodevops.base.admin.submissions.index
+    route: evolayer.base.admin.submissions.index
     source: form_submission
     includes:
       - tags
       - triage
       - activity
   thread_studio:
-    route: evodevops.base.ai.thread-studio.show
+    route: evolayer.base.ai.thread-studio.show
     source: ai_invocation
     requires_role: admin
   prd_studio:
-    route: evodevops.base.admin.prd.show
+    route: evolayer.base.admin.prd.show
     source: prd_agent
     requires_role: admin
 
@@ -353,19 +353,19 @@ agents:
     capability_ledger: ai_capability
   prd:
     class: Xuple\EvoLayer\Base\Ai\Agents\PrdAgent
-    endpoint: evodevops.base.admin.prd.generate
+    endpoint: evolayer.base.admin.prd.generate
     output: structured_prd
     requires_role: admin
   text_assist:
     class: Xuple\EvoLayer\Base\Ai\Agents\TextAssistAgent
-    endpoint: evodevops.base.ai.text-assist.stream
+    endpoint: evolayer.base.ai.text-assist.stream
     output: plain_text_stream
     requires_role: admin
 
 blocks:
   ai_text_field:
     path: resources/js/blocks/ai-text-field/index.tsx
-    endpoint: evodevops.base.ai.text-assist.stream
+    endpoint: evolayer.base.ai.text-assist.stream
   ai_triage:
     path: resources/js/blocks/ai-triage/index.tsx
     consumes:
@@ -380,10 +380,10 @@ blocks:
       - processing_state
   voice_input:
     path: resources/js/blocks/voice-input/index.tsx
-    endpoint: evodevops.base.ai.voice-input.transcribe
+    endpoint: evolayer.base.ai.voice-input.transcribe
   semantic_search:
     path: resources/js/blocks/semantic-search/index.tsx
-    endpoint: evodevops.base.admin.inbox.search
+    endpoint: evolayer.base.admin.inbox.search
     strategies:
       sqlite: like
       postgresql: pgvector

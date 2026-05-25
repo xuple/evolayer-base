@@ -1,17 +1,17 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use Xuple\EvoLayer\Base\Http\Controllers\Admin\InboxController;
 use Xuple\EvoLayer\Base\Http\Controllers\Admin\SubmissionsController;
-use Illuminate\Support\Facades\Route;
 
 /*
-| Loaded only when EVO_BASE_EXAMPLE_ADMIN_INBOX=true.
+| Loaded only when EVOLAYER_BASE_EXAMPLE_ADMIN_INBOX=true.
 | Provides the admin inbox UI plus the older submissions detail/index views.
 */
 
-Route::middleware(['auth', 'verified', 'evo.admin'])
+Route::middleware(['auth', 'verified', 'evolayer.admin'])
     ->prefix('admin')
-    ->name('evodevops.base.admin.')
+    ->name('evolayer.base.admin.')
     ->group(function (): void {
         Route::get('inbox', [InboxController::class, 'show'])->name('inbox.show');
         Route::get('inbox/search', [InboxController::class, 'search'])

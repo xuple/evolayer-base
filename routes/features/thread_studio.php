@@ -1,15 +1,15 @@
 <?php
 
-use Xuple\EvoLayer\Base\Http\Controllers\Ai\ThreadStudioController;
 use Illuminate\Support\Facades\Route;
+use Xuple\EvoLayer\Base\Http\Controllers\Ai\ThreadStudioController;
 
 /*
-| Loaded only when EVO_BASE_EXAMPLE_THREAD_STUDIO=true.
+| Loaded only when EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO=true.
 */
 
-Route::middleware(['auth', 'verified', 'evo.admin'])
+Route::middleware(['auth', 'verified', 'evolayer.admin'])
     ->prefix('ai/thread-studio')
-    ->name('evodevops.base.ai.thread-studio.')
+    ->name('evolayer.base.ai.thread-studio.')
     ->group(function (): void {
         Route::get('/', [ThreadStudioController::class, 'show'])->name('show');
         Route::post('/', [ThreadStudioController::class, 'store'])

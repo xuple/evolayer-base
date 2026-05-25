@@ -12,6 +12,8 @@ class AiInvocationAttempt extends Model
 {
     use HasUlids, LogsActivity;
 
+    protected $table = 'evolayer_base_ai_invocation_attempts';
+
     protected $guarded = ['id'];
 
     public function getActivitylogOptions(): LogOptions

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ai_capabilities', function (Blueprint $table): void {
+        Schema::create('evolayer_base_ai_capabilities', function (Blueprint $table): void {
             $table->ulid('id')->primary();
 
             // Identity columns — form the unique key for upsert resolution.
@@ -37,7 +37,7 @@ return new class extends Migration
             $table->timestampTz('probed_at');
             $table->timestampsTz();
 
-            // Unique key — drives upsert resolution in ai:probe --persist.
+            // Unique key — drives upsert resolution in evolayer:ai:probe --persist.
             $table->unique(['agent_class', 'provider', 'model', 'schema_hash']);
 
             // Secondary index — per-agent queries used by modelOptions() in Step 2.
@@ -50,6 +50,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ai_capabilities');
+        Schema::dropIfExists('evolayer_base_ai_capabilities');
     }
 };

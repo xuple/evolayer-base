@@ -2,11 +2,11 @@
 
 namespace Xuple\EvoLayer\Base\Http\Controllers\Ai;
 
-use Xuple\EvoLayer\Base\Http\Controllers\Controller;
-use Xuple\EvoLayer\Base\Http\Requests\Ai\TranscribeAudioRequest;
 use Illuminate\Http\JsonResponse;
 use Laravel\Ai\Transcription;
 use Throwable;
+use Xuple\EvoLayer\Base\Http\Controllers\Controller;
+use Xuple\EvoLayer\Base\Http\Requests\Ai\TranscribeAudioRequest;
 
 /**
  * @evo-example voice_input

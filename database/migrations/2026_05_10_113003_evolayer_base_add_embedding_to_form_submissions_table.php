@@ -14,21 +14,21 @@ return new class extends Migration
         if ($driver === 'pgsql') {
             Schema::ensureVectorExtensionExists();
 
-            Schema::table('form_submissions', function (Blueprint $table) {
+            Schema::table('evolayer_base_form_submissions', function (Blueprint $table) {
                 $table->vector('embedding', dimensions: 1536)->nullable()->index();
             });
 
             return;
         }
 
-        Schema::table('form_submissions', function (Blueprint $table) {
+        Schema::table('evolayer_base_form_submissions', function (Blueprint $table) {
             $table->json('embedding')->nullable();
         });
     }
 
     public function down(): void
     {
-        Schema::table('form_submissions', function (Blueprint $table) {
+        Schema::table('evolayer_base_form_submissions', function (Blueprint $table) {
             $table->dropColumn('embedding');
         });
     }

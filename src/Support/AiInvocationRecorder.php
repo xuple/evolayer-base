@@ -2,9 +2,9 @@
 
 namespace Xuple\EvoLayer\Base\Support;
 
-use Xuple\EvoLayer\Base\Models\AiInvocation;
 use Illuminate\Support\Facades\Auth;
 use Throwable;
+use Xuple\EvoLayer\Base\Models\AiInvocation;
 
 class AiInvocationRecorder
 {

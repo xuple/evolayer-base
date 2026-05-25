@@ -33,7 +33,7 @@ const infoItems = [
 ] as const;
 
 export default function Contact() {
-    const evo = useEvoLayerProps();
+    const evolayer = useEvoLayerProps();
     const [subjectPlaceholder, setSubjectPlaceholder] = useState<string | null>(
         null,
     );

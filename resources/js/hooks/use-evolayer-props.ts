@@ -14,7 +14,7 @@ import type { EvoLayerSharedProps } from '@/types/evolayer';
  * published pages.
  */
 export function useEvoLayerProps(): EvoLayerSharedProps {
-    const props = usePage().props as unknown as { evo?: EvoLayerSharedProps };
+    const props = usePage().props as unknown as { evolayer?: EvoLayerSharedProps };
 
     if (!props.evolayer) {
         throw new Error(

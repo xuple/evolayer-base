@@ -4,6 +4,12 @@ EvoLayer Base is a Composer package that adds an AI / ontology / React-block lay
 
 The package is designed to feel like a clean additive layer for a developer transitioning from `laravel/react-starter-kit`. **Installing it adds zero routes, zero middleware, zero shared props by default.** Each feature is opt-in via a flag.
 
+Public web strategy: `evodevops.com` is the editorial/teaching home for the
+starter-kit family, while `https://docs.evodevops.com/base` is the canonical
+EvoLayer Base documentation path. The starter's public `/` page should sell the
+working demo/install path; `/about` should explain why the Base layer exists and
+how it stays conventional.
+
 ## Start here
 
 | If you are... | Use |

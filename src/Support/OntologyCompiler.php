@@ -13,7 +13,7 @@ class OntologyCompiler
      * Compile multiple ontology files from a registry, merging by declared namespace.
      *
      * Each registered file declares its own `namespace` (e.g. `evolayer.base`,
-     * `evo.commerce`). The merged output is keyed by namespace, so sibling
+     * `evolayer.commerce`). The merged output is keyed by namespace, so sibling
      * packages can declare overlapping entity/event/block names without
      * collision — they're scoped under their own namespace.
      *

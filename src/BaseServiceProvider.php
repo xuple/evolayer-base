@@ -69,7 +69,7 @@ class BaseServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         // Register Base's ontology under the evolayer.base namespace. Variant
-        // packages register their own (evo.commerce, etc.) the same way; the
+        // packages register their own (evolayer.commerce, etc.) the same way; the
         // compiler merges them. The host may publish + customise this copy via
         // the evolayer-base-ontology tag — if they do, point the registry at
         // base_path('ontology.yaml') from the host's AppServiceProvider.

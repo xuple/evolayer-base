@@ -17,7 +17,7 @@ interface AdminGate
      * Examples:
      *   `can($user, 'evolayer.admin')`          // role-style check
      *   `can($user, 'edit', $order)`              // policy-style check on a model
-     *   `can($user, 'evodevops.commerce.orders.edit')`  // namespaced ability
+     *   `can($user, 'evolayer.commerce.orders.edit')`  // namespaced ability
      *
      * Default implementations should delegate to Laravel's Gate facade.
      */

@@ -1,9 +1,10 @@
 # Releasing EvoLayer Base
 
 This documents the intended release flow for the package (`xuple/evolayer-base`)
-and the starter (`xuple/evolayer-base-starter`). The repositories are pushed to
-the self-hosted forge and mirrored to GitHub. Version numbers, tags, and public
-distribution are still open decisions (see [Open decisions](#open-decisions)).
+and the starter (`xuple/evolayer-base-starter`). Base and the starter are
+free/public MIT projects. The self-hosted Forge and private GitHub repositories
+are pre-launch staging; the launch target is public GitHub plus Packagist.
+Version numbers and tags are still open decisions (see [Open decisions](#open-decisions)).
 
 ## Identity
 
@@ -23,8 +24,10 @@ tagged. SemVer once 1.0 ships.
 1. Ensure green: `composer test`, `composer validate --strict`.
 2. Update `CHANGELOG.md`: move `[Unreleased]` to `[0.1.0] - <date>`.
 3. Commit, then tag: `git tag v0.1.0 && git push origin v0.1.0 && git push github v0.1.0`.
-4. Publish: submit the repo to Packagist, or register it on a private Composer
-   repository / Satis *(distribution undecided — see below)*.
+4. Publish `xuple/evolayer-base` to Packagist.
+5. Update the starter to require `xuple/evolayer-base:^0.1`, remove the private
+   Forge VCS repository, validate a clean `composer create-project`, then publish
+   `xuple/evolayer-base-starter` to Packagist.
 
 > The `cweagans/composer-patches` plugin is **not** a dependency of the package.
 > The package applies its own `laravel/ai` patch in development via
@@ -70,30 +73,28 @@ Verified: `composer create-project xuple/evolayer-base-starter` resolves the
 package over the forge `vcs`, applies the patch, migrates/seeds, generates
 Wayfinder + ontology, and `npm run build` succeeds — all from a clean checkout.
 
-## Distribution & remotes (direction set)
+## Distribution & remotes
 
-- **Primary remote:** self-hosted forge (`origin`) at
+- **Pre-launch primary remote:** self-hosted Forge (`origin`) at
   `ssh://git@forge.dev.home.arpa:222/xupleteam/evolayer-base.git`.
-- **GitHub mirror:** `git@github.com:xuple/evolayer-base.git`. Treat it as a
-  mirror unless/until the release policy says otherwise.
-- **Stays private for now → not public Packagist.** While private, the starter
-  consumes the package from a **`vcs` repository** pointing at the package's
-  private git URL, not from Packagist:
+- **Pre-launch GitHub mirror:** `git@github.com:xuple/evolayer-base.git`.
+- **Public launch target:** GitHub (`xuple/evolayer-base`,
+  `xuple/evolayer-base-starter`) plus Packagist for Composer resolution.
+- **Private staging:** while private, the starter consumes the package from a
+  **Forge `vcs` repository** at `dev-main`:
 
   ```jsonc
-  // starter composer.json (publish-time — replaces the dev `path` repo)
-  "require":      { "xuple/evolayer-base": "^0.1" },
-  "repositories": [{ "type": "vcs", "url": "<git-url-of-xuple/evolayer-base>" }]
+  "require":      { "xuple/evolayer-base": "dev-main" },
+  "repositories": [{ "type": "vcs",
+                     "url": "ssh://git@forge.dev.home.arpa:222/xupleteam/evolayer-base.git" }]
   ```
 
-  Composer reads the package's tags from that git URL. Authentication for the
-  private remote goes in `auth.json` (gitignored) or `composer config`, never
-  committed. `composer create-project` of a private starter likewise needs git
-  access. A private Satis/Composer repo is an alternative if VCS auth gets noisy.
-- The starter already wires the forge `vcs` repo at `dev-main` (no committed
-  lock); at publish time `dev-main` simply becomes `^0.1`. Local side-by-side
-  package dev uses an uncommitted path override (see above).
-- Public Packagist remains an option only if/when the repos go public.
+  Authentication for private staging goes in `auth.json` (gitignored),
+  Composer config, or CI secrets, never committed.
+- **At public launch:** the starter's `dev-main` dependency becomes `^0.1`, the
+  private Forge `repositories` entry is removed, and GitHub Actions push/PR
+  triggers are restored because Composer can resolve the package from Packagist.
+  Local side-by-side package dev remains an uncommitted path override (see above).
 
 ## Open decisions
 

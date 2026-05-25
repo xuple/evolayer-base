@@ -19,7 +19,7 @@ class InboxController extends Controller
 {
     public function show(Request $request): Response
     {
-        return Inertia::render('evodevops/admin/inbox/index', [
+        return Inertia::render('evolayer/admin/inbox/index', [
             'submissions' => FormSubmission::with('tags')->latest()->paginate(20),
             'selected' => null,
             'attachments' => [],
@@ -41,7 +41,7 @@ class InboxController extends Controller
     {
         $submission->load('user', 'tags', 'media');
 
-        return Inertia::render('evodevops/admin/inbox/index', [
+        return Inertia::render('evolayer/admin/inbox/index', [
             'submissions' => FormSubmission::with('tags')->latest()->paginate(20),
             'selected' => $submission,
             'attachments' => $submission->getMedia('attachments')->map(fn ($media) => [

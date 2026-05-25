@@ -19,7 +19,7 @@ class SubmissionsController extends Controller
             ->latest()
             ->paginate(25);
 
-        return Inertia::render('evodevops/admin/submissions/index', [
+        return Inertia::render('evolayer/admin/submissions/index', [
             'submissions' => $submissions,
         ]);
     }
@@ -28,7 +28,7 @@ class SubmissionsController extends Controller
     {
         $submission->load('user', 'tags', 'media');
 
-        return Inertia::render('evodevops/admin/submissions/show', [
+        return Inertia::render('evolayer/admin/submissions/show', [
             'submission' => $submission,
             'attachments' => $submission->getMedia('attachments')->map(fn ($media) => [
                 'id' => $media->id,

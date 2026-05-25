@@ -10,7 +10,7 @@ The package is designed to feel like a clean additive layer for a developer tran
 
 ```bash
 # 1. Install the package
-composer require evodevops/base
+composer require xuple/evolayer-base
 
 # 2. Publish the always-on bits: config, core frontend, migrations, npm deps
 php artisan vendor:publish --tag=evolayer-base-config
@@ -65,8 +65,8 @@ These ship as part of the package's frontend stubs and don't need a flag. They'r
 | --- | --- |
 | **Command palette (⌘K)** | `cmdk`-powered fast nav and feature discovery; published to `resources/js/components/command-bar.tsx` and `command-palette-dialog.tsx`. Requires `cmdk` (installed at step 3 above). |
 | **Block primitives** | `streaming-card`, `ai-triage`, `ai-text-field`, `voice-input`, `semantic-search` — composable React blocks under `resources/js/blocks/`. |
-| **Type contracts** | `EvoSharedProps`, `EvoExamples`, `EvoFeatures`, `EvoNavItem` published to `resources/js/types/evodevops.d.ts`. |
-| **`useEvoProps()` hook** | Type-safe access to the `evo` shared prop. Pages call this instead of destructuring `usePage().props` directly. |
+| **Type contracts** | `EvoLayerSharedProps`, `EvoLayerExamples`, `EvoLayerFeatures`, `EvoLayerNavItem` published to `resources/js/types/evolayer.d.ts`. |
+| **`useEvoLayerProps()` hook** | Type-safe access to the `evo` shared prop. Pages call this instead of destructuring `usePage().props` directly. |
 
 ---
 
@@ -144,7 +144,7 @@ public function share(Request $request): array
 }
 ```
 
-The package's pages access `evo` via the published `useEvoProps()` hook — it throws a helpful error if the shared prop is missing, so misconfigurations surface immediately.
+The package's pages access `evo` via the published `useEvoLayerProps()` hook — it throws a helpful error if the shared prop is missing, so misconfigurations surface immediately.
 
 ### 3. Map EvoDevOps public pages onto `PublicLayout` (if you enable `MARKETING_PAGES`)
 

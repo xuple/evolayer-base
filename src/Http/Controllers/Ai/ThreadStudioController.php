@@ -20,7 +20,7 @@ class ThreadStudioController extends Controller
 {
     public function show(ThreadStudioAiConfig $aiConfig): Response
     {
-        return Inertia::render('evodevops/ai/thread-studio', [
+        return Inertia::render('evolayer/ai/thread-studio', [
             'aiProvider' => $aiConfig->metadata(),
             'aiProviders' => $aiConfig->providerOptions(),
             // Cross-feature URL passed at runtime so the page never compile-time

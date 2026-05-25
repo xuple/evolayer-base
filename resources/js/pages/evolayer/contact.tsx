@@ -1,9 +1,9 @@
 import { Form } from '@inertiajs/react';
-import { useEvoProps } from '@/hooks/use-evo-props';
+import { useEvoLayerProps } from '@/hooks/use-evolayer-props';
 import { MailIcon, MessageSquareIcon, PaperclipIcon, PhoneIcon } from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import type { ReactElement } from 'react';
-import ContactController from '@/actions/EvoDevOps/Base/Http/Controllers/ContactController';
+import ContactController from '@/actions/Xuple/EvoLayer/Base/Http/Controllers/ContactController';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,7 +33,7 @@ const infoItems = [
 ] as const;
 
 export default function Contact() {
-    const evo = useEvoProps();
+    const evo = useEvoLayerProps();
     const [subjectPlaceholder, setSubjectPlaceholder] = useState<string | null>(
         null,
     );

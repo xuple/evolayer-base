@@ -18,7 +18,7 @@ class PrdController extends Controller
 {
     public function show(): Response
     {
-        return Inertia::render('evodevops/admin/prd', [
+        return Inertia::render('evolayer/admin/prd', [
             // Cross-feature URLs passed at runtime so the page never compile-time
             // depends on the ai_text_field / voice_input features' Wayfinder
             // controllers. Null when those features aren't enabled.

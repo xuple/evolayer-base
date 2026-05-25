@@ -3,7 +3,7 @@ import { CheckCircleIcon } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { Button } from '@/components/ui/button';
 import PublicLayout from '@/layouts/public-layout';
-import evodevops from '@/routes/evodevops';
+import evolayer from '@/routes/evolayer';
 
 export default function ContactThankYou() {
     return (

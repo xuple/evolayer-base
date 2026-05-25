@@ -7,7 +7,7 @@ import { docsBaseUrl } from '@/config/docs';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { edit as profileEdit } from '@/routes/profile';
-import evodevops from '@/routes/evodevops';
+import evolayer from '@/routes/evolayer';
 
 type StarterLink = {
     title: string;

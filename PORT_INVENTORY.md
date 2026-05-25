@@ -2,7 +2,7 @@
 
 Produced 2026-05-21 against:
 
-- **Source**: `/opt/projects/evolayer-base-l14-i3` @ `feature/ai-provider-platform` (commit `95d2a33`)
+- **Source**: `/opt/projects/evodevops-base-l14-i3` @ `feature/ai-provider-platform` (commit `95d2a33`)
 - **Target**: `laravel/react-starter-kit` `main` @ `37ec697` ("Fix Teams email verification redirect")
 
 Methodology: walked both file trees (excluding `vendor/`, `node_modules/`, `storage/`, `bootstrap/cache/`, `bootstrap/ssr/` build output, `public/build/`, `public/fonts/`, generated Wayfinder helpers, `.git/`, `.claude/skills/`, `.agents/skills/`). 516 source files in this repo vs 174 in upstream.
@@ -108,7 +108,7 @@ The sidebar/header/branding layer the EvoDevOps shell sits on:
 
 ## Proposed package boundary
 
-### `evodevops/base` (composer package)
+### `xuple/evolayer-base` (composer package)
 
 **Includes:**
 - All of `app/Ai/`, `app/Jobs/`, `app/Models/` (5 EvoDevOps models), `app/Support/` (15 classes), `app/Http/Controllers/{Admin,Ai}/`, `app/Http/Controllers/ContactController`, `app/Http/Requests/{Admin,Ai}/`, `app/Http/Requests/ContactFormRequest`, `app/Http/Middleware/EnsureExampleEnabled`, `app/Console/Commands/{Ai/,OntologyCompileCommand,AiProbeCommand,AiSmokeTest,PromoteUserCommand}`
@@ -123,7 +123,7 @@ The sidebar/header/branding layer the EvoDevOps shell sits on:
 - All of `resources/js/blocks/`
 - The four EvoDevOps pages (`pages/ai/thread-studio.tsx`, `pages/admin/{inbox,prd,submissions}/`, `pages/contact*`, `pages/home`, `pages/about`)
 - Hooks (`use-thread-studio-stream`, `use-typewriter`, `use-example-nav-items`)
-- Types (`global.d.ts` EvoExamples additions, `ontology.ts` generated)
+- Types (`global.d.ts` EvoLayerExamples additions, `ontology.ts` generated)
 - Command palette config + provider
 - `public-layout.tsx`
 - `config/{navigation,docs,command-palette}.ts`
@@ -140,7 +140,7 @@ The sidebar/header/branding layer the EvoDevOps shell sits on:
 
 ## Open scoping questions
 
-1. **Frontend distribution**: Publishable assets (copy into host `resources/js/`) vs an npm sibling package (`@evodevops/base-blocks`)? Publishable is the Laravel idiom, npm is cleaner long-term. **Recommendation**: publishable for v1, npm later if it gains traction.
+1. **Frontend distribution**: Publishable assets (copy into host `resources/js/`) vs an npm sibling package (`@xuple/evolayer-base-blocks`)? Publishable is the Laravel idiom, npm is cleaner long-term. **Recommendation**: publishable for v1, npm later if it gains traction.
 2. **Starter version pinning**: Does the package require a minimum `laravel/framework` / `inertia` / `react` version, or does it gracefully detect what's there? **Recommendation**: pin to the same minor as upstream main (`laravel/framework: ^13.7`, `react: ^19.2`).
 3. **Auth assumption**: The package assumes Fortify-based auth with an `admin` role. Document this explicitly; do not try to abstract over multiple auth packages.
 4. **Database driver matrix**: SQLite + PostgreSQL (with pgvector). Should the package require PostgreSQL features as optional? **Recommendation**: lane detection inside the package (already exists in `ontology.yaml`), graceful degradation on SQLite.
@@ -149,10 +149,10 @@ The sidebar/header/branding layer the EvoDevOps shell sits on:
 
 ## Recommended phasing
 
-1. **Phase B — Skeleton** (1 session): Create `composer.json`, service provider, namespace, publishable asset tags, empty migration directory, basic test setup. Verify `composer require evodevops/base` works on a fresh starter.
+1. **Phase B — Skeleton** (1 session): Create `composer.json`, service provider, namespace, publishable asset tags, empty migration directory, basic test setup. Verify `composer require xuple/evolayer-base` works on a fresh starter.
 2. **Phase C1 — Move backend** (2-3 sessions): Migrate `app/Ai/`, `app/Support/`, `app/Models/`, `app/Jobs/`, controllers, requests, middleware with namespace rewrites (`App\` → `Xuple\EvoLayer\Base\`). Move migrations, seeders, factories, config. Run tests.
 3. **Phase C2 — Move frontend** (1-2 sessions): Move blocks, pages, hooks, providers as publishable assets. Document the host-side wiring (app.tsx layout resolver, sidebar nav entries, HandleInertiaRequests additions).
 4. **Phase C3 — Ontology + patches** (1 session): Move `ontology.yaml`, the compiler, and the composer-patches setup. Decide whether the ontology compiler runs from host or package.
-5. **Phase D — Integration test** (1 session): `laravel new evo-test --react` on the latest starter. `composer require evodevops/base` via path repository. `php artisan evolayer:install`. Verify a full thread-studio compose works end to end.
+5. **Phase D — Integration test** (1 session): `laravel new evo-test --react` on the latest starter. `composer require xuple/evolayer-base` via path repository. `php artisan evolayer:install`. Verify a full thread-studio compose works end to end.
 
 Estimated total: **6-9 focused sessions** — possibly more depending on what falls out of the modified-starter list.

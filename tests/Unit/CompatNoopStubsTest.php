@@ -54,9 +54,10 @@ test('the Compat bootstrap loads conditionally based on installed packages', fun
     $contents = file_get_contents(__DIR__.'/../../src/Compat/bootstrap.php');
 
     expect($contents)
-        ->toContain('interface_exists(\\Spatie\\MediaLibrary\\HasMedia::class)')
-        ->toContain('trait_exists(\\Spatie\\MediaLibrary\\InteractsWithMedia::class)')
-        ->toContain('trait_exists(\\Spatie\\Tags\\HasTags::class)')
+        ->toContain('interface_exists(HasMedia::class)')
+        ->toContain('trait_exists(InteractsWithMedia::class)')
+        ->toContain('trait_exists(HasTags::class)')
+        ->toContain('Spatie\\MediaLibrary\\HasMedia')
         ->toContain('_HasMedia.spatie.php')
         ->toContain('_HasMedia.noop.php');
 });

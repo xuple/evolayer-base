@@ -2,7 +2,7 @@ import { Head } from '@inertiajs/react';
 import { AlertCircle, LoaderCircle, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import type { ReactElement } from 'react';
-import ThreadStudioController from '@/actions/EvoDevOps/Base/Http/Controllers/Ai/ThreadStudioController';
+import ThreadStudioController from '@/actions/Xuple/EvoLayer/Base/Http/Controllers/Ai/ThreadStudioController';
 import { StreamingCard } from '@/blocks/streaming-card';
 import { VoiceInput } from '@/blocks/voice-input';
 import Heading from '@/components/heading';

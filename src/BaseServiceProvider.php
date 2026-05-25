@@ -108,10 +108,10 @@ class BaseServiceProvider extends ServiceProvider
             __DIR__.'/../resources/js/providers' => resource_path('js/providers'),
             __DIR__.'/../resources/js/layouts' => resource_path('js/layouts'),
             __DIR__.'/../resources/js/config' => resource_path('js/config'),
-            __DIR__.'/../resources/js/hooks/use-evo-props.ts' => resource_path('js/hooks/use-evo-props.ts'),
+            __DIR__.'/../resources/js/hooks/use-evolayer-props.ts' => resource_path('js/hooks/use-evolayer-props.ts'),
             __DIR__.'/../resources/js/hooks/use-example-nav-items.ts' => resource_path('js/hooks/use-example-nav-items.ts'),
             __DIR__.'/../resources/js/types/layout.ts' => resource_path('js/types/layout.ts'),
-            __DIR__.'/../resources/js/types/evodevops.d.ts' => resource_path('js/types/evodevops.d.ts'),
+            __DIR__.'/../resources/js/types/evolayer.d.ts' => resource_path('js/types/evolayer.d.ts'),
             __DIR__.'/../resources/js/lib/appearance.ts' => resource_path('js/lib/appearance.ts'),
             __DIR__.'/../resources/js/lib/platform.ts' => resource_path('js/lib/platform.ts'),
         ];
@@ -123,24 +123,24 @@ class BaseServiceProvider extends ServiceProvider
         // controller whose route isn't registered (which would break tsc).
         $featureFrontend = [
             'thread-studio' => [
-                __DIR__.'/../resources/js/pages/evodevops/ai/thread-studio.tsx' => resource_path('js/pages/evodevops/ai/thread-studio.tsx'),
+                __DIR__.'/../resources/js/pages/evolayer/ai/thread-studio.tsx' => resource_path('js/pages/evolayer/ai/thread-studio.tsx'),
                 __DIR__.'/../resources/js/hooks/use-thread-studio-stream.ts' => resource_path('js/hooks/use-thread-studio-stream.ts'),
                 __DIR__.'/../resources/js/hooks/use-typewriter.ts' => resource_path('js/hooks/use-typewriter.ts'),
             ],
             'prd-studio' => [
-                __DIR__.'/../resources/js/pages/evodevops/admin/prd.tsx' => resource_path('js/pages/evodevops/admin/prd.tsx'),
+                __DIR__.'/../resources/js/pages/evolayer/admin/prd.tsx' => resource_path('js/pages/evolayer/admin/prd.tsx'),
             ],
             'admin-inbox' => [
-                __DIR__.'/../resources/js/pages/evodevops/admin/inbox' => resource_path('js/pages/evodevops/admin/inbox'),
-                __DIR__.'/../resources/js/pages/evodevops/admin/submissions' => resource_path('js/pages/evodevops/admin/submissions'),
+                __DIR__.'/../resources/js/pages/evolayer/admin/inbox' => resource_path('js/pages/evolayer/admin/inbox'),
+                __DIR__.'/../resources/js/pages/evolayer/admin/submissions' => resource_path('js/pages/evolayer/admin/submissions'),
             ],
             'contact-ai' => [
-                __DIR__.'/../resources/js/pages/evodevops/contact.tsx' => resource_path('js/pages/evodevops/contact.tsx'),
-                __DIR__.'/../resources/js/pages/evodevops/contact-thank-you.tsx' => resource_path('js/pages/evodevops/contact-thank-you.tsx'),
+                __DIR__.'/../resources/js/pages/evolayer/contact.tsx' => resource_path('js/pages/evolayer/contact.tsx'),
+                __DIR__.'/../resources/js/pages/evolayer/contact-thank-you.tsx' => resource_path('js/pages/evolayer/contact-thank-you.tsx'),
             ],
             'marketing-pages' => [
-                __DIR__.'/../resources/js/pages/evodevops/about.tsx' => resource_path('js/pages/evodevops/about.tsx'),
-                __DIR__.'/../resources/js/pages/evodevops/home.tsx' => resource_path('js/pages/evodevops/home.tsx'),
+                __DIR__.'/../resources/js/pages/evolayer/about.tsx' => resource_path('js/pages/evolayer/about.tsx'),
+                __DIR__.'/../resources/js/pages/evolayer/home.tsx' => resource_path('js/pages/evolayer/home.tsx'),
             ],
         ];
 

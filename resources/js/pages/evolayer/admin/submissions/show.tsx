@@ -1,10 +1,10 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeftIcon, PaperclipIcon } from 'lucide-react';
-import SubmissionsController from '@/actions/EvoDevOps/Base/Http/Controllers/Admin/SubmissionsController';
+import SubmissionsController from '@/actions/Xuple/EvoLayer/Base/Http/Controllers/Admin/SubmissionsController';
 import { AiTriage } from '@/blocks/ai-triage';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import evodevops from '@/routes/evodevops';
+import evolayer from '@/routes/evolayer';
 import type { AppLayoutPageProps } from '@/types/layout';
 
 type ActivityEntry = {

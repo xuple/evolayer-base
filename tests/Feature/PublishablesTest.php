@@ -8,7 +8,7 @@ beforeEach(function () {
         config_path('evolayer.php'),
         config_path('evolayer-ai.php'),
         resource_path('js/blocks'),
-        resource_path('js/pages/evodevops'),
+        resource_path('js/pages/evolayer'),
         resource_path('js/hooks'),
         resource_path('js/components'),
         resource_path('js/providers'),
@@ -47,12 +47,12 @@ test('publishing evolayer-base-frontend-core drops blocks, components, shared ho
         ->and(File::exists(resource_path('js/providers/command-palette-provider.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/layouts/public-layout.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/config/navigation.ts')))->toBeTrue()
-        ->and(File::exists(resource_path('js/hooks/use-evo-props.ts')))->toBeTrue()
+        ->and(File::exists(resource_path('js/hooks/use-evolayer-props.ts')))->toBeTrue()
         ->and(File::exists(resource_path('js/hooks/use-example-nav-items.ts')))->toBeTrue()
-        ->and(File::exists(resource_path('js/types/evodevops.d.ts')))->toBeTrue()
+        ->and(File::exists(resource_path('js/types/evolayer.d.ts')))->toBeTrue()
         ->and(File::exists(resource_path('js/lib/appearance.ts')))->toBeTrue()
         // Core must NOT carry feature pages or feature-specific hooks:
-        ->and(File::exists(resource_path('js/pages/evodevops/ai/thread-studio.tsx')))->toBeFalse()
+        ->and(File::exists(resource_path('js/pages/evolayer/ai/thread-studio.tsx')))->toBeFalse()
         ->and(File::exists(resource_path('js/hooks/use-thread-studio-stream.ts')))->toBeFalse();
 });
 
@@ -62,21 +62,21 @@ test('per-feature frontend tags publish only their own page sets', function () {
         '--force' => true,
     ])->assertSuccessful();
 
-    expect(File::exists(resource_path('js/pages/evodevops/ai/thread-studio.tsx')))->toBeTrue()
+    expect(File::exists(resource_path('js/pages/evolayer/ai/thread-studio.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/hooks/use-thread-studio-stream.ts')))->toBeTrue()
         ->and(File::exists(resource_path('js/hooks/use-typewriter.ts')))->toBeTrue()
         // thread-studio tag must NOT pull in inbox/prd/contact pages:
-        ->and(File::exists(resource_path('js/pages/evodevops/admin/prd.tsx')))->toBeFalse()
-        ->and(File::exists(resource_path('js/pages/evodevops/contact.tsx')))->toBeFalse();
+        ->and(File::exists(resource_path('js/pages/evolayer/admin/prd.tsx')))->toBeFalse()
+        ->and(File::exists(resource_path('js/pages/evolayer/contact.tsx')))->toBeFalse();
 
     $this->artisan('vendor:publish', [
         '--tag' => 'evolayer-base-frontend-admin-inbox',
         '--force' => true,
     ])->assertSuccessful();
 
-    expect(File::exists(resource_path('js/pages/evodevops/admin/inbox/index.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/pages/evodevops/admin/submissions/index.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/pages/evodevops/admin/submissions/show.tsx')))->toBeTrue();
+    expect(File::exists(resource_path('js/pages/evolayer/admin/inbox/index.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/pages/evolayer/admin/submissions/index.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/pages/evolayer/admin/submissions/show.tsx')))->toBeTrue();
 });
 
 test('the evolayer-base-frontend meta tag publishes core plus every feature page set', function () {
@@ -86,13 +86,13 @@ test('the evolayer-base-frontend meta tag publishes core plus every feature page
     ])->assertSuccessful();
 
     expect(File::exists(resource_path('js/blocks/ai-text-field/index.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/pages/evodevops/ai/thread-studio.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/pages/evodevops/admin/inbox/index.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/pages/evodevops/admin/prd.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/pages/evodevops/contact.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/pages/evodevops/home.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/pages/evolayer/ai/thread-studio.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/pages/evolayer/admin/inbox/index.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/pages/evolayer/admin/prd.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/pages/evolayer/contact.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/pages/evolayer/home.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/hooks/use-thread-studio-stream.ts')))->toBeTrue()
-        ->and(File::exists(resource_path('js/types/evodevops.d.ts')))->toBeTrue();
+        ->and(File::exists(resource_path('js/types/evolayer.d.ts')))->toBeTrue();
 });
 
 test('publishing evolayer-base-npm drops the package-json additions snippet', function () {
@@ -110,9 +110,9 @@ test('published page stubs reference the package controller namespace, not App',
         '--force' => true,
     ])->assertSuccessful();
 
-    $thread = File::get(resource_path('js/pages/evodevops/ai/thread-studio.tsx'));
+    $thread = File::get(resource_path('js/pages/evolayer/ai/thread-studio.tsx'));
 
-    expect($thread)->toContain('@/actions/EvoDevOps/Base/Http/Controllers/Ai/ThreadStudioController')
+    expect($thread)->toContain('@/actions/Xuple/EvoLayer/Base/Http/Controllers/Ai/ThreadStudioController')
         ->and($thread)->not->toContain('@/actions/App/Http/Controllers/');
 });
 

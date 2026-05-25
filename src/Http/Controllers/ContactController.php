@@ -19,7 +19,7 @@ class ContactController extends Controller
 {
     public function show(): Response
     {
-        return Inertia::render('evodevops/contact');
+        return Inertia::render('evolayer/contact');
     }
 
     public function store(ContactFormRequest $request, ChangeEventRecorder $events): RedirectResponse
@@ -72,7 +72,7 @@ class ContactController extends Controller
 
     public function thankYou(): Response
     {
-        return Inertia::render('evodevops/contact-thank-you');
+        return Inertia::render('evolayer/contact-thank-you');
     }
 
     public function subjectHints(Request $request): JsonResponse

@@ -44,23 +44,31 @@ database, `migrate --seed`, `wayfinder:generate`, and `evolayer:ontology:compile
 The frontend is committed, so `npm install && npm run build` works without a
 publish step. See the starter's `README.md`.
 
-## Local path repository during development
+## How the starter resolves the package (pre-tag)
 
-Until the package is published, the starter resolves it from a sibling directory:
+The starter consumes the package from the **forge `vcs` repository** at `dev-main`
+— so `create-project` works from any machine with forge access:
 
 ```jsonc
 // xuple/evolayer-base-starter composer.json
-"require":      { "xuple/evolayer-base": "*@dev" },
-"repositories": [{ "type": "path", "url": "../evodevops-base-pkg",
-                   "options": { "symlink": false } }]
+"require":      { "xuple/evolayer-base": "dev-main" },
+"repositories": [{ "type": "vcs",
+                   "url": "ssh://git@forge.dev.home.arpa:222/xupleteam/evolayer-base.git" }]
 ```
 
-- The physical directory stays `evodevops-base-pkg` (filesystem path ≠ package
+- The starter does **not** commit `composer.lock` (a committed lock pinned the
+  package to a machine-local source and broke `create-project` elsewhere). Each
+  created project resolves fresh and commits its own lock.
+- `dev-main` is a bound constraint → `composer validate --strict` is clean. It
+  becomes `^0.1` once the package is tagged.
+- The physical directory stays `evodevops-base-pkg` (filesystem ≠ package
   identity); only the Composer **name** is `xuple/evolayer-base`.
-- `*@dev` resolves the path repo's `dev-main`. `composer validate --strict` warns
-  about this unbound constraint — that is **expected during development** and is
-  replaced with a real constraint (e.g. `^0.1`) once the package is tagged and
-  reachable from a Composer repository.
+- For local side-by-side package dev, add an *uncommitted* path override in the
+  starter: `composer config repositories.local path ../evodevops-base-pkg`.
+
+Verified: `composer create-project xuple/evolayer-base-starter` resolves the
+package over the forge `vcs`, applies the patch, migrates/seeds, generates
+Wayfinder + ontology, and `npm run build` succeeds — all from a clean checkout.
 
 ## Distribution & remotes (direction set)
 
@@ -82,8 +90,9 @@ Until the package is published, the starter resolves it from a sibling directory
   private remote goes in `auth.json` (gitignored) or `composer config`, never
   committed. `composer create-project` of a private starter likewise needs git
   access. A private Satis/Composer repo is an alternative if VCS auth gets noisy.
-- The current `path` repo (`../evodevops-base-pkg`, `*@dev`) is **development
-  only** — swapped for the `vcs` repo + `^0.1` at publish time.
+- The starter already wires the forge `vcs` repo at `dev-main` (no committed
+  lock); at publish time `dev-main` simply becomes `^0.1`. Local side-by-side
+  package dev uses an uncommitted path override (see above).
 - Public Packagist remains an option only if/when the repos go public.
 
 ## Open decisions

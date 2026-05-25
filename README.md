@@ -1,8 +1,23 @@
 # EvoLayer Base
 
-EvoLayer Base is a composer package that adds an AI / ontology / blocks layer to a Laravel 13 React Inertia starter. It is the foundation for the EvoLayer family of sibling packages — **Commerce** (product sales), **SaaS** (subscriptions / tenants), **RLS** (PostgreSQL row-level security, composable). EvoDevOps is the teaching/site brand for the family.
+EvoLayer Base is a Composer package that adds an AI / ontology / React-block layer to a Laravel 13 + React + Inertia application. It is the foundation for the EvoLayer family of sibling packages — **Commerce** (product sales), **SaaS** (subscriptions / tenants), and **RLS** (PostgreSQL row-level security). EvoDevOps is the teaching/site brand for the family.
 
 The package is designed to feel like a clean additive layer for a developer transitioning from `laravel/react-starter-kit`. **Installing it adds zero routes, zero middleware, zero shared props by default.** Each feature is opt-in via a flag.
+
+## Start here
+
+| If you are... | Use |
+| --- | --- |
+| Starting a new application | [`xuple/evolayer-base-starter`](https://github.com/xuple/evolayer-base-starter) — the Laravel React starter with EvoLayer already wired in |
+| Adding EvoLayer to an existing Laravel React app | This package (`xuple/evolayer-base`) |
+| Building a sibling package | The contracts in [Invariant contracts](#invariant-contracts-for-variant-authors) |
+
+## What you get
+
+- Structured AI streaming built on `laravel/ai`, with ThreadStudio, PRD generation, text assist, and provider smoke-test commands.
+- A small ontology compiler and TypeScript contract generator for describing app entities, routes, and blocks.
+- React blocks and example pages that publish into the host app without taking over the starter.
+- Admin and lineage primitives (`AdminGate`, `ChangeEvent`, AI invocation ledger) intended for reuse by Commerce, SaaS, and RLS packages.
 
 ---
 
@@ -29,6 +44,14 @@ php artisan migrate
 ```
 
 After step 4 the package is installed but **does nothing yet** — `php artisan route:list` shows no new routes. You opt in to features via env flags + per-feature publish tags (see below).
+
+For a one-shot install into an existing app, use:
+
+```bash
+php artisan evolayer:install
+```
+
+Then run `php artisan evolayer:doctor` to verify the package bindings, ontology cache, and AI patch state.
 
 ### Enabling a feature (two coupled steps)
 
@@ -113,6 +136,8 @@ Set `EVOLAYER_BASE_FEATURE_CONTACT_ATTACHMENTS=true` in `.env`. The package's `F
 ## Host integration steps
 
 A handful of host-owned files need small edits the package cannot publish over. They are small and stable.
+
+If you start from [`xuple/evolayer-base-starter`](https://github.com/xuple/evolayer-base-starter), these edits are already applied.
 
 ### 1. Apply the `laravel/ai` patch
 
@@ -279,13 +304,22 @@ $this->app->singleton(\Xuple\EvoLayer\Base\Contracts\AdminGate::class, MyAdminGa
 
 ---
 
-## Tests
+## Development
 
 ```bash
 composer install
 composer test
+composer validate --strict
 ```
 
 `composer install` automatically applies the `laravel/ai` patch to the package's own vendor copy so the test suite has structured streaming available.
 
 The package's own test suite runs against `require-dev` Spatie packages (medialibrary, tags) — meaningful "no Spatie installed" CI verification needs a separate composer install without dev deps. The compat layer's no-op stubs are independently asserted in `tests/Unit/CompatNoopStubsTest.php`.
+
+## Support and project status
+
+EvoLayer is pre-1.0. Breaking changes are expected until the first tagged release. See [CHANGELOG.md](CHANGELOG.md) for changes, [RELEASE.md](RELEASE.md) for the current release process, and [DECISIONS.md](DECISIONS.md) for durable architecture decisions.
+
+## License
+
+MIT. See [LICENSE](LICENSE).

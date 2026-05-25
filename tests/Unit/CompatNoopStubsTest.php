@@ -4,7 +4,7 @@
  * Verifies the no-op variants of the Compat layer behave correctly.
  *
  * The compat bootstrap aliases either the Spatie-backed or no-op variant
- * into the EvoDevOps\Base\Compat namespace based on what's installed. In
+ * into the Xuple\EvoLayer\Base\Compat namespace based on what's installed. In
  * the package's own test environment Spatie IS installed (as require-dev),
  * so the Compat namespace is the Spatie-backed variant. To test the no-op
  * variant we load its file directly into a sandbox namespace and assert
@@ -60,7 +60,7 @@ test('the Compat bootstrap loads conditionally based on installed packages', fun
 test('the Compat namespace exposes HasMedia, InteractsWithMedia, and HasTags symbols', function () {
     // In this test environment Spatie IS installed, so the symbols resolve
     // via the Spatie-backed variants. Either way the symbols must exist.
-    expect(interface_exists(\EvoDevOps\Base\Compat\HasMedia::class))->toBeTrue()
-        ->and(trait_exists(\EvoDevOps\Base\Compat\InteractsWithMedia::class))->toBeTrue()
-        ->and(trait_exists(\EvoDevOps\Base\Compat\HasTags::class))->toBeTrue();
+    expect(interface_exists(\Xuple\EvoLayer\Base\Compat\HasMedia::class))->toBeTrue()
+        ->and(trait_exists(\Xuple\EvoLayer\Base\Compat\InteractsWithMedia::class))->toBeTrue()
+        ->and(trait_exists(\Xuple\EvoLayer\Base\Compat\HasTags::class))->toBeTrue();
 });

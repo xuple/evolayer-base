@@ -1,9 +1,9 @@
 <?php
 
-namespace EvoDevOps\Base\Console\Commands\Ai;
+namespace Xuple\EvoLayer\Base\Console\Commands\Ai;
 
-use EvoDevOps\Base\Ai\Agents\ThreadStudioAgent;
-use EvoDevOps\Base\Support\PartialJsonExtractor;
+use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
+use Xuple\EvoLayer\Base\Support\PartialJsonExtractor;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;

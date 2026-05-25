@@ -1,11 +1,11 @@
 <?php
 
-namespace EvoDevOps\Base\Http\Controllers\Ai;
+namespace Xuple\EvoLayer\Base\Http\Controllers\Ai;
 
-use EvoDevOps\Base\Http\Controllers\Controller;
-use EvoDevOps\Base\Http\Requests\Ai\ComposeThreadStudioRequest;
-use EvoDevOps\Base\Support\ThreadStudioAiConfig;
-use EvoDevOps\Base\Support\ThreadStudioComposer;
+use Xuple\EvoLayer\Base\Http\Controllers\Controller;
+use Xuple\EvoLayer\Base\Http\Requests\Ai\ComposeThreadStudioRequest;
+use Xuple\EvoLayer\Base\Support\ThreadStudioAiConfig;
+use Xuple\EvoLayer\Base\Support\ThreadStudioComposer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;

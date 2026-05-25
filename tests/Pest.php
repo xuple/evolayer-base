@@ -1,8 +1,8 @@
 <?php
 
-use EvoDevOps\Base\Contracts\AdminGate;
-use EvoDevOps\Base\Tests\Fixtures\TestUser;
-use EvoDevOps\Base\Tests\TestCase;
+use Xuple\EvoLayer\Base\Contracts\AdminGate;
+use Xuple\EvoLayer\Base\Tests\Fixtures\TestUser;
+use Xuple\EvoLayer\Base\Tests\TestCase;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 

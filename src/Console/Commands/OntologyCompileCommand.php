@@ -1,9 +1,9 @@
 <?php
 
-namespace EvoDevOps\Base\Console\Commands;
+namespace Xuple\EvoLayer\Base\Console\Commands;
 
-use EvoDevOps\Base\Support\OntologyCompiler;
-use EvoDevOps\Base\Support\OntologyRegistry;
+use Xuple\EvoLayer\Base\Support\OntologyCompiler;
+use Xuple\EvoLayer\Base\Support\OntologyRegistry;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;

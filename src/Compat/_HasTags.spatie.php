@@ -1,6 +1,6 @@
 <?php
 
-namespace EvoDevOps\Base\Compat;
+namespace Xuple\EvoLayer\Base\Compat;
 
 trait HasTags
 {

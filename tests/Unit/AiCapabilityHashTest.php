@@ -1,6 +1,6 @@
 <?php
 
-use EvoDevOps\Base\Support\AiCapabilityHash;
+use Xuple\EvoLayer\Base\Support\AiCapabilityHash;
 
 test('canonicalise correctly deep sorts nested arrays', function () {
     $array1 = [

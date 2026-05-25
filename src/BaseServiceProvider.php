@@ -1,22 +1,22 @@
 <?php
 
-namespace EvoDevOps\Base;
+namespace Xuple\EvoLayer\Base;
 
-use EvoDevOps\Base\Auth\DefaultUserResolver;
-use EvoDevOps\Base\Auth\SpatieAdminGate;
-use EvoDevOps\Base\Console\Commands\Ai\AiStreamSmokeTest;
-use EvoDevOps\Base\Console\Commands\AiProbeCommand;
-use EvoDevOps\Base\Console\Commands\AiSmokeTest;
-use EvoDevOps\Base\Console\Commands\DoctorCommand;
-use EvoDevOps\Base\Console\Commands\FontsSelfHost;
-use EvoDevOps\Base\Console\Commands\InstallCommand;
-use EvoDevOps\Base\Console\Commands\OntologyCompileCommand;
-use EvoDevOps\Base\Console\Commands\PromoteUserCommand;
-use EvoDevOps\Base\Contracts\AdminGate;
-use EvoDevOps\Base\Contracts\UserResolver;
-use EvoDevOps\Base\Support\OntologyRegistry;
-use EvoDevOps\Base\Http\Middleware\EnsureExampleEnabled;
-use EvoDevOps\Base\Http\Middleware\RequireAdmin;
+use Xuple\EvoLayer\Base\Auth\DefaultUserResolver;
+use Xuple\EvoLayer\Base\Auth\SpatieAdminGate;
+use Xuple\EvoLayer\Base\Console\Commands\Ai\AiStreamSmokeTest;
+use Xuple\EvoLayer\Base\Console\Commands\AiProbeCommand;
+use Xuple\EvoLayer\Base\Console\Commands\AiSmokeTest;
+use Xuple\EvoLayer\Base\Console\Commands\DoctorCommand;
+use Xuple\EvoLayer\Base\Console\Commands\FontsSelfHost;
+use Xuple\EvoLayer\Base\Console\Commands\InstallCommand;
+use Xuple\EvoLayer\Base\Console\Commands\OntologyCompileCommand;
+use Xuple\EvoLayer\Base\Console\Commands\PromoteUserCommand;
+use Xuple\EvoLayer\Base\Contracts\AdminGate;
+use Xuple\EvoLayer\Base\Contracts\UserResolver;
+use Xuple\EvoLayer\Base\Support\OntologyRegistry;
+use Xuple\EvoLayer\Base\Http\Middleware\EnsureExampleEnabled;
+use Xuple\EvoLayer\Base\Http\Middleware\RequireAdmin;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;

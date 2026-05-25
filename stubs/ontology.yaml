@@ -42,7 +42,7 @@ entities:
         - admin
 
   form_submission:
-    model: EvoDevOps\Base\Models\FormSubmission
+    model: Xuple\EvoLayer\Base\Models\FormSubmission
     table: form_submissions
     key: id
     key_type: ulid
@@ -131,7 +131,7 @@ entities:
           - form_submission.archived
 
   ai_invocation:
-    model: EvoDevOps\Base\Models\AiInvocation
+    model: Xuple\EvoLayer\Base\Models\AiInvocation
     table: ai_invocations
     key: id
     key_type: ulid
@@ -167,7 +167,7 @@ entities:
         target: ai_invocation_attempt
 
   ai_invocation_attempt:
-    model: EvoDevOps\Base\Models\AiInvocationAttempt
+    model: Xuple\EvoLayer\Base\Models\AiInvocationAttempt
     table: ai_invocation_attempts
     key: id
     key_type: ulid
@@ -193,7 +193,7 @@ entities:
         target: ai_invocation
 
   ai_capability:
-    model: EvoDevOps\Base\Models\AiCapability
+    model: Xuple\EvoLayer\Base\Models\AiCapability
     table: ai_capabilities
     key: id
     key_type: ulid
@@ -258,7 +258,7 @@ entities:
       properties: json?
 
   change_event:
-    model: EvoDevOps\Base\Models\ChangeEvent
+    model: Xuple\EvoLayer\Base\Models\ChangeEvent
     table: change_events
     key: id
     key_type: ulid
@@ -335,7 +335,7 @@ events:
 
 jobs:
   triage_form_submission:
-    class: EvoDevOps\Base\Jobs\TriageFormSubmissionJob
+    class: Xuple\EvoLayer\Base\Jobs\TriageFormSubmissionJob
     retries: 3
     backoff:
       - 30
@@ -349,15 +349,15 @@ jobs:
 
 agents:
   thread_studio:
-    class: EvoDevOps\Base\Ai\Agents\ThreadStudioAgent
+    class: Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent
     capability_ledger: ai_capability
   prd:
-    class: EvoDevOps\Base\Ai\Agents\PrdAgent
+    class: Xuple\EvoLayer\Base\Ai\Agents\PrdAgent
     endpoint: evodevops.base.admin.prd.generate
     output: structured_prd
     requires_role: admin
   text_assist:
-    class: EvoDevOps\Base\Ai\Agents\TextAssistAgent
+    class: Xuple\EvoLayer\Base\Ai\Agents\TextAssistAgent
     endpoint: evodevops.base.ai.text-assist.stream
     output: plain_text_stream
     requires_role: admin

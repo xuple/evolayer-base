@@ -1,8 +1,8 @@
 <?php
 
-namespace EvoDevOps\Base\Support;
+namespace Xuple\EvoLayer\Base\Support;
 
-use EvoDevOps\Base\Models\ChangeEvent;
+use Xuple\EvoLayer\Base\Models\ChangeEvent;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 

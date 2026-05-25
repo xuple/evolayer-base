@@ -5,7 +5,7 @@
 | EvoDevOps Base configuration
 |--------------------------------------------------------------------------
 |
-| Merged into the top-level `evo` config key by EvoDevOps\Base\BaseServiceProvider.
+| Merged into the top-level `evo` config key by Xuple\EvoLayer\Base\BaseServiceProvider.
 | All Base settings live under `evo.base.*` so sibling packages (Commerce,
 | SaaS, RLS, etc.) can claim `evo.commerce.*`, `evo.saas.*`, etc. without
 | collision.

@@ -1,12 +1,12 @@
 <?php
 
-use EvoDevOps\Base\Http\Requests\Admin\GeneratePrdRequest;
-use EvoDevOps\Base\Http\Requests\Admin\SearchInboxRequest;
-use EvoDevOps\Base\Http\Requests\Ai\ComposeThreadStudioRequest;
-use EvoDevOps\Base\Http\Requests\Ai\StreamTextAssistRequest;
-use EvoDevOps\Base\Http\Requests\Ai\TranscribeAudioRequest;
-use EvoDevOps\Base\Models\FormSubmission;
-use EvoDevOps\Base\Tests\Fixtures\TestUser;
+use Xuple\EvoLayer\Base\Http\Requests\Admin\GeneratePrdRequest;
+use Xuple\EvoLayer\Base\Http\Requests\Admin\SearchInboxRequest;
+use Xuple\EvoLayer\Base\Http\Requests\Ai\ComposeThreadStudioRequest;
+use Xuple\EvoLayer\Base\Http\Requests\Ai\StreamTextAssistRequest;
+use Xuple\EvoLayer\Base\Http\Requests\Ai\TranscribeAudioRequest;
+use Xuple\EvoLayer\Base\Models\FormSubmission;
+use Xuple\EvoLayer\Base\Tests\Fixtures\TestUser;
 
 /*
 | Regression coverage for the admin authorization contract (ADR-004 / ADR-009).

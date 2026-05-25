@@ -1,6 +1,6 @@
 <?php
 
-use EvoDevOps\Base\Ai\Agents\ThreadStudioAgent;
+use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
 
 test('the thread studio prompt preserves safety guardrails', function () {
     $instructions = ThreadStudioAgent::make()->instructions();

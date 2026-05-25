@@ -1,8 +1,8 @@
 <?php
 
-namespace EvoDevOps\Base\Support;
+namespace Xuple\EvoLayer\Base\Support;
 
-use EvoDevOps\Base\Models\AiInvocation;
+use Xuple\EvoLayer\Base\Models\AiInvocation;
 use Illuminate\Support\Facades\Auth;
 use Throwable;
 

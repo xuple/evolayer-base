@@ -1,8 +1,8 @@
 <?php
 
-namespace EvoDevOps\Base\Auth;
+namespace Xuple\EvoLayer\Base\Auth;
 
-use EvoDevOps\Base\Contracts\AdminGate;
+use Xuple\EvoLayer\Base\Contracts\AdminGate;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Gate;
 

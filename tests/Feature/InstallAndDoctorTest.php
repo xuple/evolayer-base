@@ -1,6 +1,6 @@
 <?php
 
-use EvoDevOps\Base\Contracts\AdminGate;
+use Xuple\EvoLayer\Base\Contracts\AdminGate;
 use Illuminate\Support\Facades\File;
 
 test('evodevops:install publishes assets, migrates, and compiles the ontology', function () {

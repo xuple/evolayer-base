@@ -1,6 +1,6 @@
 <?php
 
-namespace EvoDevOps\Base\Support;
+namespace Xuple\EvoLayer\Base\Support;
 
 use Illuminate\JsonSchema\JsonSchemaTypeFactory;
 use Laravel\Ai\Contracts\HasStructuredOutput;

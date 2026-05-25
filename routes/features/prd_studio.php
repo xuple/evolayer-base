@@ -1,6 +1,6 @@
 <?php
 
-use EvoDevOps\Base\Http\Controllers\Admin\PrdController;
+use Xuple\EvoLayer\Base\Http\Controllers\Admin\PrdController;
 use Illuminate\Support\Facades\Route;
 
 /*

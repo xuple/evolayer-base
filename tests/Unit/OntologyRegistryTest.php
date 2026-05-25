@@ -1,7 +1,7 @@
 <?php
 
-use EvoDevOps\Base\Support\OntologyCompiler;
-use EvoDevOps\Base\Support\OntologyRegistry;
+use Xuple\EvoLayer\Base\Support\OntologyCompiler;
+use Xuple\EvoLayer\Base\Support\OntologyRegistry;
 
 beforeEach(function () {
     $this->registry = new OntologyRegistry;

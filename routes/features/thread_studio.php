@@ -1,6 +1,6 @@
 <?php
 
-use EvoDevOps\Base\Http\Controllers\Ai\ThreadStudioController;
+use Xuple\EvoLayer\Base\Http\Controllers\Ai\ThreadStudioController;
 use Illuminate\Support\Facades\Route;
 
 /*

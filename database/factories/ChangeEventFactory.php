@@ -1,8 +1,8 @@
 <?php
 
-namespace EvoDevOps\Base\Database\Factories;
+namespace Xuple\EvoLayer\Base\Database\Factories;
 
-use EvoDevOps\Base\Models\ChangeEvent;
+use Xuple\EvoLayer\Base\Models\ChangeEvent;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

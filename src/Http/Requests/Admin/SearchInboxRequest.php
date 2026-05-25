@@ -1,8 +1,8 @@
 <?php
 
-namespace EvoDevOps\Base\Http\Requests\Admin;
+namespace Xuple\EvoLayer\Base\Http\Requests\Admin;
 
-use EvoDevOps\Base\Contracts\AdminGate;
+use Xuple\EvoLayer\Base\Contracts\AdminGate;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 

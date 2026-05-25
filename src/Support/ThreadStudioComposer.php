@@ -1,8 +1,8 @@
 <?php
 
-namespace EvoDevOps\Base\Support;
+namespace Xuple\EvoLayer\Base\Support;
 
-use EvoDevOps\Base\Ai\Agents\ThreadStudioAgent;
+use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
 use Generator;
 use Illuminate\JsonSchema\JsonSchemaTypeFactory;
 use InvalidArgumentException;

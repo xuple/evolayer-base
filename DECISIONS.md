@@ -17,7 +17,7 @@ Status legend: **Accepted** · **Superseded** · **Open**
 - **Greenfield** fresh starter + manual port — partially absorbed.
 - **Hybrid: extract a composer package first** — chosen.
 
-**Decision.** Build `evodevops/base` as a composer library in a sibling directory (`/opt/projects/evodevops-base-pkg`), namespace `EvoDevOps\Base\`.
+**Decision.** Build `evodevops/base` as a composer library in a sibling directory (`/opt/projects/evodevops-base-pkg`), namespace `Xuple\EvoLayer\Base\`.
 
 **Side effects.**
 - Created the package repo + `PORT_INVENTORY.md` discovery doc.
@@ -59,7 +59,7 @@ Status legend: **Accepted** · **Superseded** · **Open**
 
 **Status:** Accepted
 
-**Decision.** Define `EvoDevOps\Base\Contracts\AdminGate`; ship `SpatieAdminGate` as the default. No hardcoded `hasRole('admin')` in package logic; routes use an `evo.admin` middleware that delegates to the bound gate.
+**Decision.** Define `Xuple\EvoLayer\Base\Contracts\AdminGate`; ship `SpatieAdminGate` as the default. No hardcoded `hasRole('admin')` in package logic; routes use an `evo.admin` middleware that delegates to the bound gate.
 
 **Side effects.**
 - Enabled "clients without Spatie permission" — which forced ADR-005 and the compat polyfill.
@@ -76,7 +76,7 @@ Status legend: **Accepted** · **Superseded** · **Open**
 **Decision.** `require` only `spatie/laravel-permission` + `spatie/laravel-activitylog`. `spatie/laravel-medialibrary` + `spatie/laravel-tags` move to `suggest` (+ `require-dev` for the package's own tests).
 
 **Side effects.**
-- Built the `EvoDevOps\Base\Compat\{HasMedia, InteractsWithMedia, HasTags}` polyfill (the complexity earlier deferred) — aliased to Spatie when present, no-op otherwise.
+- Built the `Xuple\EvoLayer\Base\Compat\{HasMedia, InteractsWithMedia, HasTags}` polyfill (the complexity earlier deferred) — aliased to Spatie when present, no-op otherwise.
 - No-op traits throw on mutation methods so a missed feature-flag gate surfaces loudly.
 - `FormSubmission` imports from `Compat\*` so it autoloads identically in both modes.
 

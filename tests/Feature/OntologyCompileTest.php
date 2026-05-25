@@ -1,7 +1,7 @@
 <?php
 
-use EvoDevOps\Base\Support\OntologyCompiler;
-use EvoDevOps\Base\Support\OntologyRegistry;
+use Xuple\EvoLayer\Base\Support\OntologyCompiler;
+use Xuple\EvoLayer\Base\Support\OntologyRegistry;
 use Illuminate\Support\Facades\File;
 
 test('Base registers its ontology under the evo.base namespace', function () {

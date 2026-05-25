@@ -1,6 +1,6 @@
 <?php
 
-namespace EvoDevOps\Base\Ai\Agents;
+namespace Xuple\EvoLayer\Base\Ai\Agents;
 
 use Laravel\Ai\Attributes\MaxTokens;
 use Laravel\Ai\Attributes\Temperature;

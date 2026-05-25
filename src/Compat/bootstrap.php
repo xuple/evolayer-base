@@ -5,7 +5,7 @@
  *
  * Loaded via composer.json `autoload.files` so it runs before any model is
  * autoloaded. Conditionally defines polyfill interfaces / traits under the
- * EvoDevOps\Base\Compat namespace based on whether Spatie packages are
+ * Xuple\EvoLayer\Base\Compat namespace based on whether Spatie packages are
  * installed.
  *
  * The package's own models (e.g. FormSubmission) import from the Compat
@@ -13,7 +13,7 @@
  * attachTag, etc.) is gated at call sites by EVO_BASE_FEATURE_* flags.
  */
 
-namespace EvoDevOps\Base\Compat;
+namespace Xuple\EvoLayer\Base\Compat;
 
 if (! interface_exists(__NAMESPACE__.'\\HasMedia')) {
     if (interface_exists(\Spatie\MediaLibrary\HasMedia::class)) {

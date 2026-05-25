@@ -1,10 +1,10 @@
 <?php
 
-namespace EvoDevOps\Base\Jobs;
+namespace Xuple\EvoLayer\Base\Jobs;
 
-use EvoDevOps\Base\Ai\Agents\TriageAgent;
-use EvoDevOps\Base\Models\FormSubmission;
-use EvoDevOps\Base\Support\ChangeEventRecorder;
+use Xuple\EvoLayer\Base\Ai\Agents\TriageAgent;
+use Xuple\EvoLayer\Base\Models\FormSubmission;
+use Xuple\EvoLayer\Base\Support\ChangeEventRecorder;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\DB;

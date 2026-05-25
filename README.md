@@ -106,7 +106,7 @@ php artisan vendor:publish --provider="Spatie\\MediaLibrary\\MediaLibraryService
 php artisan migrate
 ```
 
-Set `EVO_BASE_FEATURE_CONTACT_ATTACHMENTS=true` in `.env`. The package's `FormSubmission` model loads either way — a compat polyfill in `EvoDevOps\Base\Compat\*` shadows the Spatie interfaces and traits when the Spatie packages aren't installed.
+Set `EVO_BASE_FEATURE_CONTACT_ATTACHMENTS=true` in `.env`. The package's `FormSubmission` model loads either way — a compat polyfill in `Xuple\EvoLayer\Base\Compat\*` shadows the Spatie interfaces and traits when the Spatie packages aren't installed.
 
 ---
 
@@ -220,7 +220,7 @@ Reserved for future Base / variant use (documented now to prevent collision): `t
 ### Toast / flash contract
 
 ```php
-use EvoDevOps\Base\Support\Toast;
+use Xuple\EvoLayer\Base\Support\Toast;
 Toast::success('Done.');
 // or directly:
 Inertia::flash('toast', ['type' => 'success', 'message' => 'Done.']);
@@ -252,7 +252,7 @@ The package's `OntologyCompiler` supports merging multiple ontology files keyed 
 
 ```php
 // In a variant package's ServiceProvider::boot()
-app(\EvoDevOps\Base\Support\OntologyRegistry::class)
+app(\Xuple\EvoLayer\Base\Support\OntologyRegistry::class)
     ->register('evo.commerce', __DIR__.'/../ontology.yaml');
 ```
 
@@ -265,7 +265,7 @@ The compiler reads the registry plus the host's own `ontology.yaml` and produces
 The package ships an `AdminGate` contract with a default `SpatieAdminGate` implementation (`hasRole('admin')`). To plug in a different authorisation model, bind your own implementation in `AppServiceProvider`:
 
 ```php
-$this->app->singleton(\EvoDevOps\Base\Contracts\AdminGate::class, MyAdminGate::class);
+$this->app->singleton(\Xuple\EvoLayer\Base\Contracts\AdminGate::class, MyAdminGate::class);
 ```
 
 ---

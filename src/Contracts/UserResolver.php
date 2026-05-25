@@ -1,6 +1,6 @@
 <?php
 
-namespace EvoDevOps\Base\Contracts;
+namespace Xuple\EvoLayer\Base\Contracts;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 

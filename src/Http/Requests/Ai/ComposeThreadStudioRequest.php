@@ -1,9 +1,9 @@
 <?php
 
-namespace EvoDevOps\Base\Http\Requests\Ai;
+namespace Xuple\EvoLayer\Base\Http\Requests\Ai;
 
-use EvoDevOps\Base\Contracts\AdminGate;
-use EvoDevOps\Base\Support\ThreadStudioAiConfig;
+use Xuple\EvoLayer\Base\Contracts\AdminGate;
+use Xuple\EvoLayer\Base\Support\ThreadStudioAiConfig;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

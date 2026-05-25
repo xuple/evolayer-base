@@ -1,9 +1,9 @@
 <?php
 
-namespace EvoDevOps\Base\Http\Middleware;
+namespace Xuple\EvoLayer\Base\Http\Middleware;
 
 use Closure;
-use EvoDevOps\Base\Contracts\AdminGate;
+use Xuple\EvoLayer\Base\Contracts\AdminGate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 

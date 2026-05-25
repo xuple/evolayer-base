@@ -1,6 +1,6 @@
 <?php
 
-namespace EvoDevOps\Base\Support;
+namespace Xuple\EvoLayer\Base\Support;
 
 /**
  * Streaming extractor for top-level JSON objects whose values are all strings.

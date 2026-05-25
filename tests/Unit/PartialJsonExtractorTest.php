@@ -1,6 +1,6 @@
 <?php
 
-use EvoDevOps\Base\Support\PartialJsonExtractor;
+use Xuple\EvoLayer\Base\Support\PartialJsonExtractor;
 
 test('it extracts a single field from a complete chunk', function () {
     $extractor = new PartialJsonExtractor;

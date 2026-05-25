@@ -1,9 +1,9 @@
 <?php
 
-namespace EvoDevOps\Base\Http\Controllers\Ai;
+namespace Xuple\EvoLayer\Base\Http\Controllers\Ai;
 
-use EvoDevOps\Base\Http\Controllers\Controller;
-use EvoDevOps\Base\Http\Requests\Ai\TranscribeAudioRequest;
+use Xuple\EvoLayer\Base\Http\Controllers\Controller;
+use Xuple\EvoLayer\Base\Http\Requests\Ai\TranscribeAudioRequest;
 use Illuminate\Http\JsonResponse;
 use Laravel\Ai\Transcription;
 use Throwable;

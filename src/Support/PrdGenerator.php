@@ -1,8 +1,8 @@
 <?php
 
-namespace EvoDevOps\Base\Support;
+namespace Xuple\EvoLayer\Base\Support;
 
-use EvoDevOps\Base\Ai\Agents\PrdAgent;
+use Xuple\EvoLayer\Base\Ai\Agents\PrdAgent;
 
 /**
  * @evo-example prd_studio

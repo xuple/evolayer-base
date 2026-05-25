@@ -1,6 +1,6 @@
 <?php
 
-use EvoDevOps\Base\Support\ThreadStudioResult;
+use Xuple\EvoLayer\Base\Support\ThreadStudioResult;
 
 test('it creates a thread studio result from structured provider data', function () {
     $result = ThreadStudioResult::fromArray([

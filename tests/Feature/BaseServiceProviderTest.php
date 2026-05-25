@@ -1,10 +1,10 @@
 <?php
 
-use EvoDevOps\Base\Auth\DefaultUserResolver;
-use EvoDevOps\Base\Auth\SpatieAdminGate;
-use EvoDevOps\Base\Console\Commands\DoctorCommand;
-use EvoDevOps\Base\Contracts\AdminGate;
-use EvoDevOps\Base\Contracts\UserResolver;
+use Xuple\EvoLayer\Base\Auth\DefaultUserResolver;
+use Xuple\EvoLayer\Base\Auth\SpatieAdminGate;
+use Xuple\EvoLayer\Base\Console\Commands\DoctorCommand;
+use Xuple\EvoLayer\Base\Contracts\AdminGate;
+use Xuple\EvoLayer\Base\Contracts\UserResolver;
 
 test('the AdminGate contract resolves to the Spatie-backed default implementation', function () {
     expect(app(AdminGate::class))->toBeInstanceOf(SpatieAdminGate::class);
@@ -32,7 +32,7 @@ test('AdminGate returns false for a null user', function () {
 });
 
 test('AdminGate::isAdmin delegates to can(evodevops.admin)', function () {
-    $user = \EvoDevOps\Base\Tests\Fixtures\TestUser::factory()->create();
+    $user = \Xuple\EvoLayer\Base\Tests\Fixtures\TestUser::factory()->create();
 
     // The default SpatieAdminGate denies because TestUser does not have HasRoles trait.
     expect(app(AdminGate::class)->can($user, 'evodevops.admin'))->toBeFalse()
@@ -43,7 +43,7 @@ test('AdminGate::can routes arbitrary abilities through Laravel Gate', function 
     \Illuminate\Support\Facades\Gate::define('test-ability', fn () => true);
     \Illuminate\Support\Facades\Gate::define('denied-ability', fn () => false);
 
-    $user = \EvoDevOps\Base\Tests\Fixtures\TestUser::factory()->create();
+    $user = \Xuple\EvoLayer\Base\Tests\Fixtures\TestUser::factory()->create();
 
     expect(app(AdminGate::class)->can($user, 'test-ability'))->toBeTrue()
         ->and(app(AdminGate::class)->can($user, 'denied-ability'))->toBeFalse();

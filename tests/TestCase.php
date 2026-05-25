@@ -1,9 +1,9 @@
 <?php
 
-namespace EvoDevOps\Base\Tests;
+namespace Xuple\EvoLayer\Base\Tests;
 
-use EvoDevOps\Base\BaseServiceProvider;
-use EvoDevOps\Base\Tests\Fixtures\TestUser;
+use Xuple\EvoLayer\Base\BaseServiceProvider;
+use Xuple\EvoLayer\Base\Tests\Fixtures\TestUser;
 use Illuminate\Foundation\Application;
 use Orchestra\Testbench\TestCase as Orchestra;
 

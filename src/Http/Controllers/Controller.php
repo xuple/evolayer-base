@@ -1,6 +1,6 @@
 <?php
 
-namespace EvoDevOps\Base\Http\Controllers;
+namespace Xuple\EvoLayer\Base\Http\Controllers;
 
 abstract class Controller
 {

@@ -1,8 +1,8 @@
 <?php
 
-use EvoDevOps\Base\Ai\Agents\ThreadStudioAgent;
-use EvoDevOps\Base\Models\AiInvocation;
-use EvoDevOps\Base\Tests\Fixtures\TestUser;
+use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
+use Xuple\EvoLayer\Base\Models\AiInvocation;
+use Xuple\EvoLayer\Base\Tests\Fixtures\TestUser;
 use Laravel\Ai\Prompts\AgentPrompt;
 
 $fakeResult = [

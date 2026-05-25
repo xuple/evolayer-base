@@ -1,8 +1,8 @@
 <?php
 
-namespace EvoDevOps\Base\Tests\Fixtures;
+namespace Xuple\EvoLayer\Base\Tests\Fixtures;
 
-use EvoDevOps\Base\Tests\Fixtures\TestUserFactory;
+use Xuple\EvoLayer\Base\Tests\Fixtures\TestUserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -13,7 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * table. Spatie's HasRoles is deliberately omitted; tests fake the
  * AdminGate binding instead.
  *
- * @method static \EvoDevOps\Base\Tests\Fixtures\TestUserFactory factory()
+ * @method static \Xuple\EvoLayer\Base\Tests\Fixtures\TestUserFactory factory()
  */
 class TestUser extends Authenticatable
 {

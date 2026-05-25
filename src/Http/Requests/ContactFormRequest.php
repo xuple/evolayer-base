@@ -1,6 +1,6 @@
 <?php
 
-namespace EvoDevOps\Base\Http\Requests;
+namespace Xuple\EvoLayer\Base\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;

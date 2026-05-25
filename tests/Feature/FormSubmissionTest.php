@@ -1,7 +1,7 @@
 <?php
 
-use EvoDevOps\Base\Models\FormSubmission;
-use EvoDevOps\Base\Tests\Fixtures\TestUser;
+use Xuple\EvoLayer\Base\Models\FormSubmission;
+use Xuple\EvoLayer\Base\Tests\Fixtures\TestUser;
 
 test('form submission can be created with factory defaults', function () {
     $submission = FormSubmission::factory()->create();

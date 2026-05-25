@@ -1,11 +1,11 @@
 <?php
 
-namespace EvoDevOps\Base\Database\Seeders;
+namespace Xuple\EvoLayer\Base\Database\Seeders;
 
-use EvoDevOps\Base\Ai\Agents\ThreadStudioAgent;
-use EvoDevOps\Base\Models\AiCapability;
-use EvoDevOps\Base\Support\AiCapabilityHash;
-use EvoDevOps\Base\Support\ThreadStudioAiConfig;
+use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
+use Xuple\EvoLayer\Base\Models\AiCapability;
+use Xuple\EvoLayer\Base\Support\AiCapabilityHash;
+use Xuple\EvoLayer\Base\Support\ThreadStudioAiConfig;
 use Illuminate\Database\Seeder;
 
 /**

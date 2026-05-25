@@ -1,9 +1,9 @@
 <?php
 
-use EvoDevOps\Base\Models\AiInvocation;
-use EvoDevOps\Base\Models\AiInvocationAttempt;
-use EvoDevOps\Base\Models\FormSubmission;
-use EvoDevOps\Base\Tests\Fixtures\TestUser;
+use Xuple\EvoLayer\Base\Models\AiInvocation;
+use Xuple\EvoLayer\Base\Models\AiInvocationAttempt;
+use Xuple\EvoLayer\Base\Models\FormSubmission;
+use Xuple\EvoLayer\Base\Tests\Fixtures\TestUser;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;

@@ -150,7 +150,7 @@ The sidebar/header/branding layer the EvoDevOps shell sits on:
 ## Recommended phasing
 
 1. **Phase B — Skeleton** (1 session): Create `composer.json`, service provider, namespace, publishable asset tags, empty migration directory, basic test setup. Verify `composer require evodevops/base` works on a fresh starter.
-2. **Phase C1 — Move backend** (2-3 sessions): Migrate `app/Ai/`, `app/Support/`, `app/Models/`, `app/Jobs/`, controllers, requests, middleware with namespace rewrites (`App\` → `EvoDevOps\Base\`). Move migrations, seeders, factories, config. Run tests.
+2. **Phase C1 — Move backend** (2-3 sessions): Migrate `app/Ai/`, `app/Support/`, `app/Models/`, `app/Jobs/`, controllers, requests, middleware with namespace rewrites (`App\` → `Xuple\EvoLayer\Base\`). Move migrations, seeders, factories, config. Run tests.
 3. **Phase C2 — Move frontend** (1-2 sessions): Move blocks, pages, hooks, providers as publishable assets. Document the host-side wiring (app.tsx layout resolver, sidebar nav entries, HandleInertiaRequests additions).
 4. **Phase C3 — Ontology + patches** (1 session): Move `ontology.yaml`, the compiler, and the composer-patches setup. Decide whether the ontology compiler runs from host or package.
 5. **Phase D — Integration test** (1 session): `laravel new evo-test --react` on the latest starter. `composer require evodevops/base` via path repository. `php artisan evodevops:install`. Verify a full thread-studio compose works end to end.

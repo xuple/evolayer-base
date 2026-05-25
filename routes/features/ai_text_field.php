@@ -1,6 +1,6 @@
 <?php
 
-use EvoDevOps\Base\Http\Controllers\Ai\AiTextAssistController;
+use Xuple\EvoLayer\Base\Http\Controllers\Ai\AiTextAssistController;
 use Illuminate\Support\Facades\Route;
 
 /*

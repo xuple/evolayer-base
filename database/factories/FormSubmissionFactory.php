@@ -1,8 +1,8 @@
 <?php
 
-namespace EvoDevOps\Base\Database\Factories;
+namespace Xuple\EvoLayer\Base\Database\Factories;
 
-use EvoDevOps\Base\Models\FormSubmission;
+use Xuple\EvoLayer\Base\Models\FormSubmission;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

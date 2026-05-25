@@ -1,8 +1,8 @@
 <?php
 
-namespace EvoDevOps\Base\Models;
+namespace Xuple\EvoLayer\Base\Models;
 
-use EvoDevOps\Base\Database\Factories\ChangeEventFactory;
+use Xuple\EvoLayer\Base\Database\Factories\ChangeEventFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

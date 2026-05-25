@@ -1,6 +1,6 @@
 <?php
 
-namespace EvoDevOps\Base\Compat;
+namespace Xuple\EvoLayer\Base\Compat;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\MorphMany;

@@ -1,8 +1,8 @@
 <?php
 
-namespace EvoDevOps\Base\Auth;
+namespace Xuple\EvoLayer\Base\Auth;
 
-use EvoDevOps\Base\Contracts\UserResolver;
+use Xuple\EvoLayer\Base\Contracts\UserResolver;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
 

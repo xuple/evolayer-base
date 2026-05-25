@@ -1,12 +1,12 @@
 <?php
 
-namespace EvoDevOps\Base\Http\Controllers\Admin;
+namespace Xuple\EvoLayer\Base\Http\Controllers\Admin;
 
-use EvoDevOps\Base\Contracts\AdminGate;
-use EvoDevOps\Base\Http\Controllers\Controller;
-use EvoDevOps\Base\Http\Requests\Admin\SearchInboxRequest;
-use EvoDevOps\Base\Models\FormSubmission;
-use EvoDevOps\Base\Support\FormSubmissionSearch;
+use Xuple\EvoLayer\Base\Contracts\AdminGate;
+use Xuple\EvoLayer\Base\Http\Controllers\Controller;
+use Xuple\EvoLayer\Base\Http\Requests\Admin\SearchInboxRequest;
+use Xuple\EvoLayer\Base\Models\FormSubmission;
+use Xuple\EvoLayer\Base\Support\FormSubmissionSearch;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

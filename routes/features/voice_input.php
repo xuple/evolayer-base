@@ -1,6 +1,6 @@
 <?php
 
-use EvoDevOps\Base\Http\Controllers\Ai\VoiceInputController;
+use Xuple\EvoLayer\Base\Http\Controllers\Ai\VoiceInputController;
 use Illuminate\Support\Facades\Route;
 
 /*

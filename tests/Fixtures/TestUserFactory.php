@@ -1,6 +1,6 @@
 <?php
 
-namespace EvoDevOps\Base\Tests\Fixtures;
+namespace Xuple\EvoLayer\Base\Tests\Fixtures;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;

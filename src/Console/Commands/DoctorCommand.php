@@ -1,10 +1,10 @@
 <?php
 
-namespace EvoDevOps\Base\Console\Commands;
+namespace Xuple\EvoLayer\Base\Console\Commands;
 
-use EvoDevOps\Base\Auth\SpatieAdminGate;
-use EvoDevOps\Base\Contracts\AdminGate;
-use EvoDevOps\Base\Contracts\UserResolver;
+use Xuple\EvoLayer\Base\Auth\SpatieAdminGate;
+use Xuple\EvoLayer\Base\Contracts\AdminGate;
+use Xuple\EvoLayer\Base\Contracts\UserResolver;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -55,7 +55,7 @@ class DoctorCommand extends Command
         return [
             $bound,
             'AdminGate is bound'.($isDefault ? ' (default SpatieAdminGate)' : ' (custom implementation)'),
-            $bound ? null : 'Bind EvoDevOps\Base\Contracts\AdminGate in a service provider.',
+            $bound ? null : 'Bind Xuple\EvoLayer\Base\Contracts\AdminGate in a service provider.',
         ];
     }
 
@@ -67,7 +67,7 @@ class DoctorCommand extends Command
         return [
             $bound,
             'UserResolver is bound',
-            $bound ? null : 'Bind EvoDevOps\Base\Contracts\UserResolver in a service provider.',
+            $bound ? null : 'Bind Xuple\EvoLayer\Base\Contracts\UserResolver in a service provider.',
         ];
     }
 

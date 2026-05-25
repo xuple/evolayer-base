@@ -1,10 +1,10 @@
 <?php
 
-namespace EvoDevOps\Base\Http\Controllers\Admin;
+namespace Xuple\EvoLayer\Base\Http\Controllers\Admin;
 
-use EvoDevOps\Base\Http\Controllers\Controller;
-use EvoDevOps\Base\Http\Requests\Admin\GeneratePrdRequest;
-use EvoDevOps\Base\Support\PrdGenerator;
+use Xuple\EvoLayer\Base\Http\Controllers\Controller;
+use Xuple\EvoLayer\Base\Http\Requests\Admin\GeneratePrdRequest;
+use Xuple\EvoLayer\Base\Support\PrdGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;

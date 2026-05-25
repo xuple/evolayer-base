@@ -1,11 +1,13 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "evodevops/base",
-    "description": "EvoDevOps Base — AI agents, ontology, and premium React blocks for the Laravel React Inertia starter.",
+    "name": "xuple/evolayer-base",
+    "description": "EvoLayer Base — AI agents, ontology, and premium React blocks for the Laravel React Inertia starter. Part of the EvoDevOps starter-kit family.",
     "type": "library",
     "license": "MIT",
     "keywords": [
+        "evolayer",
         "evodevops",
+        "xuple",
         "laravel",
         "inertia",
         "react",
@@ -28,15 +30,15 @@
         "spatie/laravel-tags": "^4.11"
     },
     "suggest": {
-        "spatie/laravel-medialibrary": "Required to enable contact attachment processing. Set EVO_BASE_FEATURE_CONTACT_ATTACHMENTS=true after install.",
+        "spatie/laravel-medialibrary": "Required to enable contact attachment processing. Set EVOLAYER_BASE_FEATURE_CONTACT_ATTACHMENTS=true after install.",
         "spatie/laravel-tags": "Required to enable AI auto-tagging on form submissions during triage.",
         "cweagans/composer-patches": "Required for structured streaming on laravel/ai <=0.6.5. See patches/README.md."
     },
     "autoload": {
         "psr-4": {
-            "EvoDevOps\\Base\\": "src/",
-            "EvoDevOps\\Base\\Database\\Factories\\": "database/factories/",
-            "EvoDevOps\\Base\\Database\\Seeders\\": "database/seeders/"
+            "Xuple\\EvoLayer\\Base\\": "src/",
+            "Xuple\\EvoLayer\\Base\\Database\\Factories\\": "database/factories/",
+            "Xuple\\EvoLayer\\Base\\Database\\Seeders\\": "database/seeders/"
         },
         "files": [
             "src/Compat/bootstrap.php"
@@ -44,14 +46,14 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "EvoDevOps\\Base\\Tests\\": "tests/",
-            "EvoDevOps\\Base\\Tests\\Fixtures\\": "tests/Fixtures/"
+            "Xuple\\EvoLayer\\Base\\Tests\\": "tests/",
+            "Xuple\\EvoLayer\\Base\\Tests\\Fixtures\\": "tests/Fixtures/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "EvoDevOps\\Base\\BaseServiceProvider"
+                "Xuple\\EvoLayer\\Base\\BaseServiceProvider"
             ]
         }
     },

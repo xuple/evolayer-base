@@ -1,6 +1,6 @@
 <?php
 
-namespace EvoDevOps\Base\Http\Middleware;
+namespace Xuple\EvoLayer\Base\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;

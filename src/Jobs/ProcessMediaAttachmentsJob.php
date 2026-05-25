@@ -1,9 +1,9 @@
 <?php
 
-namespace EvoDevOps\Base\Jobs;
+namespace Xuple\EvoLayer\Base\Jobs;
 
-use EvoDevOps\Base\Ai\Agents\MediaAnalysisAgent;
-use EvoDevOps\Base\Models\FormSubmission;
+use Xuple\EvoLayer\Base\Ai\Agents\MediaAnalysisAgent;
+use Xuple\EvoLayer\Base\Models\FormSubmission;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Laravel\Ai\Files\Document;

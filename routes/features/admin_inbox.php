@@ -1,7 +1,7 @@
 <?php
 
-use EvoDevOps\Base\Http\Controllers\Admin\InboxController;
-use EvoDevOps\Base\Http\Controllers\Admin\SubmissionsController;
+use Xuple\EvoLayer\Base\Http\Controllers\Admin\InboxController;
+use Xuple\EvoLayer\Base\Http\Controllers\Admin\SubmissionsController;
 use Illuminate\Support\Facades\Route;
 
 /*

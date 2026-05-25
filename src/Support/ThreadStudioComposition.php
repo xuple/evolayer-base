@@ -1,6 +1,6 @@
 <?php
 
-namespace EvoDevOps\Base\Support;
+namespace Xuple\EvoLayer\Base\Support;
 
 final readonly class ThreadStudioComposition
 {

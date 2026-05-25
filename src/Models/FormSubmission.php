@@ -1,11 +1,11 @@
 <?php
 
-namespace EvoDevOps\Base\Models;
+namespace Xuple\EvoLayer\Base\Models;
 
-use EvoDevOps\Base\Compat\HasMedia;
-use EvoDevOps\Base\Compat\HasTags;
-use EvoDevOps\Base\Compat\InteractsWithMedia;
-use EvoDevOps\Base\Database\Factories\FormSubmissionFactory;
+use Xuple\EvoLayer\Base\Compat\HasMedia;
+use Xuple\EvoLayer\Base\Compat\HasTags;
+use Xuple\EvoLayer\Base\Compat\InteractsWithMedia;
+use Xuple\EvoLayer\Base\Database\Factories\FormSubmissionFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

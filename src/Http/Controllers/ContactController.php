@@ -1,13 +1,13 @@
 <?php
 
-namespace EvoDevOps\Base\Http\Controllers;
+namespace Xuple\EvoLayer\Base\Http\Controllers;
 
-use EvoDevOps\Base\Ai\Agents\SubjectHintsAgent;
-use EvoDevOps\Base\Http\Requests\ContactFormRequest;
-use EvoDevOps\Base\Jobs\ProcessMediaAttachmentsJob;
-use EvoDevOps\Base\Jobs\TriageFormSubmissionJob;
-use EvoDevOps\Base\Models\FormSubmission;
-use EvoDevOps\Base\Support\ChangeEventRecorder;
+use Xuple\EvoLayer\Base\Ai\Agents\SubjectHintsAgent;
+use Xuple\EvoLayer\Base\Http\Requests\ContactFormRequest;
+use Xuple\EvoLayer\Base\Jobs\ProcessMediaAttachmentsJob;
+use Xuple\EvoLayer\Base\Jobs\TriageFormSubmissionJob;
+use Xuple\EvoLayer\Base\Models\FormSubmission;
+use Xuple\EvoLayer\Base\Support\ChangeEventRecorder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

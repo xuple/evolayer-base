@@ -1,6 +1,6 @@
 <?php
 
-use EvoDevOps\Base\Http\Controllers\ContactController;
+use Xuple\EvoLayer\Base\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 
 /*

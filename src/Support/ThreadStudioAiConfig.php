@@ -1,9 +1,9 @@
 <?php
 
-namespace EvoDevOps\Base\Support;
+namespace Xuple\EvoLayer\Base\Support;
 
-use EvoDevOps\Base\Ai\Agents\ThreadStudioAgent;
-use EvoDevOps\Base\Models\AiCapability;
+use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
+use Xuple\EvoLayer\Base\Models\AiCapability;
 use InvalidArgumentException;
 
 /**

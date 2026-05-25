@@ -2,6 +2,7 @@
 
 namespace EvoDevOps\Base\Http\Requests\Ai;
 
+use EvoDevOps\Base\Contracts\AdminGate;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -9,7 +10,10 @@ class TranscribeAudioRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->hasRole('admin') ?? false;
+        // Delegate to the pluggable AdminGate contract rather than hardcoding
+        // a Spatie role check (the route already enforces evo.admin; this keeps
+        // request-level authorization consistent for custom gate bindings).
+        return app(AdminGate::class)->isAdmin($this->user());
     }
 
     /**

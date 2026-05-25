@@ -2,6 +2,7 @@
 
 namespace EvoDevOps\Base\Http\Requests\Admin;
 
+use EvoDevOps\Base\Contracts\AdminGate;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -10,7 +11,10 @@ class GeneratePrdRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->hasRole('admin') ?? false;
+        // Delegate to the pluggable AdminGate contract rather than hardcoding
+        // a Spatie role check (the route already enforces evo.admin; this keeps
+        // request-level authorization consistent for custom gate bindings).
+        return app(AdminGate::class)->isAdmin($this->user());
     }
 
     /**

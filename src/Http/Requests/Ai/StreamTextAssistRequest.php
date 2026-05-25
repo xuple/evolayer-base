@@ -2,6 +2,7 @@
 
 namespace EvoDevOps\Base\Http\Requests\Ai;
 
+use EvoDevOps\Base\Contracts\AdminGate;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -12,7 +13,9 @@ class StreamTextAssistRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        // Route already enforces evo.admin; delegate here too so request-level
+        // authorization stays consistent with the AdminGate contract (ADR-004).
+        return app(AdminGate::class)->isAdmin($this->user());
     }
 
     /**

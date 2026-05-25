@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 | Provides the admin inbox UI plus the older submissions detail/index views.
 */
 
-Route::middleware(['auth', 'verified'])
+Route::middleware(['auth', 'verified', 'evo.admin'])
     ->prefix('admin')
     ->name('evodevops.base.admin.')
     ->group(function (): void {

@@ -55,7 +55,7 @@ test('authenticated contact submissions record the acting user via polymorphic a
 });
 
 test('mark read records before and after lineage snapshots with polymorphic actor', function () {
-    $user = TestUser::factory()->create();
+    $user = makeAdmin();
     $submission = FormSubmission::factory()->create(['status' => 'new']);
 
     $this->actingAs($user)
@@ -73,7 +73,7 @@ test('mark read records before and after lineage snapshots with polymorphic acto
 });
 
 test('archive records before and after lineage snapshots with polymorphic actor', function () {
-    $user = TestUser::factory()->create();
+    $user = makeAdmin();
     $submission = FormSubmission::factory()->create(['status' => 'read']);
 
     $this->actingAs($user)

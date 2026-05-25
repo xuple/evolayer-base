@@ -236,6 +236,30 @@ Status legend: **Accepted** · **Superseded** · **Open**
 
 ---
 
+## ADR-017 — Final public identity: `Xuple\EvoLayer\Base` (`xuple/evolayer-base`)
+
+**Status:** Accepted (supersedes the pre-release `EvoDevOps\Base` working identity and ADR-010's `evodevops.*` scheme)
+
+**Context.** The package was built under the working identity `EvoDevOps\Base` / `evodevops/base`. Before release the product family needed a name distinct from the **EvoDevOps** teaching/site brand and the **Xuple** legal/vendor entity. Two candidates were tried and rejected as **fatal collisions**: **EvoStack** (`github.com/evothings/evostack`) and **EvoKit** (the `evokit` npm package is a React-blocks UI library — a head-on collision in this product's exact domain). A vetted slate of 8+ names was collision-checked across GitHub / npm / Packagist / web; **EvoLayer** was the only candidate clean across all axes (and "layer" is semantically apt — the package is an additive AI/ontology/blocks layer).
+
+**Decision.** Final naming matrix:
+- Teaching/site brand: **EvoDevOps** (unchanged) — appears in docs/marketing only.
+- Vendor/legal: **Xuple** — Composer vendor, PHP namespace root, copyright.
+- Product family: **EvoLayer**.
+- Composer: `xuple/evolayer-base`, `xuple/evolayer-base-starter`. Namespace `Xuple\EvoLayer\Base`.
+- Runtime: commands `evolayer:*` (incl. `evolayer:ontology:compile`, `evolayer:ai:*`); routes `evolayer.base.*`; middleware/ability `evolayer.admin`; config `config/evolayer{,-ai}.php` merged under `evolayer` (AI keeps the SDK's `ai` key); env `EVOLAYER_BASE_*`; publish tags `evolayer-base-*`; ontology namespace `evolayer.base`.
+- Frontend: `pages/evolayer/*`, `types/evolayer.d.ts`, `useEvoLayerProps()`, shared prop `page.props.evolayer.base.*`, types `EvoLayer*`, Wayfinder imports `@/actions/Xuple/EvoLayer/Base` + `@/routes/evolayer`.
+- **DB tables prefixed `evolayer_base_*`** (user-approved widening of ADR-008/ADR-010 — table *names* now namespaced, not just migration filenames; Spatie/host tables untouched). Models carry explicit `$table`.
+
+**Retained old names (deliberate).** Bare **EvoDevOps** as the teaching brand in docs/marketing; the physical repo directories `/opt/projects/evodevops-base-{pkg,starter}` and the starter's `../evodevops-base-pkg` path-repo URL (filesystem ≠ package identity); the `laravel/ai` SDK's `ai` config key.
+
+**Side effects.**
+- Executed as a phased migration (backend namespace → runtime tokens + tables → frontend → docs → starter) gated by a **stale-name audit loop** with an expanded term list (the originally-proposed audit list missed `props.evo`, the `'evo'` shared-prop key, and the `Evo*` type names).
+- Two classes of bug surfaced only at the end and were caught by the loop + `tsc`: a bash single-quote-escaping failure left route-import *bindings* un-renamed (path fixed, binding not), and the over-broad `evo.base`→`evolayer.base` rule orphaned a local `const evo` variable. Both fixed.
+- 142 package tests green; starter `tsc` clean, build OK, 39 tests pass, `evolayer:doctor` all-green, 20 `evolayer.base.*` routes registered.
+
+---
+
 ## Cross-cutting lesson
 
 Almost every painful cascade — namespacing breaking imports, opt-in breaking tests, per-feature routes breaking type-checks, the ontology collision — was caught by **thin Phase D probes on a real fresh starter, not by the package's own test suite** (which was green throughout at 120–129 tests). The package tests prove the code is internally coherent; only an integration run proves it installs and composes. This is the strongest argument for completing a full Phase D and the Phase E starter template before considering Base "done."

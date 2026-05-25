@@ -115,3 +115,12 @@ gitignored). Push the self-hosted origin and GitHub mirror together:
 git push origin main
 git push github main
 ```
+
+## GitHub Actions during private pre-release
+
+GitHub workflows are intentionally manual (`workflow_dispatch`) while the repos
+remain private and the starter depends on the private package repository. This
+avoids noisy failure emails from GitHub-hosted runners that do not yet have the
+package-access secret. Re-enable push/PR triggers once `xuple/evolayer-base` is
+tagged and published on Packagist. A temporary GitHub package-access secret can
+be used before then, but Packagist is the intended public distribution path.

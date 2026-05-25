@@ -69,9 +69,11 @@ The starter consumes the package from the **forge `vcs` repository** at `dev-mai
 - For local side-by-side package dev, add an *uncommitted* path override in the
   starter: `composer config repositories.local path ../evodevops-base-pkg`.
 
-Verified: `composer create-project xuple/evolayer-base-starter` resolves the
-package over the forge `vcs`, applies the patch, migrates/seeds, generates
-Wayfinder + ontology, and `npm run build` succeeds — all from a clean checkout.
+Verified from `/tmp` on a clean install using the Forge VCS repository argument:
+`composer create-project` resolved `xuple/evolayer-base-starter` and
+`xuple/evolayer-base`, applied the `laravel/ai` patch, migrated/seeded the
+prefixed tables, generated Wayfinder + ontology, and then `npm install`,
+`npm run build`, `php artisan evolayer:doctor`, and `composer test` all passed.
 
 ## Distribution & remotes
 

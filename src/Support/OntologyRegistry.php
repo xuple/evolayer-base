@@ -6,7 +6,7 @@ use RuntimeException;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * Registry of ontology.yaml files contributed by EvoDevOps packages.
+ * Registry of ontology.yaml files contributed by EvoLayer packages.
  *
  * Each variant package (Commerce, SaaS, RLS, etc.) registers its own
  * ontology.yaml during its service provider's boot phase. The

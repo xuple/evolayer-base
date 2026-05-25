@@ -27,10 +27,9 @@ The package is designed to feel like a clean additive layer for a developer tran
 # 1. Install the package
 composer require xuple/evolayer-base
 
-# 2. Publish the always-on bits: config, core frontend, migrations, npm deps
+# 2. Publish the always-on bits: config, core frontend, patches, npm deps
 php artisan vendor:publish --tag=evolayer-base-config
 php artisan vendor:publish --tag=evolayer-base-frontend-core
-php artisan vendor:publish --tag=evolayer-base-migrations
 php artisan vendor:publish --tag=evolayer-base-patches
 php artisan vendor:publish --tag=evolayer-base-npm
 
@@ -42,6 +41,8 @@ npm install cmdk
 # 4. Run package migrations
 php artisan migrate
 ```
+
+EvoLayer migrations auto-load from the package via Laravel's package migration loader. Do **not** publish them by default; `vendor:publish --tag=evolayer-base-migrations` is only for hosts that intentionally want to own and customize the schema.
 
 After step 4 the package is installed but **does nothing yet** — `php artisan route:list` shows no new routes. You opt in to features via env flags + per-feature publish tags (see below).
 

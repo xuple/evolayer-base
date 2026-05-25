@@ -61,8 +61,8 @@ class InstallCommand extends Command
         $this->line('       <fg=gray>patch -p1 -d vendor/laravel/ai --forward < patches/laravel-ai-structured-streaming.patch</>');
         $this->line('  2. Install the command-palette npm dependency:');
         $this->line('       <fg=gray>npm install cmdk   # see package-json-additions.evolayer.json</>');
-        $this->line('  3. Share the evo prop in app/Http/Middleware/HandleInertiaRequests.php');
-        $this->line('       <fg=gray>\'evo\' => [\'base\' => [\'examples\' => config(\'evolayer.base.examples\'), \'features\' => config(\'evolayer.base.features\')]]</>');
+        $this->line('  3. Share the evolayer prop in app/Http/Middleware/HandleInertiaRequests.php');
+        $this->line('       <fg=gray>\'evolayer\' => [\'base\' => [\'examples\' => config(\'evolayer.base.examples\'), \'features\' => config(\'evolayer.base.features\')]]</>');
         $this->line('  4. Enable features one at a time — set the env flag AND publish its tag:');
         $this->line('       <fg=gray>EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO=true  +  vendor:publish --tag=evolayer-base-frontend-thread-studio</>');
         $this->line('');

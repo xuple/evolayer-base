@@ -1,9 +1,9 @@
 # Releasing EvoLayer Base
 
 This documents the intended release flow for the package (`xuple/evolayer-base`)
-and the starter (`xuple/evolayer-base-starter`). **Nothing here is automated or
-final** — remotes, distribution, and version numbers are still open decisions
-(see [Open decisions](#open-decisions)).
+and the starter (`xuple/evolayer-base-starter`). The repositories are pushed to
+the self-hosted forge and mirrored to GitHub. Version numbers, tags, and public
+distribution are still open decisions (see [Open decisions](#open-decisions)).
 
 ## Identity
 
@@ -18,11 +18,11 @@ final** — remotes, distribution, and version numbers are still open decisions
 First release target: **0.1.0** (pre-1.0, expect breaking changes). Not yet
 tagged. SemVer once 1.0 ships.
 
-## Package tag flow (when a remote + distribution are chosen)
+## Package tag flow (when a version is chosen)
 
 1. Ensure green: `composer test`, `composer validate --strict`.
 2. Update `CHANGELOG.md`: move `[Unreleased]` to `[0.1.0] - <date>`.
-3. Commit, then tag: `git tag v0.1.0 && git push --tags` *(deferred — no remote yet)*.
+3. Commit, then tag: `git tag v0.1.0 && git push origin v0.1.0 && git push github v0.1.0`.
 4. Publish: submit the repo to Packagist, or register it on a private Composer
    repository / Satis *(distribution undecided — see below)*.
 
@@ -72,10 +72,10 @@ Wayfinder + ontology, and `npm run build` succeeds — all from a clean checkout
 
 ## Distribution & remotes (direction set)
 
-- **Primary remote:** a self-hosted git server (the `origin`). URL not yet wired
-  into these repos — no remote is configured here, and none will be invented.
-- **GitHub:** likely a **private** repo to start, opening up to a few
-  collaborators. Secondary mirror, not the source of truth.
+- **Primary remote:** self-hosted forge (`origin`) at
+  `ssh://git@forge.dev.home.arpa:222/xupleteam/evolayer-base.git`.
+- **GitHub mirror:** `git@github.com:xuple/evolayer-base.git`. Treat it as a
+  mirror unless/until the release policy says otherwise.
 - **Stays private for now → not public Packagist.** While private, the starter
   consumes the package from a **`vcs` repository** pointing at the package's
   private git URL, not from Packagist:
@@ -99,25 +99,19 @@ Wayfinder + ontology, and `npm run build` succeeds — all from a clean checkout
 
 Still need a human decision before a real release:
 
-- **Exact remote URLs** — the self-hosted git origin and the GitHub repo names;
-  nothing is wired up until those are provided.
 - **Final version/tag** — `0.1.0` is provisional; no tag has been created.
 - **Live AI verification** — a full ThreadStudio round-trip and
   `evolayer:ai:stream-smoke gemini` / `anthropic` are **blocked until provider API
   keys are supplied** in the starter's `.env`. The Anthropic run will also close
   the deferred structured-streaming verification noted in `patches/README.md`.
 
-## Push recipe (run when the origin URL exists)
+## Push recipe
 
 Both repos are clean, on `main`, with no secrets tracked (`.env`/`auth.json`
-gitignored). To push to the self-hosted origin (and optionally a private GitHub
-mirror):
+gitignored). Push the self-hosted origin and GitHub mirror together:
 
 ```bash
 # in each repo (evodevops-base-pkg, evodevops-base-starter):
-git remote add origin <self-hosted-git-url>
-git push -u origin main
-# optional private mirror:
-git remote add github <private-github-url>
+git push origin main
 git push github main
 ```

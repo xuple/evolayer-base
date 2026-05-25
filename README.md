@@ -1,6 +1,6 @@
 # EvoLayer Base
 
-EvoLayer Base is a composer package that adds the EvoDevOps AI / ontology / blocks layer to a Laravel 13 React Inertia starter. It is the foundation for the EvoDevOps family of sibling packages — **Commerce** (product sales), **SaaS** (subscriptions / tenants), **RLS** (PostgreSQL row-level security, composable).
+EvoLayer Base is a composer package that adds an AI / ontology / blocks layer to a Laravel 13 React Inertia starter. It is the foundation for the EvoLayer family of sibling packages — **Commerce** (product sales), **SaaS** (subscriptions / tenants), **RLS** (PostgreSQL row-level security, composable). EvoDevOps is the teaching/site brand for the family.
 
 The package is designed to feel like a clean additive layer for a developer transitioning from `laravel/react-starter-kit`. **Installing it adds zero routes, zero middleware, zero shared props by default.** Each feature is opt-in via a flag.
 
@@ -66,7 +66,7 @@ These ship as part of the package's frontend stubs and don't need a flag. They'r
 | **Command palette (⌘K)** | `cmdk`-powered fast nav and feature discovery; published to `resources/js/components/command-bar.tsx` and `command-palette-dialog.tsx`. Requires `cmdk` (installed at step 3 above). |
 | **Block primitives** | `streaming-card`, `ai-triage`, `ai-text-field`, `voice-input`, `semantic-search` — composable React blocks under `resources/js/blocks/`. |
 | **Type contracts** | `EvoLayerSharedProps`, `EvoLayerExamples`, `EvoLayerFeatures`, `EvoLayerNavItem` published to `resources/js/types/evolayer.d.ts`. |
-| **`useEvoLayerProps()` hook** | Type-safe access to the `evo` shared prop. Pages call this instead of destructuring `usePage().props` directly. |
+| **`useEvoLayerProps()` hook** | Type-safe access to the `evolayer` shared prop. Pages call this instead of destructuring `usePage().props` directly. |
 
 ---
 
@@ -82,7 +82,7 @@ Every feature defaults to **off**. Set the corresponding env flag to `true` to e
 | `EVOLAYER_BASE_EXAMPLE_CONTACT_AI=true` | `/contact` + AI subject hints + AI triage on submission |
 | `EVOLAYER_BASE_EXAMPLE_VOICE_INPUT=true` | `/ai/voice-input/transcribe` — speech-to-text endpoint for the `<VoiceInput>` block |
 | `EVOLAYER_BASE_EXAMPLE_AI_TEXT_FIELD=true` | `/ai/text-assist/stream` — text-suggestion streaming endpoint for the `<AiTextField>` block |
-| `EVOLAYER_BASE_EXAMPLE_MARKETING_PAGES=true` | `/about` + `/home` — showcase landing pages mapped to the published `evodevops/about.tsx` and `evodevops/home.tsx` |
+| `EVOLAYER_BASE_EXAMPLE_MARKETING_PAGES=true` | `/about` + `/home` — showcase landing pages mapped to the published `evolayer/about.tsx` and `evolayer/home.tsx` |
 | `EVOLAYER_BASE_FEATURE_CONTACT_ATTACHMENTS=true` | File-upload handling on the contact form. Requires `composer require spatie/laravel-medialibrary` (see "Opt-in extras" below) |
 
 After enabling, run `php artisan route:list` to confirm only the routes you asked for are registered.
@@ -124,7 +124,7 @@ patch -p1 -d vendor/laravel/ai --forward < patches/laravel-ai-structured-streami
 
 The recommended production setup is to declare this patch in your starter template's `composer.json` so it survives every `composer install`. See `patches/README.md` for the revisit policy.
 
-### 2. Wire EvoDevOps shared props into Inertia
+### 2. Wire EvoLayer shared props into Inertia
 
 In `app/Http/Middleware/HandleInertiaRequests.php`:
 
@@ -134,7 +134,7 @@ public function share(Request $request): array
     return [
         ...parent::share($request),
         // ...your existing shared props
-        'evo' => [
+        'evolayer' => [
             'base' => [
                 'examples' => config('evolayer.base.examples'),
                 'features' => config('evolayer.base.features'),
@@ -144,9 +144,9 @@ public function share(Request $request): array
 }
 ```
 
-The package's pages access `evo` via the published `useEvoLayerProps()` hook — it throws a helpful error if the shared prop is missing, so misconfigurations surface immediately.
+The package's pages access `evolayer` via the published `useEvoLayerProps()` hook — it throws a helpful error if the shared prop is missing, so misconfigurations surface immediately.
 
-### 3. Map EvoDevOps public pages onto `PublicLayout` (if you enable `MARKETING_PAGES`)
+### 3. Map EvoLayer public pages onto `PublicLayout` (if you enable `MARKETING_PAGES`)
 
 In `resources/js/app.tsx`:
 
@@ -158,7 +158,7 @@ createInertiaApp({
     const pages = import.meta.glob('./pages/**/*.tsx', { eager: true });
     const page = pages[`./pages/${name}.tsx`];
 
-    if (name.startsWith('evodevops/') && !name.startsWith('evodevops/admin/') && name !== 'evodevops/home') {
+    if (name.startsWith('evolayer/') && !name.startsWith('evolayer/admin/') && name !== 'evolayer/home') {
       page.default.layout = page.default.layout ?? ((p: ReactElement) => <PublicLayout>{p}</PublicLayout>);
     }
 
@@ -168,7 +168,7 @@ createInertiaApp({
 });
 ```
 
-### 4. Surface EvoDevOps nav entries in your sidebar
+### 4. Surface EvoLayer nav entries in your sidebar
 
 In `resources/js/components/app-sidebar.tsx`:
 
@@ -189,18 +189,18 @@ export function AppSidebar() {
 
 ## Invariant contracts (for variant authors)
 
-These are the stable surfaces sibling EvoDevOps packages (Commerce, SaaS, RLS) and host apps can depend on. Breaking changes are versioned.
+These are the stable surfaces sibling EvoLayer packages (Commerce, SaaS, RLS) and host apps can depend on. Breaking changes are versioned.
 
 ### Namespacing convention
 
 | Surface | Convention |
 | --- | --- |
-| Route names | `evolayer.base.*` (variants use `evodevops.commerce.*`, etc.) |
-| Env vars | `EVOLAYER_BASE_EXAMPLE_*`, `EVOLAYER_BASE_FEATURE_*` (variants use `EVO_COMMERCE_*`, etc.) |
-| Shared props | `evolayer.base.{examples, features}` (variants own `evo.commerce.*`, etc.) |
+| Route names | `evolayer.base.*` (variants use `evolayer.commerce.*`, etc.) |
+| Env vars | `EVOLAYER_BASE_EXAMPLE_*`, `EVOLAYER_BASE_FEATURE_*` (variants use `EVOLAYER_COMMERCE_*`, etc.) |
+| Shared props | `evolayer.base.{examples, features}` (variants own `evolayer.commerce.*`, etc.) |
 | Config | `config/evolayer.php`; access via `evolayer.base.*` |
-| Publish tags | `evolayer-base-*` (variants use `evodevops-commerce-*`, etc.) |
-| Migration filenames | Include `evodevops_base_` segment (variants include `evodevops_commerce_`, etc.) |
+| Publish tags | `evolayer-base-*` (variants use `evolayer-commerce-*`, etc.) |
+| Migration filenames | Include `evolayer_base_` segment (variants include `evolayer_commerce_`, etc.) |
 
 ### SSE streaming vocabulary
 
@@ -253,7 +253,7 @@ The package's `OntologyCompiler` supports merging multiple ontology files keyed 
 ```php
 // In a variant package's ServiceProvider::boot()
 app(\Xuple\EvoLayer\Base\Support\OntologyRegistry::class)
-    ->register('evo.commerce', __DIR__.'/../ontology.yaml');
+    ->register('evolayer.commerce', __DIR__.'/../ontology.yaml');
 ```
 
 The compiler reads the registry plus the host's own `ontology.yaml` and produces a namespace-keyed merged output.

@@ -262,10 +262,10 @@ Payload shape: `{type: 'success'|'error'|'warning'|'info', message: string, ...}
 
 ### Schema invariants
 
-The following columns are guaranteed on Base's models for variant/RLS compatibility:
+The following columns are guaranteed on Base's prefixed tables/models for variant/RLS compatibility:
 
-- `ai_invocations`: nullable `subject_type`/`subject_id` polymorph, `tenant_id`, `prompt_tokens`, `completion_tokens`, `cost_cents`, `cost_currency`.
-- `change_events`: nullable polymorphic `actor_type`/`actor_id` (User by default; variants may record Customer/Tenant/System), nullable `tenant_id`.
+- `evolayer_base_ai_invocations` (`AiInvocation`): nullable `subject_type`/`subject_id` polymorph, `tenant_id`, `prompt_tokens`, `completion_tokens`, `cost_cents`, `cost_currency`.
+- `evolayer_base_change_events` (`ChangeEvent`): nullable polymorphic `actor_type`/`actor_id` (User by default; variants may record Customer/Tenant/System), nullable `tenant_id`.
 
 ### `AdminGate` contract
 

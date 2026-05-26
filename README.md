@@ -6,9 +6,9 @@ The package is designed to feel like a clean additive layer for a developer tran
 
 Public web strategy: `evodevops.com` is the editorial/teaching home for the
 starter-kit family, while `https://docs.evodevops.com/base` is the canonical
-EvoLayer Base documentation path. The starter's public `/` page should sell the
-working demo/install path; `/about` should explain why the Base layer exists and
-how it stays conventional.
+EvoLayer Base documentation path. The starter's public `/` page mounts the
+EvoLayer Base demo/install explainer; when marketing pages are enabled, the
+package also exposes that page at `/about`.
 
 ## Start here
 

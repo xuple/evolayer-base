@@ -13,8 +13,9 @@ Version numbers and tags are still open decisions (see [Open decisions](#open-de
 - Package: `xuple/evolayer-base` — namespace `Xuple\EvoLayer\Base`.
 - Starter: `xuple/evolayer-base-starter`.
 - Web IA: `evodevops.com` teaches and markets the family; `docs.evodevops.com/base`
-  is the canonical Base documentation root. The starter homepage (`/`) is the
-  demo/install entry point, while `/about` is the product-explainer page.
+  is the canonical Base documentation root. The starter homepage (`/`) mounts
+  the EvoLayer Base demo/install explainer; the package's opt-in marketing
+  routes expose that same page at `/about`.
 - See `DECISIONS.md` ADR-017 for why this identity was chosen.
 
 ## Provisional version

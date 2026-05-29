@@ -46,7 +46,7 @@ class FormSubmissionSearch
     private function vectorSearch(string $query, int $limit): Collection
     {
         return FormSubmission::query()
-            ->with('tags')
+            ->when(FormSubmission::supportsTags(), fn ($query) => $query->with('tags'))
             ->whereNotNull('embedding')
             ->whereVectorSimilarTo('embedding', $query, minSimilarity: 0.35)
             ->limit($limit)
@@ -61,7 +61,7 @@ class FormSubmissionSearch
         $like = '%'.$this->escapeLike($query).'%';
 
         return FormSubmission::query()
-            ->with('tags')
+            ->when(FormSubmission::supportsTags(), fn ($query) => $query->with('tags'))
             ->where(function ($builder) use ($like): void {
                 $builder
                     ->where('subject', 'like', $like)
@@ -99,11 +99,13 @@ class FormSubmissionSearch
                 'urgency' => $submission->triage_urgency,
                 'sentiment' => $submission->triage_sentiment,
                 'created_at' => $submission->created_at?->toISOString(),
-                'tags' => $submission->tags
-                    ->map(fn ($tag): string => is_string($tag->name) ? $tag->name : ($tag->name['en'] ?? ''))
-                    ->filter()
-                    ->values()
-                    ->all(),
+                'tags' => FormSubmission::supportsTags()
+                    ? $submission->tags
+                        ->map(fn ($tag): string => is_string($tag->name) ? $tag->name : ($tag->name['en'] ?? ''))
+                        ->filter()
+                        ->values()
+                        ->all()
+                    : [],
             ])
             ->values()
             ->all();

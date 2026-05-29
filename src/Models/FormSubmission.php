@@ -70,6 +70,11 @@ class FormSubmission extends Model implements HasMedia
         return FormSubmissionFactory::new();
     }
 
+    public static function supportsTags(): bool
+    {
+        return trait_exists(\Spatie\Tags\HasTags::class);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(config('auth.providers.users.model'));

@@ -13,7 +13,8 @@ return new class extends Migration
 
             // Actor polymorph (nullable) — User by default; variants may record Customer / Tenant / system.
             // Replaces the old `actor_user_id` column; package is pre-release, no data migration needed.
-            $table->nullableMorphs('actor');
+            $table->string('actor_type')->nullable()->index();
+            $table->string('actor_id')->nullable()->index();
 
             $table->nullableUlidMorphs('subject');
 

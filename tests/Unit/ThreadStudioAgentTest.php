@@ -15,11 +15,11 @@ test('the thread studio prompt preserves safety guardrails', function () {
         ->toContain('Keep the customer reply under 180 words');
 });
 
-test('the thread studio prompt dogfoods evodevops base support context', function () {
+test('the thread studio prompt dogfoods evolayer base support context', function () {
     $instructions = ThreadStudioAgent::make()->instructions();
 
     expect($instructions)
-        ->toContain('EvoLayer Base is a Laravel 13 + Inertia React starter')
+        ->toContain('It is commonly used with the EvoLayer Base starter')
         ->toContain('https://docs.evodevops.com/base')
         ->toContain('Fortify authentication')
         ->toContain('Wayfinder-generated route helpers')

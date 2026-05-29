@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Spatie\Activitylog\Models\Activity;
 use Xuple\EvoLayer\Base\Models\AiInvocation;
 use Xuple\EvoLayer\Base\Models\AiInvocationAttempt;
+use Xuple\EvoLayer\Base\Models\ChangeEvent;
 use Xuple\EvoLayer\Base\Models\FormSubmission;
 use Xuple\EvoLayer\Base\Tests\Fixtures\TestUser;
 
@@ -123,4 +124,23 @@ test('change_events subject_id stores and resolves the ulid of a form submission
     expect($row)->not->toBeNull()
         ->and($row->subject_type)->toBe(FormSubmission::class)
         ->and($row->subject_id)->toBe($submission->id);
+});
+
+test('change_events actor_id stores a ulid-compatible actor identifier', function () {
+    $actor = FormSubmission::factory()->create();
+
+    $event = ChangeEvent::create([
+        'actor_type' => FormSubmission::class,
+        'actor_id' => $actor->id,
+        'event_name' => 'test.actor_recorded',
+        'occurred_at' => now(),
+    ]);
+
+    $row = DB::table('evolayer_base_change_events')
+        ->where('id', $event->id)
+        ->first();
+
+    expect($row)->not->toBeNull()
+        ->and($row->actor_type)->toBe(FormSubmission::class)
+        ->and($row->actor_id)->toBe($actor->id);
 });

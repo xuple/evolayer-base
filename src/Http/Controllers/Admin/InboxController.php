@@ -20,7 +20,10 @@ class InboxController extends Controller
     public function show(Request $request): Response
     {
         return Inertia::render('evolayer/admin/inbox/index', [
-            'submissions' => FormSubmission::with('tags')->latest()->paginate(20),
+            'submissions' => FormSubmission::query()
+                ->when(FormSubmission::supportsTags(), fn ($query) => $query->with('tags'))
+                ->latest()
+                ->paginate(20),
             'selected' => null,
             'attachments' => [],
             'activity' => [],
@@ -39,10 +42,17 @@ class InboxController extends Controller
 
     public function detail(Request $request, FormSubmission $submission): Response
     {
-        $submission->load('user', 'tags', 'media');
+        $submission->load(array_filter([
+            'user',
+            FormSubmission::supportsTags() ? 'tags' : null,
+            'media',
+        ]));
 
         return Inertia::render('evolayer/admin/inbox/index', [
-            'submissions' => FormSubmission::with('tags')->latest()->paginate(20),
+            'submissions' => FormSubmission::query()
+                ->when(FormSubmission::supportsTags(), fn ($query) => $query->with('tags'))
+                ->latest()
+                ->paginate(20),
             'selected' => $submission,
             'attachments' => $submission->getMedia('attachments')->map(fn ($media) => [
                 'id' => $media->id,

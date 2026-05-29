@@ -1,5 +1,12 @@
 # EvoLayer Base — Port Inventory
 
+> **Archived pre-pivot inventory.** This file records the May 2026 extraction from
+> `/opt/projects/evodevops-base-l14-i3` into the package/starter split. It
+> intentionally preserves some pre-pivot names such as `EvoDevOps additions`,
+> `evo` props, and the original source path as historical extraction context.
+> Current public/runtime contracts live in `README.md`, `DECISIONS.md`, and the
+> starter docs.
+
 Produced 2026-05-21 against:
 
 - **Source**: `/opt/projects/evodevops-base-l14-i3` @ `feature/ai-provider-platform` (commit `95d2a33`)

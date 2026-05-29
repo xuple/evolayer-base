@@ -65,6 +65,7 @@ class InstallCommand extends Command
         $this->line('       <fg=gray>\'evolayer\' => [\'base\' => [\'examples\' => config(\'evolayer.base.examples\'), \'features\' => config(\'evolayer.base.features\')]]</>');
         $this->line('  4. Enable features one at a time — set the env flag AND publish its tag:');
         $this->line('       <fg=gray>EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO=true  +  vendor:publish --tag=evolayer-base-frontend-thread-studio</>');
+        $this->line('  5. PostgreSQL + Spatie extras: make activity_log.subject_id, taggables.taggable_id, and media.model_id ULID/string-compatible before migrating.');
         $this->line('');
         $this->line('  Run <fg=cyan>php artisan evolayer:doctor</> to verify the install.');
         $this->newLine();

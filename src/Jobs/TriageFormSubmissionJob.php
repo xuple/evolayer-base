@@ -6,6 +6,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Spatie\Tags\HasTags;
 use Throwable;
 use Xuple\EvoLayer\Base\Ai\Agents\TriageAgent;
 use Xuple\EvoLayer\Base\Models\FormSubmission;
@@ -37,7 +38,11 @@ class TriageFormSubmissionJob implements ShouldQueue
         ]);
 
         $tags = array_slice((array) $response['tags'], 0, 3);
-        $this->submission->syncTagsWithType($tags, 'ai');
+        $tagsSkipped = ! trait_exists(HasTags::class);
+
+        if (! $tagsSkipped) {
+            $this->submission->syncTagsWithType($tags, 'ai');
+        }
 
         activity()
             ->performedOn($this->submission)
@@ -45,6 +50,7 @@ class TriageFormSubmissionJob implements ShouldQueue
                 'urgency' => $response['urgency'],
                 'sentiment' => $response['sentiment'],
                 'tags' => $tags,
+                'tags_skipped' => $tagsSkipped,
             ])
             ->log('AI triage completed');
 
@@ -56,11 +62,13 @@ class TriageFormSubmissionJob implements ShouldQueue
                 'triage_sentiment' => $this->submission->triage_sentiment,
                 'triage_summary' => $this->submission->triage_summary,
                 'tags' => $tags,
+                'tags_skipped' => $tagsSkipped,
             ],
             properties: [
                 'urgency' => $response['urgency'],
                 'sentiment' => $response['sentiment'],
                 'tags' => $tags,
+                'tags_skipped' => $tagsSkipped,
             ],
         );
 

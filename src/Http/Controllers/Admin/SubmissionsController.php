@@ -15,7 +15,7 @@ class SubmissionsController extends Controller
     public function index(): Response
     {
         $submissions = FormSubmission::query()
-            ->with('tags')
+            ->when(FormSubmission::supportsTags(), fn ($query) => $query->with('tags'))
             ->latest()
             ->paginate(25);
 
@@ -26,7 +26,11 @@ class SubmissionsController extends Controller
 
     public function show(FormSubmission $submission): Response
     {
-        $submission->load('user', 'tags', 'media');
+        $submission->load(array_filter([
+            'user',
+            FormSubmission::supportsTags() ? 'tags' : null,
+            'media',
+        ]));
 
         return Inertia::render('evolayer/admin/submissions/show', [
             'submission' => $submission,

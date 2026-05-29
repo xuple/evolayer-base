@@ -5,6 +5,8 @@ namespace Xuple\EvoLayer\Base\Console\Commands;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\Tags\HasTags;
 use Xuple\EvoLayer\Base\Auth\SpatieAdminGate;
@@ -23,6 +25,7 @@ class DoctorCommand extends Command
             $this->checkStructuredStreamingPatch(),
             $this->checkOntologyCompiled(),
             ...$this->checkSpatieFeatureMatrix(),
+            ...$this->checkPostgresUlidMorphColumns(),
         ];
 
         $this->newLine();
@@ -126,5 +129,47 @@ class DoctorCommand extends Command
         ];
 
         return $rows;
+    }
+
+    /** @return list<array{0: bool, 1: string, 2: ?string}> */
+    private function checkPostgresUlidMorphColumns(): array
+    {
+        if (DB::connection()->getDriverName() !== 'pgsql') {
+            return [[
+                true,
+                'PostgreSQL ULID morph schema: skipped ('.DB::connection()->getDriverName().')',
+                null,
+            ]];
+        }
+
+        return collect([
+            ['activity_log', 'subject_id', 'Spatie activitylog subjects'],
+            ['taggables', 'taggable_id', 'Spatie tags taggables'],
+            ['media', 'model_id', 'Spatie medialibrary owners'],
+        ])->map(function (array $column): array {
+            [$table, $name, $label] = $column;
+
+            if (! Schema::hasColumn($table, $name)) {
+                return [
+                    true,
+                    "{$label}: {$table}.{$name} not present",
+                    null,
+                ];
+            }
+
+            $type = DB::table('information_schema.columns')
+                ->where('table_schema', 'public')
+                ->where('table_name', $table)
+                ->where('column_name', $name)
+                ->value('data_type');
+
+            $ok = is_string($type) && ! str_contains(strtolower($type), 'bigint');
+
+            return [
+                $ok,
+                "{$label}: {$table}.{$name} {$type}",
+                $ok ? null : "Use ULID/string-compatible morph columns for EvoLayer ULID models before migrating on PostgreSQL.",
+            ];
+        })->all();
     }
 }

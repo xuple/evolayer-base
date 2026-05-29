@@ -2,7 +2,7 @@
 
 EvoLayer Base is a Composer package that adds an AI / ontology / React-block layer to a Laravel 13 + React + Inertia application. It is the foundation for the EvoLayer family of sibling packages — **Commerce** (product sales), **SaaS** (subscriptions / tenants), and **RLS** (PostgreSQL row-level security). EvoDevOps is the teaching/site brand for the family.
 
-The package is designed to feel like a clean additive layer for a developer transitioning from `laravel/react-starter-kit`. **Installing it adds zero routes, zero middleware, zero shared props by default.** Each feature is opt-in via a flag.
+The package is designed to feel like a clean additive layer for a developer transitioning from `laravel/react-starter-kit`. **Installing it adds zero routes and no active request surface by default.** Shared props and feature pages are host opt-in via flags and publish tags.
 
 Public web strategy: `evodevops.com` is the editorial/teaching home for the
 starter-kit family, while `https://docs.evodevops.com/base` is the canonical
@@ -51,6 +51,8 @@ php artisan migrate
 EvoLayer migrations auto-load from the package via Laravel's package migration loader. Do **not** publish them by default; `vendor:publish --tag=evolayer-base-migrations` is only for hosts that intentionally want to own and customize the schema.
 
 After step 4 the package is installed but **does nothing yet** — `php artisan route:list` shows no new routes. You opt in to features via env flags + per-feature publish tags (see below).
+
+EvoLayer Base targets the Laravel React starter shape. Existing Inertia apps that have renamed routes, layouts, components, or aliases may need adapter edits after publishing frontend stubs.
 
 For a one-shot install into an existing app, use:
 
@@ -126,7 +128,7 @@ Base requires `spatie/laravel-permission` and `spatie/laravel-activitylog` as co
 | Spatie package | Feature it enables | Required when |
 | --- | --- | --- |
 | `spatie/laravel-medialibrary` | Contact form file attachments + AI media analysis | `EVOLAYER_BASE_FEATURE_CONTACT_ATTACHMENTS=true` |
-| `spatie/laravel-tags` | AI auto-tagging on form submissions during triage | `EVOLAYER_BASE_EXAMPLE_CONTACT_AI=true` (only if you want auto-tagging) |
+| `spatie/laravel-tags` | AI auto-tagging on form submissions during triage | Optional with `EVOLAYER_BASE_EXAMPLE_CONTACT_AI=true`; triage still stores urgency/sentiment/summary when absent and records `tags_skipped=true` |
 
 To enable contact attachments:
 
@@ -137,6 +139,15 @@ php artisan migrate
 ```
 
 Set `EVOLAYER_BASE_FEATURE_CONTACT_ATTACHMENTS=true` in `.env`. The package's `FormSubmission` model loads either way — a compat polyfill in `Xuple\EvoLayer\Base\Compat\*` shadows the Spatie interfaces and traits when the Spatie packages aren't installed.
+
+If you use Spatie activitylog, tags, or medialibrary with EvoLayer ULID models, make the related morph id columns ULID/string-compatible before migrating on PostgreSQL:
+
+- `activity_log.subject_id` must support ULID subjects (`nullableUlidMorphs('subject', 'subject')`).
+- `taggables.taggable_id` must support ULID taggables (`ulidMorphs('taggable')`).
+- `media.model_id` must support ULID media owners (`ulidMorphs('model')`).
+- `activity_log.causer_id` may stay integer when causers are integer-keyed users.
+
+The EvoLayer Base starter commits corrected Spatie migrations for this. Package-only installs that publish upstream Spatie migrations must make the same edits before running `migrate` against PostgreSQL.
 
 ---
 
@@ -265,7 +276,7 @@ Payload shape: `{type: 'success'|'error'|'warning'|'info', message: string, ...}
 The following columns are guaranteed on Base's prefixed tables/models for variant/RLS compatibility:
 
 - `evolayer_base_ai_invocations` (`AiInvocation`): nullable `subject_type`/`subject_id` polymorph, `tenant_id`, `prompt_tokens`, `completion_tokens`, `cost_cents`, `cost_currency`.
-- `evolayer_base_change_events` (`ChangeEvent`): nullable polymorphic `actor_type`/`actor_id` (User by default; variants may record Customer/Tenant/System), nullable `tenant_id`.
+- `evolayer_base_change_events` (`ChangeEvent`): nullable string-compatible polymorphic `actor_type`/`actor_id` (User by default; variants may record Customer/Tenant/System), nullable `tenant_id`.
 
 ### `AdminGate` contract
 

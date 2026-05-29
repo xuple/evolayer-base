@@ -20,7 +20,8 @@
         "laravel/ai": "^0.6.5",
         "inertiajs/inertia-laravel": "^3.0",
         "spatie/laravel-permission": "^7.4",
-        "spatie/laravel-activitylog": "^5.0"
+        "spatie/laravel-activitylog": "^5.0",
+        "symfony/yaml": "^7.0|^8.0"
     },
     "require-dev": {
         "orchestra/testbench": "^11.0",

@@ -262,7 +262,7 @@ Status legend: **Accepted** · **Superseded** · **Open**
 
 ## ADR-018 — AI provider tiering: smoke ≠ endorsement; ThreadStudio stays curated
 
-**Status:** Accepted (policy only; the roster change is a separate follow-up — see "Open decisions")
+**Status:** Superseded by ADR-019 (kept for history — the five-tier framing, smoke-≠-endorsement, and structural-inference rules carry forward; ADR-019 names the abstractions, adds conditions-lite vocabulary, adds the no-runtime-fallback guardrail, and mandates the `ThreadStudioProviderPolicy` seam).
 
 **Context.** The package exposes AI providers across several surfaces with implicit-but-mismatched eligibility rules:
 
@@ -305,6 +305,98 @@ Three real tensions follow from this surface:
 
 ---
 
+## ADR-019 — Provider capability model: abstractions before roster
+
+**Status:** Accepted (supersedes/extends ADR-018; ships the policy seam + conditions-lite vocabulary; the roster change is still a separate follow-up — see "Open decisions")
+
+**Context.** ADR-018 fixed the *tiering policy* (five tiers, smoke ≠ endorsement, demotion follows verification) but stopped at policy. After review, the leak is wider than tiering alone:
+
+- `AiFeatureConfig::supportedProviders()` is a single method called from at least four places — `ComposeThreadStudioRequest` (request validation), `AiSmokeTest::runAllProviders` (smoke iteration), `AiProbeCommand::runAllProviders` (probe iteration), and `ThreadStudioAiConfig` (metadata loop) — plus the `patches/README.md` matrix as a documentation consumer. One method name carries five distinct meanings: SDK-known / diagnostically smokable / probe-iteration default / curated product surface / verified.
+- `AiCapability` already exists as an observations-shaped table (`provider`, `model`, `agent_class`, `schema_hash`, `status`, `output_mode`, `probe_passed: boolean`, `failure_reason`, `latency_ms`, `note`, `probed_at`, `superseded_at`) with `status ∈ {supported, experimental, blocked, unknown}` and `output_mode ∈ {json_schema, json_object, prompt_json, unsupported, unknown}`. The schema is already multi-state; only `probe_passed` is a boolean that can't express `Unknown`.
+- `AiStreamSmokeTest` accepts any `Lab` provider (already decoupled from `supportedProviders()`), establishing precedent that the diagnostic surface is broader than the curated surface.
+- Pre-0.1 is the cheapest window to surface the right abstractions. After public release, the `AiCapability` schema, the `status` enum values, and the public-method name `supportedProviders()` all become compatibility commitments for downstream hosts that have started persisting capability rows or reading the method.
+
+ADR-018's policy framing is correct but incomplete: it names the tiers but doesn't name the seams. Future surfaces (`doctor --json`, receipts, admin probing UI, agent-readable failure messages, the starter's first-run readiness screen) will all need vocabulary for "provider exists / provider tested / provider untested / provider blocked / provider stale." Defining that vocabulary now is cheaper than refactoring after each surface invents its own.
+
+**Decision.** Introduce a named abstraction model with seven boundaries; document it; ship the minimum policy seam now; leave most implementation for follow-up ADRs and commits.
+
+### The seven abstraction boundaries
+
+1. **Provider registry** — static knowledge: labels, SDK-known providers (`Laravel\Ai\Enums\Lab`), provider families, diagnostic eligibility. Today this lives implicitly in `AiFeatureConfig` (labels + `supportedProviders()`) and in the SDK's `Lab` enum (SDK-known). No new class today; the boundary is documented for future extraction.
+2. **Capability ledger** — observed facts only. The existing `evolayer_base_ai_capabilities` table + `AiCapability` model is the ledger. The ledger does NOT decide product policy; it records what was probed and what happened.
+3. **Conditions-lite vocabulary** — observations are expressed as `(type, status, reason, message, schema_hash, observed_at)` tuples with `status ∈ {True, False, Unknown}`. Adapted from the Kubernetes API conditions pattern (without the full controller / `observedGeneration` / `lastTransitionTime` machinery — those are valuable when there are multiple producers and runtime reconciliation; we have neither). The trichotomy is the load-bearing piece: it lets the ledger express "router provider untested" without conflating it with "provider tested and failed."
+4. **`ThreadStudioProviderPolicy`** — feature-specific product policy. Decides what ThreadStudio allows, why, and what rejection message to show. Wraps `AiFeatureConfig::supportedProviders()` today; can grow to consult the capability ledger when adaptive mode lands (ADR-020+). **Mandatory now**, not optional. New consumers (e.g. an admin UI's "why is this provider greyed out?") read the policy, not the underlying list.
+5. **Runtime selection** — no silent fallback across providers. The runtime uses the explicit configured `provider` + `model` for the request. Adaptivity happens at configuration time, validation time, and probe time — never inside the live request path. (A `try-Gemini-then-OpenAI-then-Anthropic` runtime loop would create hidden cost, privacy, and debuggability problems and is explicitly forbidden.)
+6. **Feature flags** — `EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO=true` exposes the ThreadStudio surface. It does NOT prove AI provider capability. Future readiness screens compose feature-enabled AND provider-capable as separate predicates — a feature can be visible but report "no usable provider configured."
+7. **Probe entrypoints** — Artisan commands (`evolayer:ai:probe`, `evolayer:ai:smoke-test`, `evolayer:ai:stream-smoke`) and future in-app / admin probing must share probe logic. If/when an admin UI ships, it doesn't reimplement probing — it queues the same probe service the CLI uses. Today this is one shared codebase; the future-extracted `AiCapabilityProbe` service is the named seam.
+
+### Conditions-lite vocabulary
+
+A capability row records observations as a collection of typed conditions. First-cut types:
+
+| Type | What it observes |
+| --- | --- |
+| `SdkKnown` | Provider exists in `Laravel\Ai\Enums\Lab` |
+| `CredentialsConfigured` | Provider API key resolves at request time |
+| `PatchPresent` | `vendor/laravel/ai/.../StreamsText.php` contains the `JsonSchemaTypeFactory` marker |
+| `StructuredStreaming` | The patched flow emits `TextDelta` events end-to-end |
+| `ThreadStudioSchemaValid` | The current `ThreadStudioAgent` schema hash passed structured streaming against this provider/model |
+| `ThreadStudioReady` | Computed: all of the above True AND provider is in the curated policy list |
+
+Each condition is `(type, status ∈ {True, False, Unknown}, reason, message, schema_hash?, observed_at)`. `Unknown` is the load-bearing value — it distinguishes "untested" from "tested and failed." A provider with no probe row is Unknown; a probe row with `probe_passed=false` is False; a probe row with `probe_passed=true` is True for the conditions its probe exercised.
+
+This ADR does not require all conditions to be populated today. Today's probe synthesises one condition (`StructuredStreaming` for the structured-streaming smoke). Future probes add more.
+
+### Current provider classification (no roster change)
+
+| Provider | Classification |
+| --- | --- |
+| Gemini | Curated default; structured-streaming verified (matrix ✅). |
+| OpenAI | Structured-streaming verified (matrix ✅); eligible for ThreadStudio consideration; **not** automatically curated. |
+| Anthropic | Diagnostic-known; ThreadStudio pending/blocked until structured streaming emits TextDelta events. **Still in `supportedProviders()` today** — roster change deferred per the explicit "no roster change in this commit" rule. |
+| NVIDIA, OpenCode, OpenRouter | Structural / router candidates (share OpenAI's Chat-Completions code path); **Unknown** until directly probed for structured streaming on the actual model the router resolves to. |
+
+This is classification only — `AiFeatureConfig::supportedProviders()` carries forward unchanged. The roster change (whether to add OpenAI, whether to remove Anthropic, whether the router providers stay under structural inference or require their own matrix runs) is the next decision and will be presented as options A-E in a follow-up message.
+
+### Audit — `AiSmokeTest` and `AiProbeCommand` use of `supportedProviders()`
+
+- `AiSmokeTest::runAllProviders` (`src/Console/Commands/AiSmokeTest.php:45`): iterates the curated list. **Defensible today** — the intent matches "smoke the providers the package endorses." A separate diagnostic-eligibility list could replace it later if needed, but no urgent fix.
+- `AiProbeCommand::runAllProviders` (`src/Console/Commands/AiProbeCommand.php:157`): iterates the curated list to probe each. **Direction-of-flow mismatch** — when the probe becomes operational against arbitrary providers (currently in-progress per the `TODO (Step 2+)` comment), the probe should iterate diagnostic-eligible providers and write conditions; the curated list should be the *output* of probing (or a deliberate policy decision on top of probe results), not the input. Today's coupling is acceptable because the probe is still wiring up persistence; flag as known-issue for follow-up.
+
+No code change to either today. The behaviour-preserved `ThreadStudioProviderPolicy` seam (this ADR's mandated commit) only re-routes `ComposeThreadStudioRequest`; the iteration callers stay on the same underlying list, with the docblock on `supportedProviders()` clarifying what that list currently means.
+
+### What this ADR ships
+
+- **DECISIONS.md**: this ADR (ADR-019), supersedes ADR-018 with an explicit pointer.
+- **`Xuple\EvoLayer\Base\Support\ThreadStudioProviderPolicy`** (new class): wraps `AiFeatureConfig::supportedProviders()` for now. First public method is `curatedProviders(): array`; the class is the future home for `explain($provider, $model): ProviderAvailability` and capability-ledger consultation, neither of which lands in this ADR's commit.
+- **`ComposeThreadStudioRequest`**: rewired to depend on `ThreadStudioProviderPolicy::curatedProviders()` instead of calling `AiFeatureConfig::supportedProviders()` directly. Behaviour identical.
+- **`AiFeatureConfig::supportedProviders()`**: gets a clarifying docblock — "Returns the curated ThreadStudio provider list. Not all SDK-known or diagnostic providers; see `ThreadStudioProviderPolicy` for the consumer-facing API."
+- **`AiCapability` migration**: nullable `json('conditions')` column added (additive; preserves `probe_passed` as a backwards-compat projection). Cost: ~30 lines per the evaluation. No consumer writes conditions yet; the column is forward infrastructure for the probe's future evolution.
+- **`AiCapability` model**: adds `'conditions' => 'array'` cast.
+- **`AGENTS.md` / `CLAUDE.md`**: a new short rule above the Boost-generated block — "Observed capability is not product policy" — cross-linking ADR-019.
+- **Tests**: a unit test for `ThreadStudioProviderPolicy` (delegates to `AiFeatureConfig` with current behaviour); a unit test for `AiCapability` conditions cast (nullable insert + array roundtrip).
+
+### Non-goals
+
+This ADR explicitly does NOT:
+
+- Change `AiFeatureConfig::supportedProviders()`. Anthropic stays, OpenAI is not added.
+- Implement adaptive mode (capability-ledger-driven ThreadStudio gating).
+- Build admin / in-app probing UI.
+- Build `doctor --json` or receipts.
+- Extract `ProviderRegistry`, `AiCapabilityProbe`, or `AiCapabilityLedger` as separate named classes. They remain implicit inside `AiFeatureConfig`, `AiProbeCommand`, and the `AiCapability` model respectively. The boundaries are documented; extraction is future work that happens when a second consumer needs the seam.
+- Rename `supportedProviders()`. Renaming with a compatibility alias is a clean future change; deferred to avoid scope creep here.
+- Wire `AiProbeCommand` to write conditions. The column lands; the probe-to-conditions write path is the next probe-evolution commit.
+- Change the `.env.example` defaults from the package side (the starter owns those).
+
+### Side effects
+
+- This ADR is policy-first but ships a small amount of code: one new class, one rewire, one nullable column, one model cast, two tests, plus the agents-doc update. The diff is bounded (~150 lines including the ADR itself).
+- Pest stays green throughout (149 / 531 baseline at HEAD).
+- Future ADR-020+ will record the chosen roster (the A-E follow-up), the conditions-writing probe, the policy's `explain()` method, and adaptive mode.
+
+---
+
 ## Cross-cutting lesson
 
 Almost every painful cascade — namespacing breaking imports, opt-in breaking tests, per-feature routes breaking type-checks, the ontology collision — was caught by **thin Phase D probes on a real fresh starter, not by the package's own test suite** (which was green throughout at 120–129 tests). The package tests prove the code is internally coherent; only an integration run proves it installs and composes. This is the strongest argument for completing a full Phase D and the Phase E starter template before considering Base "done."
@@ -316,7 +408,8 @@ Almost every painful cascade — namespacing breaking imports, opt-in breaking t
 - **Full Phase D** — a live ThreadStudio compose round-trip on a fresh starter (the thin probes covered install/build/types, not a live AI call). Blocked on a provider API key.
 - **Anthropic structured-streaming verification** — blocked on credits.
 - **Upstream `laravel/ai` PR** — deferred; tracked in `patches/README.md`.
-- **AI provider roster** — ADR-018 fixed the *tiering policy*; the *roster change* (Anthropic / OpenAI / router-tier decisions) is the next follow-up. Options A–E will be presented separately for human review before any change to `AiFeatureConfig::supportedProviders()`.
+- **AI provider roster** — ADR-018 fixed the *tiering policy*; ADR-019 ships the abstractions and the `ThreadStudioProviderPolicy` seam. The *roster change* (Anthropic / OpenAI / router-tier decisions) is the next follow-up. Options A–E remain on the table for human review before any change to `AiFeatureConfig::supportedProviders()`.
+- **`AiProbeCommand` iteration direction** — currently iterates the curated list (`supportedProviders()`); should iterate diagnostic-eligible providers when the probe becomes operational against arbitrary providers (per the `TODO (Step 2+)` comment). Not a roster change; a probe-direction correction queued for after the roster is settled.
 - **Next family member** — Commerce Core is slated to follow Base's public release; not yet started.
 
 *Phase E resolved — see ADR-015 and ADR-016. The `xuple/evolayer-base-starter` template is built and verified live.*

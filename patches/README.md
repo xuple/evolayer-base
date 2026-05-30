@@ -1,6 +1,8 @@
 # Vendor patches
 
-Applied automatically by `cweagans/composer-patches` on every `composer install` / `composer update`. Declared under `extra.patches` in `composer.json`.
+**In this package repo,** the patch is applied to the dev vendor copy by `scripts/apply-patches.php`, wired through Composer `post-install-cmd` and `post-update-cmd`. There is no `extra.patches` block in this package's `composer.json` and no Composer plugin involved here — the script idempotently patches `vendor/laravel/ai/...` after each install/update.
+
+**Host applications do not inherit that script.** Each host project is responsible for applying the patch in its own root project. The `xuple/evolayer-base-starter` host does this with [`cweagans/composer-patches`](https://github.com/cweagans/composer-patches), declaring the patch under `extra.patches` and listing the plugin in `config.allow-plugins`. Other hosts may use a different mechanism; the package only requires that the patched marker (`JsonSchemaTypeFactory` in `vendor/laravel/ai/src/Providers/Concerns/StreamsText.php`) is present at request time — `evolayer:doctor` flags its absence.
 
 ## `laravel-ai-structured-streaming.patch`
 
@@ -42,8 +44,8 @@ The fix belongs upstream in `laravel/ai`. We deferred filing it because:
 
 **When to revisit:** When a new `laravel/ai` minor release lands (anything past v0.6.5). At that point:
 
-1. Run `composer update laravel/ai` and watch for the patches plugin reporting `FAILED to patch` — that means upstream changed `StreamsText.php` and may have shipped the fix.
-2. Re-run `php artisan evolayer:ai:stream-smoke gemini` and `openai` against the unpatched vendor copy. Also re-check Anthropic once its structured-streaming path emits `TextDelta` events. If supported providers pass without the patch, delete this patch and the `extra.patches` entry in `composer.json`.
+1. Run `composer update laravel/ai`. In this package repo, watch for `scripts/apply-patches.php` reporting a failure to apply — that means upstream changed `StreamsText.php` and may have shipped the fix. In a host like the starter using `cweagans/composer-patches`, the equivalent signal is the patches plugin reporting `FAILED to patch`.
+2. Re-run `vendor/bin/testbench evolayer:ai:stream-smoke gemini` and `openai` against the unpatched vendor copy (or `php artisan evolayer:ai:stream-smoke ...` from a host app). Also re-check Anthropic once its structured-streaming path emits `TextDelta` events. If supported providers pass without the patch, delete `patches/laravel-ai-structured-streaming.patch` here AND coordinate removal from any host project's patch configuration (the starter's `extra.patches` entry, for example).
 3. If upstream did **not** ship the fix and the patch still applies cleanly, file the PR. Reference the test suite in this repo and the smoke command for verification evidence.
 
 **Where to file it:** https://github.com/laravel/ai

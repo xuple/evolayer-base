@@ -39,6 +39,20 @@ starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.
   with a fixed contract — the starter's kitchen-sink workflow,
   pre-release gates — can opt in without the grep-the-summary-line
   wrapper.
+
+### Fixed
+- `stubs/ontology.yaml` `change_event` entity caught up to the actual
+  migration schema: `relations.actor.type` changed from `belongs_to`
+  with `target: user` to `morph_to` with `target: any` (the migration
+  uses polymorphic `nullableMorphs('actor')` — actor is User by default
+  but variants record Customer / Tenant / system); `tenant_id: string?`
+  field added (the migration ships an RLS tenant scope column that the
+  ontology never listed). The runtime model (`ChangeEvent::actor()`
+  returns `morphTo()`) and recorder (`ChangeEventRecorder` writes
+  `actor_type` + `actor_id`) were already correct; only the metadata
+  spec was stale. Host apps (the starter included) pick up the
+  corrected ontology on `composer update xuple/evolayer-base` plus a
+  resync that publishes the `evolayer-base-ontology` tag.
 - Spatie compat polyfill (`Compat\{HasMedia,InteractsWithMedia,HasTags}`):
   `permission` + `activitylog` required; `medialibrary` + `tags` opt-in.
 - Forward-compatible nullable invariant columns on `evolayer_base_ai_invocations`

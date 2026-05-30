@@ -53,3 +53,26 @@ test('evolayer:doctor flags a custom AdminGate binding distinctly from the defau
         ->expectsOutputToContain('custom implementation')
         ->assertSuccessful();
 });
+
+test('evolayer:doctor --strict exits failure when any check is advisory', function () {
+    // Force the ontology-compiled check to be advisory by removing the artifact.
+    $cached = base_path('bootstrap/cache/ontology.php');
+    if (File::exists($cached)) {
+        File::delete($cached);
+    }
+
+    $this->artisan('evolayer:doctor', ['--strict' => true])
+        ->expectsOutputToContain('advisory item(s)')
+        ->assertExitCode(1);
+});
+
+test('evolayer:doctor without --strict stays informational and exits success even with advisories', function () {
+    $cached = base_path('bootstrap/cache/ontology.php');
+    if (File::exists($cached)) {
+        File::delete($cached);
+    }
+
+    $this->artisan('evolayer:doctor')
+        ->expectsOutputToContain('advisory item(s)')
+        ->assertExitCode(0);
+});

@@ -13,7 +13,7 @@ use Xuple\EvoLayer\Base\Auth\SpatieAdminGate;
 use Xuple\EvoLayer\Base\Contracts\AdminGate;
 use Xuple\EvoLayer\Base\Contracts\UserResolver;
 
-#[Signature('evolayer:doctor')]
+#[Signature('evolayer:doctor {--strict : Exit non-zero if any check is advisory (for CI use). Default mode stays informational and always exits 0.}')]
 #[Description('Check the EvoLayer Base installation for common configuration problems.')]
 class DoctorCommand extends Command
 {
@@ -41,12 +41,19 @@ class DoctorCommand extends Command
         }
         $this->newLine();
 
-        // Doctor never fails the process — it advises. Unresolved items are
-        // warnings, since many depend on which features the host has enabled.
+        // Doctor is informational by default: many advisories depend on which
+        // features the host has enabled, so a non-zero exit there would
+        // false-flag legitimate configurations. CI surfaces that need a
+        // hard fail (kitchen-sink starter contracts, release gates) opt in
+        // with --strict.
         $failed = collect($checks)->reject(fn ($c) => $c[0])->count();
         $this->components->info($failed === 0
             ? 'All checks passed.'
             : "{$failed} advisory item(s) — review the hints above.");
+
+        if ($this->option('strict') && $failed > 0) {
+            return self::FAILURE;
+        }
 
         return self::SUCCESS;
     }

@@ -32,6 +32,13 @@ starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.
 - Console commands: `evolayer:install`, `evolayer:doctor`, `evolayer:user:promote`,
   `evolayer:ontology:compile`, `evolayer:ai:probe`, `evolayer:ai:smoke-test`,
   `evolayer:ai:stream-smoke`.
+- `evolayer:doctor --strict` exit-code mode. Default `evolayer:doctor` stays
+  informational and always exits 0 (advisories often depend on which
+  host-side features are enabled and shouldn't false-flag legitimate
+  installs). `--strict` exits non-zero on any advisory, so CI surfaces
+  with a fixed contract — the starter's kitchen-sink workflow,
+  pre-release gates — can opt in without the grep-the-summary-line
+  wrapper.
 - Spatie compat polyfill (`Compat\{HasMedia,InteractsWithMedia,HasTags}`):
   `permission` + `activitylog` required; `medialibrary` + `tags` opt-in.
 - Forward-compatible nullable invariant columns on `evolayer_base_ai_invocations`

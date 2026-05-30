@@ -1,8 +1,8 @@
 # EvoLayer Base
 
-EvoLayer Base is a Composer package that adds an AI / ontology / React-block layer to a Laravel 13 + React + Inertia application. It is the foundation for the EvoLayer family of sibling packages — **Commerce** (product sales), **SaaS** (subscriptions / tenants), and **RLS** (PostgreSQL row-level security). EvoDevOps is the teaching/site brand for the family.
+EvoLayer Base is a Composer package that adds an AI / ontology / React-block substrate to a Laravel 13 + React + Inertia application. It is designed to feel like a clean additive layer for a developer transitioning from `laravel/react-starter-kit`. **Installing it adds zero routes and no active request surface by default.** Shared props and feature pages are host opt-in via flags and publish tags.
 
-The package is designed to feel like a clean additive layer for a developer transitioning from `laravel/react-starter-kit`. **Installing it adds zero routes and no active request surface by default.** Shared props and feature pages are host opt-in via flags and publish tags.
+EvoLayer Base is also the intended foundation for future EvoLayer sibling packages — **Commerce** (product sales), **SaaS** (subscriptions / tenants), and **RLS** (PostgreSQL row-level security) — but those layers ship as separate packages and are not part of this one. EvoDevOps is the teaching/site brand for the family.
 
 Public web strategy: `evodevops.com` is the editorial/teaching home for the
 starter-kit family, while `https://docs.evodevops.com/base` is the canonical
@@ -313,7 +313,7 @@ $this->app->singleton(\Xuple\EvoLayer\Base\Contracts\AdminGate::class, MyAdminGa
 
 ---
 
-## Known constraints (v1)
+## Known constraints for 0.1
 
 - Assumes `laravel/fortify` for authentication when using the default `SpatieAdminGate`. Other auth setups require a custom `AdminGate` binding.
 - Assumes the host `users` table uses the default Laravel convention (integer PK, table name `users`).

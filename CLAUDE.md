@@ -25,7 +25,7 @@ Decision rule before any edit:
 4. **Is the file the `.env` value for an existing flag?** Starter-scoped.
 5. **Cross-repo change** (new `EVOLAYER_BASE_*` flag): land here first against a resolvable ref, then open the starter PR pointing at it.
 
-The full matrix lives in the starter's CONTRIBUTING.md and is package-authoritative from this side too.
+The cross-repo routing matrix is mirrored in both repos. Keep the package and starter guidance aligned when changing ownership boundaries.
 
 ## Package-owned, starter-owned
 

@@ -32,6 +32,13 @@ starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.
 - Console commands: `evolayer:install`, `evolayer:doctor`, `evolayer:user:promote`,
   `evolayer:ontology:compile`, `evolayer:ai:probe`, `evolayer:ai:smoke-test`,
   `evolayer:ai:stream-smoke`.
+- Package-side `AGENTS.md` / `CLAUDE.md` with library-constrained
+  Laravel Boost guidance for agent-assisted maintenance. Project-specific
+  guidance (package/starter routing rule, ontology contract, AI provider
+  scope, Pest-not-PHPUnit hard rule) goes first; Boost's framework block
+  follows. `boost.json` declares `agents: [claude_code, codex, opencode]`
+  but `mcp: false` and `skills: []` because the package has no `artisan`
+  script — full MCP wiring belongs in host apps consuming the package.
 - `evolayer:doctor --strict` exit-code mode. Default `evolayer:doctor` stays
   informational and always exits 0 (advisories often depend on which
   host-side features are enabled and shouldn't false-flag legitimate

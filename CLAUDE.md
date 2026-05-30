@@ -118,6 +118,10 @@ The Boost MCP server (`boost:mcp`) is designed for app contexts where `php artis
 - [`SECURITY.md`](SECURITY.md), [`SUPPORT.md`](SUPPORT.md) — community policies.
 - [`patches/`](patches/) — committed vendor patch dossier.
 
+## Skills note
+
+This package currently ships **no committed Boost skills** (`boost.json` has `"skills": []`, and there are no `.claude/skills/` or `.agents/skills/` directories in tree). When the auto-generated Boost guidance below references `**/skills/**` activation, treat that as generic framework wording — there's nothing for it to activate against here. Skills live in the host app (the starter publishes six). If a future commit adds package-local skills (e.g. an `evolayer-ontology` skill that helps agents extend the ontology schema), update both this section and `boost.json` together.
+
 <!--
   ──────────────────────────────────────────────────────────────────
   Boost-generated framework guidelines follow below.

@@ -260,6 +260,51 @@ Status legend: **Accepted** · **Superseded** · **Open**
 
 ---
 
+## ADR-018 — AI provider tiering: smoke ≠ endorsement; ThreadStudio stays curated
+
+**Status:** Accepted (policy only; the roster change is a separate follow-up — see "Open decisions")
+
+**Context.** The package exposes AI providers across several surfaces with implicit-but-mismatched eligibility rules:
+
+- `evolayer:ai:stream-smoke {provider}` accepts any `Laravel\Ai\Enums\Lab` value (the SDK's provider enum). Its `#[Signature]` docstring explicitly says "Provider key (gemini, openai, anthropic, ...)".
+- `patches/README.md` carries a hand-maintained structured-streaming verification matrix. At HEAD, only **Gemini** and **OpenAI** have ✅ rows. **Anthropic** is explicitly recorded as failing (zero `TextDelta` events, empty final payload).
+- `Xuple\EvoLayer\Base\Support\AiFeatureConfig::supportedProviders()` returns `['anthropic', 'gemini', 'nvidia', 'opencode', 'openrouter']` — the curated set used by `ComposeThreadStudioRequest` validation (`Rule::in(...)`), the `AiSmokeTest` probe loop, and the `AiProbeCommand` capability scan. This list was last set when `config/evolayer-ai.php`'s rationale comment was written, which says NVIDIA / OpenCode / OpenRouter are present to "prove OpenAI-compatible Chat Completions and model-router style paths."
+- The capability ledger (`evolayer_base_ai_capabilities` via `AiProbeCommand`) records per-agent probe results but does not currently gate ThreadStudio eligibility at request time.
+
+Three real tensions follow from this surface:
+
+1. **OpenAI passes structured streaming** (matrix ✅) **but is not in `supportedProviders()`** — a host setting `AI_THREAD_STUDIO_PROVIDER=openai` is rejected at request validation, while `evolayer:ai:stream-smoke openai` works.
+2. **Anthropic is in `supportedProviders()` despite failing structured streaming** — a host setting `AI_THREAD_STUDIO_PROVIDER=anthropic` is accepted by validation and then degrades silently in production.
+3. **NVIDIA / OpenCode / OpenRouter sit in `supportedProviders()` without their own matrix rows.** Their inclusion is **structural inference**: they share OpenAI's Chat-Completions code path, so if OpenAI streams structured output they should too. Defensible but not empirically verified per-provider.
+
+**Decision.** Treat AI-provider eligibility as **five concentric tiers**, with explicit promotion rules between them. This ADR documents the tiers and the policy; the roster change (which providers actually live in `supportedProviders()`) is a separate decision tracked under "Open decisions" below.
+
+| Tier | Source of truth | What it means | Where consumed |
+| --- | --- | --- | --- |
+| 1. SDK-known providers | `Laravel\Ai\Enums\Lab` | Anything the upstream SDK can route to. | `evolayer:ai:stream-smoke {provider}` accepts these. |
+| 2. Diagnostic smoke providers | `evolayer:ai:stream-smoke` argument set (= Tier 1 today) | Anyone can run the smoke against any Lab provider for diagnostic purposes only. **Smoke is not endorsement.** | The smoke command. Nothing else. |
+| 3. Structured-streaming verified providers | `patches/README.md` matrix | Live-tested end-to-end with the patched `laravel/ai` flow. Currently Gemini and OpenAI. | Documentation only. Membership here is *eligibility for* Tier 4 consideration, not automatic promotion. |
+| 4. Curated ThreadStudio providers | `AiFeatureConfig::supportedProviders()` | Allowed as `AI_THREAD_STUDIO_PROVIDER`. Pass `ComposeThreadStudioRequest` validation. Iterated by `AiSmokeTest` and `AiProbeCommand`. **Curation is a separate decision from streaming verification.** | Request validation, probe loops, host UI selection. |
+| 5. Locally verified / adaptive providers (future) | The capability ledger (`evolayer_base_ai_capabilities`) | Future: hosts could opt into runtime gating where ThreadStudio rejects a configured provider if its most recent probe failed. Out of scope until the capability ledger is wired into request validation. | Future runtime gate. |
+
+**Policy rules from this tiering:**
+
+- **Smoke stays broad.** The diagnostic surface should accept any Lab provider so contributors can test new providers before promotion. The smoke command will never gate on `supportedProviders()`.
+- **ThreadStudio stays curated.** Whatever's in `supportedProviders()` is the contract a host sees. The default `AI_THREAD_STUDIO_PROVIDER=gemini` env stays the lowest-friction first-run path.
+- **Passing structured streaming = eligibility for ThreadStudio consideration, not automatic promotion.** A provider can pass the matrix and still not be curated (e.g. because of cost, quota, model-availability, or contributor capacity to maintain its UX surface). Promotion to Tier 4 is a deliberate roster decision.
+- **Demotion follows verification.** A provider currently in `supportedProviders()` should be removed if its verification status moves from passing to failing — presenting a "supported" UI selection for a provider known to fail in production is a user-visible bug.
+- **Structural inference is acceptable but documented.** Router-style providers (currently NVIDIA, OpenCode, OpenRouter) may live in `supportedProviders()` on the basis of sharing OpenAI's verified code path, but this ADR records that the inheritance is structural (same SDK code path) not empirical (no per-provider matrix run). If a router provider's behavior diverges from OpenAI's (e.g. a router strips schema, or rate-limits the streaming endpoint), it loses inheritance and needs its own matrix row.
+- **The capability ledger is informational today, gating tomorrow.** Tier 5 is a placeholder: until hosts can opt into runtime gating, the curated list is the only contract that matters at request time.
+
+**Side effects.**
+
+- This ADR is **policy-only**. `AiFeatureConfig::supportedProviders()` is NOT changed by this commit. The current list (`anthropic`, `gemini`, `nvidia`, `opencode`, `openrouter`) carries forward unchanged, with the three tensions above explicitly catalogued as open issues until the roster proposal is reviewed.
+- The roster change (whether to add OpenAI, whether to remove Anthropic, whether router-style providers stay under structural inference or require empirical matrix runs) is a separate follow-up. A proposal with explicit options — A: keep as-is, B: remove Anthropic only, C: add OpenAI + remove Anthropic, D: require ThreadStudio probes for all curated providers, E: introduce adaptive / verified runtime mode — will follow this ADR for human review.
+- No verification-gated code changes. No tests added for `supportedProviders()` shape. The capability ledger continues to be informational.
+- A future ADR-019+ will record the chosen roster after the proposal is reviewed.
+
+---
+
 ## Cross-cutting lesson
 
 Almost every painful cascade — namespacing breaking imports, opt-in breaking tests, per-feature routes breaking type-checks, the ontology collision — was caught by **thin Phase D probes on a real fresh starter, not by the package's own test suite** (which was green throughout at 120–129 tests). The package tests prove the code is internally coherent; only an integration run proves it installs and composes. This is the strongest argument for completing a full Phase D and the Phase E starter template before considering Base "done."
@@ -271,6 +316,7 @@ Almost every painful cascade — namespacing breaking imports, opt-in breaking t
 - **Full Phase D** — a live ThreadStudio compose round-trip on a fresh starter (the thin probes covered install/build/types, not a live AI call). Blocked on a provider API key.
 - **Anthropic structured-streaming verification** — blocked on credits.
 - **Upstream `laravel/ai` PR** — deferred; tracked in `patches/README.md`.
+- **AI provider roster** — ADR-018 fixed the *tiering policy*; the *roster change* (Anthropic / OpenAI / router-tier decisions) is the next follow-up. Options A–E will be presented separately for human review before any change to `AiFeatureConfig::supportedProviders()`.
 - **Next family member** — Commerce Core is slated to follow Base's public release; not yet started.
 
 *Phase E resolved — see ADR-015 and ADR-016. The `xuple/evolayer-base-starter` template is built and verified live.*

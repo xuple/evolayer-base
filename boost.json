@@ -1,0 +1,14 @@
+{
+    "agents": [
+        "claude_code",
+        "codex",
+        "opencode"
+    ],
+    "cloud": false,
+    "guidelines": true,
+    "mcp": false,
+    "nightwatch": false,
+    "nightwatch_mcp": false,
+    "sail": false,
+    "skills": []
+}

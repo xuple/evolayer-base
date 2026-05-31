@@ -5,10 +5,8 @@ namespace Xuple\EvoLayer\Base\Console\Commands;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
-use Illuminate\Http\Client\RequestException;
-use Laravel\Ai\AiManager;
-use RuntimeException;
 use Throwable;
+use Xuple\EvoLayer\Base\Ai\AiCapabilityProbe;
 use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
 use Xuple\EvoLayer\Base\Support\ThreadStudioAiConfig;
 use Xuple\EvoLayer\Base\Support\ThreadStudioResult;
@@ -127,78 +125,38 @@ class AiSmokeTest extends Command
     }
 
     /**
+     * Console-only structured-output check. Delegates the agent call,
+     * API-key short-circuit, provider override, and exception
+     * classification to the shared AiCapabilityProbe service (ADR-019) —
+     * persisting nothing — then applies the smoke command's own stricter
+     * success criterion (full ThreadStudioResult validation) and its
+     * `Response: {summary}` message.
+     *
      * @return array{ok: bool, message: string}
      */
     private function runProviderTest(string $provider, ?string $model, int $timeout): array
     {
+        $result = app(AiCapabilityProbe::class)->probe(ThreadStudioAgent::class, $provider, $model, $timeout);
+
+        if (! $result->ok) {
+            // Identical classified failure messages (API key, json_schema,
+            // response_format, model-not-supported, HTTP, runtime, other).
+            return $result->toLegacyArray();
+        }
+
+        // Smoke is stricter than the probe on success: the payload must pass
+        // full ThreadStudio schema validation, not merely decode.
         try {
-            $config = app(AiManager::class)->getInstanceConfig($provider);
-
-            if (empty($config['key'] ?? '')) {
-                return ['ok' => false, 'message' => 'API key not configured'];
-            }
-
-            $aiConfig = app(ThreadStudioAiConfig::class);
-
-            $originalProvider = null;
-            if ($provider !== $aiConfig->provider() && $provider !== 'opencode') {
-                $originalProvider = config('ai.thread_studio.provider');
-                config()->set('ai.thread_studio.provider', $provider);
-            }
-
-            if ($model === null && $provider === 'opencode') {
-                $model = config('ai.providers.opencode.models.text.default', 'kimi-k2.6');
-            }
-
-            try {
-                $response = ThreadStudioAgent::make()->prompt(
-                    prompt: <<<'PROMPT'
-Preferred reply tone: balanced
-
-Customer message:
-Greetings, now what do I do once I have downloaded this?
-PROMPT,
-                    provider: $provider,
-                    model: $model,
-                    timeout: $timeout,
-                );
-            } finally {
-                if ($originalProvider !== null) {
-                    config()->set('ai.thread_studio.provider', $originalProvider);
-                }
-            }
-
-            $data = $response->toArray();
-
-            ThreadStudioResult::fromArray($data);
-
-            $modelInfo = $model ? " (model: {$model})" : '';
-
-            return [
-                'ok' => true,
-                'message' => "Structured output works{$modelInfo}. Response: {$data['summary']}",
-            ];
-        } catch (RequestException $e) {
-            $body = $e->response?->json() ?? [];
-            $error = $body['error']['message'] ?? $e->getMessage();
-
-            if (str_contains($error, 'json_schema')) {
-                return ['ok' => false, 'message' => 'Provider does not support json_schema'];
-            }
-
-            if (str_contains($error, 'response_format')) {
-                return ['ok' => false, 'message' => 'Provider response_format incompatibility'];
-            }
-
-            if (str_contains($error, 'Model') && str_contains($error, 'not supported')) {
-                return ['ok' => false, 'message' => 'Model not supported by provider'];
-            }
-
-            return ['ok' => false, 'message' => 'HTTP error: '.substr($error, 0, 100)];
-        } catch (RuntimeException $e) {
-            return ['ok' => false, 'message' => 'Runtime: '.$e->getMessage()];
+            ThreadStudioResult::fromArray($result->payload ?? []);
         } catch (Throwable $e) {
             return ['ok' => false, 'message' => get_class($e).': '.substr($e->getMessage(), 0, 100)];
         }
+
+        $modelInfo = $result->model ? " (model: {$result->model})" : '';
+
+        return [
+            'ok' => true,
+            'message' => "Structured output works{$modelInfo}. Response: {$result->payload['summary']}",
+        ];
     }
 }

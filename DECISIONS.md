@@ -348,7 +348,7 @@ Each condition is `(type, status ∈ {True, False, Unknown}, reason, message, sc
 
 Conditions stored on `AiCapability` describe the probe context for that `provider × model × agent × schema_hash` row — what was true at probe time. Some condition *types* are environment-wide (`PatchPresent`, `CredentialsConfigured`) rather than provider-specific; when stored on a capability row they record what was observed *during that probe*, not universal system truth. Environment-wide health may also surface separately in future doctor/receipt output, but the capability row is always the per-probe snapshot.
 
-This ADR adds the column and vocabulary only — **no command writes conditions yet**. The first probe writer (the next probe-evolution commit) will synthesise a `StructuredStreaming` condition from the probe result; future probes add more.
+The column and vocabulary landed first (separately from any producer). The producer now exists: `AiCapabilityProbe` (the shared service extracted from the three `evolayer:ai:*` commands) synthesises a `StructuredStreaming` condition via `ConditionsBuilder` and `persist()` writes it on every recorded probe, with `probe_passed` derived from that condition's status so the boolean and the conditions array cannot drift. Only the `StructuredStreaming` condition is synthesised today; future probes add the remaining types (`CredentialsConfigured`, `PatchPresent`, `ThreadStudioSchemaValid`). The `Unknown` vs `False` distinction is enforced at the producer: the credentials short-circuit records `Unknown` (the agent was never run), never `False`.
 
 ### Current provider classification (no roster change)
 
@@ -396,7 +396,17 @@ This ADR explicitly does NOT:
 
 - This ADR is policy-first but ships a small amount of code: one new class, one rewire, one nullable column, one model cast, two tests, plus the agents-doc update. The diff is bounded (~150 lines including the ADR itself).
 - Pest stays green throughout (149 / 531 baseline at HEAD).
-- Future ADR-020+ will record the chosen roster (the A-E follow-up), the conditions-writing probe, the policy's `explain()` method, and adaptive mode.
+- Future ADR-020+ will record the chosen roster (the A-E follow-up), the policy's `explain()` method, and adaptive mode.
+
+### Update — probe-evolution follow-up (landed after the original ADR commit)
+
+The two non-goals scoped as "next probe-evolution commit" subsequently landed, behaviour-preservingly, as their own commits:
+
+- **`AiCapabilityProbe` extracted as a named class** (`src/Ai/AiCapabilityProbe.php`), with a `ProbeResult` value object, a `Probeable` agent interface, and a `ConditionsBuilder`. This was promoted from "future work when a second consumer needs the seam" to "now" because the three `evolayer:ai:*` commands were already that second/third consumer — the duplication was real, not hypothetical. `AiProbeCommand` and `AiSmokeTest` now delegate; `AiStreamSmokeTest` stays separate.
+- **The conditions producer is wired**: `persist()` writes the `StructuredStreaming` condition and derives `probe_passed` from it. The probe→ledger write path — previously untested — now has feature coverage (creation, cooldown, `--force`, supersession, conditions tuple, output_mode preservation).
+- Two latent bugs were fixed at the single chokepoint: `output_mode` is no longer hardcoded to `json_schema` on success (curated catalogue modes are preserved), and the persist no-op is now an explicit "model required" contract.
+
+Still deferred to ADR-020+: the roster change (A-E), the policy's `explain()`/`availability()` method, adaptive mode, `doctor --json`/receipts, and enabling `--persist` for non-OpenCode providers in the all-providers path (roster-coupled).
 
 ---
 
@@ -412,7 +422,7 @@ Almost every painful cascade — namespacing breaking imports, opt-in breaking t
 - **Anthropic structured-streaming verification** — blocked on credits.
 - **Upstream `laravel/ai` PR** — deferred; tracked in `patches/README.md`.
 - **AI provider roster** — ADR-018 fixed the *tiering policy*; ADR-019 ships the abstractions and the `ThreadStudioProviderPolicy` seam. The *roster change* (Anthropic / OpenAI / router-tier decisions) is the next follow-up. Options A–E remain on the table for human review before any change to `AiFeatureConfig::supportedProviders()`.
-- **`AiProbeCommand` iteration direction** — currently iterates the curated list (`supportedProviders()`); should iterate diagnostic-eligible providers when the probe becomes operational against arbitrary providers (per the `TODO (Step 2+)` comment). Not a roster change; a probe-direction correction queued for after the roster is settled.
+- **`AiProbeCommand` iteration direction** — still iterates the curated list (`supportedProviders()`) in the all-providers path. The `TODO (Step 2+)` comment is gone (the probe logic is now the shared `AiCapabilityProbe` service and the persist no-op is an explicit contract), but the direction-of-flow point stands: the probe should iterate diagnostic-eligible providers and write conditions, with curation as the *output* of probing, not the input. Coupled to enabling `--persist` for non-OpenCode providers — both wait on the roster decision.
 - **Next family member** — Commerce Core is slated to follow Base's public release; not yet started.
 
 *Phase E resolved — see ADR-015 and ADR-016. The `xuple/evolayer-base-starter` template is built and verified live.*

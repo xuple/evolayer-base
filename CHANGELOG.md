@@ -46,15 +46,26 @@ starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.
   with a fixed contract — the starter's kitchen-sink workflow,
   pre-release gates — can opt in without the grep-the-summary-line
   wrapper.
-- Provider capability model groundwork (ADR-018 → ADR-019): the
+- Provider capability model (ADR-018 → ADR-019): the
   `ThreadStudioProviderPolicy` seam (the consumer-facing API for
   ThreadStudio provider eligibility, so callers no longer depend on
   `AiFeatureConfig::supportedProviders()` directly) and a nullable
-  `evolayer_base_ai_capabilities.conditions` JSON column for future
-  True / False / Unknown capability observations. `probe_passed` is
-  unchanged and remains the backwards-compatible projection. No provider
-  roster change — the curated list is preserved pending a separate
-  decision.
+  `evolayer_base_ai_capabilities.conditions` JSON column carrying
+  True / False / Unknown capability observations. No provider roster
+  change — the curated list is preserved pending a separate decision.
+- Shared `AiCapabilityProbe` service (with a `ProbeResult` value object,
+  a `Probeable` agent interface, and a `ConditionsBuilder`) extracted
+  from the three `evolayer:ai:*` commands, which previously each
+  reimplemented the probe. The probe now writes a `StructuredStreaming`
+  condition on every recorded probe and derives `probe_passed` from it
+  (so the boolean and the conditions array cannot drift); a credentials
+  short-circuit records `Unknown`, not a false `False`. The probe→ledger
+  write path (creation, 24h cooldown, `--force`, stale-row supersession,
+  output_mode preservation) now has feature-test coverage where it had
+  none. Two latent bugs fixed at the single chokepoint: `output_mode` is
+  no longer hardcoded to `json_schema` on success (curated catalogue
+  modes are preserved on `--force` reprobe), and the persist no-op for
+  modelless probes is now an explicit "model required" contract.
 
 ### Fixed
 - `stubs/ontology.yaml` `change_event` entity caught up to the actual

@@ -12,6 +12,21 @@ abstract class AiFeatureConfig
     ) {}
 
     /**
+     * The curated provider list for this feature — NOT every SDK-known or
+     * diagnostically-smokable provider.
+     *
+     * Per ADR-019, consumers deciding ThreadStudio eligibility should depend
+     * on {@see ThreadStudioProviderPolicy::curatedProviders()} (the
+     * feature-policy seam), not call this method directly. This method owns
+     * the underlying curated list + labels; the policy owns the product
+     * decision and is the future home for capability-ledger gating and
+     * per-provider rejection messages.
+     *
+     * Membership is a deliberate curation decision: a provider is here only
+     * when it is matrix-verified for structured streaming OR a documented
+     * OpenAI-compatible router path. Passing `evolayer:ai:stream-smoke` is
+     * eligibility for consideration, not automatic curation.
+     *
      * @return array<int, string>
      */
     public function supportedProviders(): array

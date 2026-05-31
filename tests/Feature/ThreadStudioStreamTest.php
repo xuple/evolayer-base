@@ -116,22 +116,37 @@ test('the stream endpoint prompts the agent with the customer message and tone',
 test('the stream endpoint uses the selected provider', function () use ($fakeResult) {
     $user = makeAdmin();
 
+    // Default is gemini; select the other curated provider (openai) to prove
+    // the explicitly-selected provider/model is the one used.
     config()->set('ai.thread_studio.provider', 'gemini');
-    config()->set('ai.providers.anthropic.models.text.default', 'claude-haiku-4-5-20251001');
+    config()->set('ai.providers.openai.models.text.default', 'gpt-4o-mini');
 
     ThreadStudioAgent::fake([$fakeResult])->preventStrayPrompts();
 
     $this->actingAs($user)->post('/ai/thread-studio/stream', [
-        'customer_message' => 'A customer asks whether Anthropic can be tested through ThreadStudio.',
-        'model' => 'claude-haiku-4-5-20251001',
-        'provider' => 'anthropic',
+        'customer_message' => 'A customer asks whether OpenAI is used when selected in ThreadStudio.',
+        'model' => 'gpt-4o-mini',
+        'provider' => 'openai',
         'tone' => 'balanced',
     ])->assertSuccessful()->streamedContent();
 
     ThreadStudioAgent::assertPrompted(function (AgentPrompt $prompt): bool {
-        return $prompt->provider->name() === 'anthropic'
-            && $prompt->model === 'claude-haiku-4-5-20251001';
+        return $prompt->provider->name() === 'openai'
+            && $prompt->model === 'gpt-4o-mini';
     });
+});
+
+test('the stream endpoint rejects a non-curated provider (anthropic blocked/pending)', function () {
+    $user = makeAdmin();
+
+    // Anthropic is diagnostic-known but not curated for ThreadStudio (ADR-020)
+    // — its structured streaming emits no usable TextDelta events. It must not
+    // be selectable in the curated runtime.
+    $this->actingAs($user)->postJson('/ai/thread-studio/stream', [
+        'customer_message' => 'A customer asks how to install the starter kit locally.',
+        'provider' => 'anthropic',
+        'tone' => 'balanced',
+    ])->assertUnprocessable()->assertInvalid(['provider']);
 });
 
 // ---- Invocation recording ----
@@ -290,12 +305,14 @@ test('the stream endpoint validates the selected provider', function () {
 test('the stream endpoint validates the selected model belongs to the selected provider', function () {
     $user = makeAdmin();
 
-    config()->set('ai.providers.anthropic.models.text.default', 'claude-haiku-4-5-20251001');
+    config()->set('ai.providers.openai.models.text.default', 'gpt-4o-mini');
 
+    // openai is curated, so the provider passes; a gemini model does not belong
+    // to openai, so model validation fails.
     $this->actingAs($user)->postJson('/ai/thread-studio/stream', [
         'customer_message' => 'A customer asks how to install the starter kit locally.',
         'model' => 'gemini-3-flash-preview',
-        'provider' => 'anthropic',
+        'provider' => 'openai',
         'tone' => 'balanced',
     ])->assertUnprocessable()->assertInvalid(['model']);
 });

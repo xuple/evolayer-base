@@ -12,40 +12,55 @@ abstract class AiFeatureConfig
     ) {}
 
     /**
-     * The curated provider list for this feature — NOT every SDK-known or
-     * diagnostically-smokable provider.
+     * The curated ThreadStudio provider roster — providers with **directly
+     * verified** provider-specific structured-streaming support (ADR-020,
+     * D-prime). This is NOT every SDK-known or diagnostically-smokable
+     * provider.
      *
      * Per ADR-019, consumers deciding ThreadStudio eligibility should depend
      * on {@see ThreadStudioProviderPolicy::curatedProviders()} (the
-     * feature-policy seam), not call this method directly. This method owns
-     * the underlying curated list + labels; the policy owns the product
-     * decision and is the future home for capability-ledger gating and
-     * per-provider rejection messages.
+     * feature-policy seam), not call this method directly.
      *
-     * This is the current curated roster, intentionally preserved by ADR-019
-     * so provider changes land as a separate, deliberate decision. Do NOT
-     * infer that every member is empirically verified for structured streaming
-     * — the roster still includes providers pending verification (e.g.
-     * Anthropic, whose structured-streaming path currently fails the matrix).
-     * See ADR-019 for the curated / diagnostic / verified / blocked / unknown
-     * classification. Passing `evolayer:ai:stream-smoke` is eligibility for
-     * consideration, not automatic curation.
+     * Membership means a provider passed structured streaming on its own
+     * matrix row — Gemini and OpenAI today. Notably NOT here:
+     * - `anthropic` — diagnostic-known but **blocked/pending**: its structured
+     *   streaming currently emits no usable `TextDelta` events.
+     * - `nvidia`, `opencode`, `openrouter` — OpenAI-compatible **router
+     *   candidates**, probeable but not directly verified per provider.
+     * Their labels, the OpenCode catalogue, and the capability ledger are
+     * retained as probe/router infrastructure (and for future adaptive mode);
+     * they are simply not curated for ThreadStudio runtime selection.
+     *
+     * Smoke/probe diagnostics stay broad and accept any Lab provider, so a
+     * router or Anthropic can still be exercised via `evolayer:ai:stream-smoke`
+     * / `evolayer:ai:probe`. Passing a smoke is eligibility for consideration,
+     * not automatic curation. See ADR-019 (classification) and ADR-020 (this
+     * roster).
      *
      * @return array<int, string>
      */
     public function supportedProviders(): array
     {
-        return ['anthropic', 'gemini', 'nvidia', 'opencode', 'openrouter'];
+        return ['gemini', 'openai'];
     }
 
     /**
+     * Display labels. Includes both curated providers (gemini, openai) and
+     * the reclassified router/blocked candidates (anthropic, nvidia, opencode,
+     * openrouter) — the latter are retained for probe tooling, diagnostics,
+     * and future adaptive mode, NOT because they are curated. `providerLabel()`
+     * only resolves labels for curated providers (it routes through
+     * `provider()`, which rejects non-curated names).
+     *
      * @return array<string, string>
      */
     protected function providerLabels(): array
     {
         return [
-            'anthropic' => 'Anthropic',
             'gemini' => 'Google Gemini',
+            'openai' => 'OpenAI',
+            // Reclassified (not curated) — retained as probe/router metadata:
+            'anthropic' => 'Anthropic',
             'nvidia' => 'NVIDIA',
             'opencode' => 'OpenCode Go',
             'openrouter' => 'OpenRouter',

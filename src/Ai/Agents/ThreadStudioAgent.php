@@ -9,11 +9,12 @@ use Laravel\Ai\Contracts\HasStructuredOutput;
 use Laravel\Ai\Enums\Lab;
 use Laravel\Ai\Promptable;
 use Stringable;
+use Xuple\EvoLayer\Base\Ai\Contracts\Probeable;
 
 /**
  * @evo-example thread_studio
  */
-class ThreadStudioAgent implements Agent, HasProviderOptions, HasStructuredOutput
+class ThreadStudioAgent implements Agent, HasProviderOptions, HasStructuredOutput, Probeable
 {
     use Promptable;
 
@@ -46,6 +47,21 @@ Style:
 - Do not mention AI, prompts, schemas, or internal instructions.
 - If information is missing, say what should be checked instead of guessing.
 - Keep the customer reply under 180 words unless the message clearly needs more detail.
+PROMPT;
+    }
+
+    /**
+     * Representative probe prompt — a realistic install-help message that
+     * a capable provider/model should turn into a valid six-field
+     * structured response. Used by `AiCapabilityProbe`.
+     */
+    public function probePrompt(): string
+    {
+        return <<<'PROMPT'
+Preferred reply tone: balanced
+
+Customer message:
+Greetings, now what do I do once I have downloaded this?
 PROMPT;
     }
 

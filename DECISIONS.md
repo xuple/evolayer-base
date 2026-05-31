@@ -341,11 +341,14 @@ A capability row records observations as a collection of typed conditions. First
 | `PatchPresent` | `vendor/laravel/ai/.../StreamsText.php` contains the `JsonSchemaTypeFactory` marker |
 | `StructuredStreaming` | The patched flow emits `TextDelta` events end-to-end |
 | `ThreadStudioSchemaValid` | The current `ThreadStudioAgent` schema hash passed structured streaming against this provider/model |
-| `ThreadStudioReady` | Computed: all of the above True AND provider is in the curated policy list |
+
+`ThreadStudioReady` is **not** a stored ledger condition — it is a **policy-derived availability result** computed by `ThreadStudioProviderPolicy` from observed conditions plus the curated roster. Keeping it out of the table preserves the ledger-records-observations / policy-decides rule: a row records what a probe saw, not whether the product currently allows the provider. `ThreadStudioReady` may surface in future doctor/receipt output, computed on demand.
 
 Each condition is `(type, status ∈ {True, False, Unknown}, reason, message, schema_hash?, observed_at)`. `Unknown` is the load-bearing value — it distinguishes "untested" from "tested and failed." A provider with no probe row is Unknown; a probe row with `probe_passed=false` is False; a probe row with `probe_passed=true` is True for the conditions its probe exercised.
 
-This ADR does not require all conditions to be populated today. Today's probe synthesises one condition (`StructuredStreaming` for the structured-streaming smoke). Future probes add more.
+Conditions stored on `AiCapability` describe the probe context for that `provider × model × agent × schema_hash` row — what was true at probe time. Some condition *types* are environment-wide (`PatchPresent`, `CredentialsConfigured`) rather than provider-specific; when stored on a capability row they record what was observed *during that probe*, not universal system truth. Environment-wide health may also surface separately in future doctor/receipt output, but the capability row is always the per-probe snapshot.
+
+This ADR adds the column and vocabulary only — **no command writes conditions yet**. The first probe writer (the next probe-evolution commit) will synthesise a `StructuredStreaming` condition from the probe result; future probes add more.
 
 ### Current provider classification (no roster change)
 

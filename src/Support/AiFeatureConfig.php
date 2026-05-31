@@ -22,10 +22,14 @@ abstract class AiFeatureConfig
      * decision and is the future home for capability-ledger gating and
      * per-provider rejection messages.
      *
-     * Membership is a deliberate curation decision: a provider is here only
-     * when it is matrix-verified for structured streaming OR a documented
-     * OpenAI-compatible router path. Passing `evolayer:ai:stream-smoke` is
-     * eligibility for consideration, not automatic curation.
+     * This is the current curated roster, intentionally preserved by ADR-019
+     * so provider changes land as a separate, deliberate decision. Do NOT
+     * infer that every member is empirically verified for structured streaming
+     * — the roster still includes providers pending verification (e.g.
+     * Anthropic, whose structured-streaming path currently fails the matrix).
+     * See ADR-019 for the curated / diagnostic / verified / blocked / unknown
+     * classification. Passing `evolayer:ai:stream-smoke` is eligibility for
+     * consideration, not automatic curation.
      *
      * @return array<int, string>
      */

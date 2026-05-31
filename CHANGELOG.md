@@ -46,6 +46,15 @@ starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.
   with a fixed contract — the starter's kitchen-sink workflow,
   pre-release gates — can opt in without the grep-the-summary-line
   wrapper.
+- Provider capability model groundwork (ADR-018 → ADR-019): the
+  `ThreadStudioProviderPolicy` seam (the consumer-facing API for
+  ThreadStudio provider eligibility, so callers no longer depend on
+  `AiFeatureConfig::supportedProviders()` directly) and a nullable
+  `evolayer_base_ai_capabilities.conditions` JSON column for future
+  True / False / Unknown capability observations. `probe_passed` is
+  unchanged and remains the backwards-compatible projection. No provider
+  roster change — the curated list is preserved pending a separate
+  decision.
 
 ### Fixed
 - `stubs/ontology.yaml` `change_event` entity caught up to the actual

@@ -350,14 +350,16 @@ Conditions stored on `AiCapability` describe the probe context for that `provide
 
 The column and vocabulary landed first (separately from any producer). The producer now exists: `AiCapabilityProbe` (the shared service extracted from the three `evolayer:ai:*` commands) synthesises a `StructuredStreaming` condition via `ConditionsBuilder` and `persist()` writes it on every recorded probe, with `probe_passed` derived from that condition's status so the boolean and the conditions array cannot drift. Only the `StructuredStreaming` condition is synthesised today; future probes add the remaining types (`CredentialsConfigured`, `PatchPresent`, `ThreadStudioSchemaValid`). The `Unknown` vs `False` distinction is enforced at the producer: the credentials short-circuit records `Unknown` (the agent was never run), never `False`.
 
-### Current provider classification (no roster change)
+### Provider classification (as of ADR-019; the roster itself was changed by ADR-020 → D-prime)
 
 | Provider | Classification |
 | --- | --- |
 | Gemini | Curated default; structured-streaming verified (matrix ✅). |
-| OpenAI | Structured-streaming verified (matrix ✅); eligible for ThreadStudio consideration; **not** automatically curated. |
-| Anthropic | Diagnostic-known; ThreadStudio pending/blocked until structured streaming emits TextDelta events. **Still in `supportedProviders()` today** — roster change deferred per the explicit "no roster change in this commit" rule. |
+| OpenAI | Structured-streaming verified (matrix ✅); eligible for ThreadStudio consideration; **not** automatically curated by ADR-019 (promoted to curated by ADR-020). |
+| Anthropic | Diagnostic-known; ThreadStudio pending/blocked until structured streaming emits TextDelta events. |
 | NVIDIA, OpenCode, OpenRouter | Structural / router candidates (share OpenAI's Chat-Completions code path); **Unknown** until directly probed for structured streaming on the actual model the router resolves to. |
+
+ADR-019 left the roster unchanged (`supportedProviders()` still `['anthropic', 'gemini', 'nvidia', 'opencode', 'openrouter']`) and deferred the roster decision. **ADR-020 makes that decision — see below.**
 
 This is classification only — `AiFeatureConfig::supportedProviders()` carries forward unchanged. The roster change (whether to add OpenAI, whether to remove Anthropic, whether the router providers stay under structural inference or require their own matrix runs) is the next decision and will be presented as options A-E in a follow-up message.
 
@@ -410,6 +412,51 @@ Still deferred to ADR-020+: the roster change (A-E), the policy's `explain()`/`a
 
 ---
 
+## ADR-020 — Curated ThreadStudio roster = directly-verified providers (D-prime)
+
+**Status:** Accepted (resolves the roster decision ADR-019 deferred)
+
+**Context.** ADR-019 fixed the capability *model* (tiers, conditions-lite, the `ThreadStudioProviderPolicy` seam) but explicitly left the *roster* — what `AiFeatureConfig::supportedProviders()` actually returns — for a follow-up. Five options were on the table: A (keep as-is + document), B (remove Anthropic only), C (add OpenAI + remove Anthropic), D (only matrix-verified: `gemini`, `openai`), E (adaptive runtime mode later). The roster at the time (`['anthropic', 'gemini', 'nvidia', 'opencode', 'openrouter']`) carried two concrete anomalies: OpenAI was matrix-verified but excluded; Anthropic was included but fails structured streaming (zero `TextDelta` events). NVIDIA/OpenCode/OpenRouter sat in the roster on *structural inference* (shared OpenAI-compatible code path), not direct verification.
+
+**Decision — D-prime.** Curated ThreadStudio providers mean **directly verified provider-specific structured-streaming support**.
+
+```
+supportedProviders(): ['anthropic','gemini','nvidia','opencode','openrouter']
+                   -> ['gemini','openai']
+```
+
+- **OpenAI** is promoted to curated (matrix ✅, granular TextDeltas).
+- **Anthropic** is removed from curated support and classified **blocked/pending** until its structured streaming emits usable deltas. It must not be selectable in curated ThreadStudio while broken.
+- **NVIDIA / OpenCode / OpenRouter** are removed from curated runtime support and reclassified as **router-compatible / probe candidates** — Unknown until directly probed per provider/model.
+
+**The 0.1 provider promise this establishes:**
+
+- Curated ThreadStudio providers are directly verified.
+- Router-compatible providers are probe candidates.
+- Local verification can promote exact provider/model pairs later (the future adaptive/verified mode, ADR-021+).
+
+This is the honest, provider-specific-support-first posture. It is stricter than C (which would keep the structural-inference router tier in the curated set); D-prime treats "verified" as empirical, not structural.
+
+**What is reclassified, not deleted.** Nothing in the probe/router infrastructure is removed — only its curation status changes:
+
+- Provider **labels** for anthropic/nvidia/opencode/openrouter are retained (documented as reclassified metadata in `providerLabels()`).
+- The **OpenCode model catalogue** (`opencodeModelCompatibility()`) and the **capability ledger** are retained for probe tooling and future adaptive mode.
+- **Smoke/probe diagnostics stay broad** — `evolayer:ai:probe`, `smoke-test`, `stream-smoke` accept any `Lab` provider, so Anthropic and the routers remain fully exercisable. Passing a smoke is eligibility for consideration, not automatic curation (carried from ADR-019).
+
+**Enforcement.** `supportedProviders()` drives three surfaces, so removal is total: `AiFeatureConfig::provider()` throws for non-curated names; `ComposeThreadStudioRequest`'s `Rule::in($curated)` returns 422 on `anthropic`/routers; and `ThreadStudioAiConfig::providerOptions()` (the UI dropdown source) stops listing them. A regression test pins `['gemini','openai']`; a feature test pins the anthropic 422.
+
+**OpenAI default model.** OpenAI had no `models.text.default` configured — a newly-curated provider with no default model would resolve the `defaultModel()` sentinel (`'provider default'`) and fail at request time. `config/evolayer-ai.php` now sets `openai.models.text.default = env('OPENAI_CHAT_MODEL', 'gpt-4o-mini')`; the starter's `.env.example` ships `OPENAI_CHAT_MODEL` for parity with the Gemini/Anthropic model env lines.
+
+**Explanatory rejection — deferred.** Today a blocked provider is rejected with the framework's generic "selected provider is invalid" validation message. The intended end state is explanatory: *"Anthropic is known to the diagnostic layer but is blocked for ThreadStudio because structured streaming currently emits no usable TextDelta events."* That belongs to `ThreadStudioProviderPolicy::explain()` / `availability()`, the next policy method — **not built in this commit** (this ADR keeps to the roster decision + docs). Until then the rationale lives here, in `AGENTS.md`, and in the CHANGELOG.
+
+**Non-goals (unchanged from ADR-019).** No adaptive/verified runtime mode yet; no runtime provider fallback; no receipts; no admin probing UI; no removal of router-provider probe infrastructure.
+
+**Side effects.**
+- Hosts that had set `AI_THREAD_STUDIO_PROVIDER=anthropic` (or a router) now get a 422 at ThreadStudio request time. The default is `gemini`, so the starter's kitchen-sink install is unaffected; only hosts that explicitly opted into a now-uncurated provider feel the cutover. Recorded under CHANGELOG `### Changed`.
+- Pest 172 / 596. Diagnostic-layer tests using Anthropic/OpenCode stayed green (broad surface preserved).
+
+---
+
 ## Cross-cutting lesson
 
 Almost every painful cascade — namespacing breaking imports, opt-in breaking tests, per-feature routes breaking type-checks, the ontology collision — was caught by **thin Phase D probes on a real fresh starter, not by the package's own test suite** (which was green throughout at 120–129 tests). The package tests prove the code is internally coherent; only an integration run proves it installs and composes. This is the strongest argument for completing a full Phase D and the Phase E starter template before considering Base "done."
@@ -421,7 +468,8 @@ Almost every painful cascade — namespacing breaking imports, opt-in breaking t
 - **Full Phase D** — a live ThreadStudio compose round-trip on a fresh starter (the thin probes covered install/build/types, not a live AI call). Blocked on a provider API key.
 - **Anthropic structured-streaming verification** — blocked on credits.
 - **Upstream `laravel/ai` PR** — deferred; tracked in `patches/README.md`.
-- **AI provider roster** — ADR-018 fixed the *tiering policy*; ADR-019 ships the abstractions and the `ThreadStudioProviderPolicy` seam. The *roster change* (Anthropic / OpenAI / router-tier decisions) is the next follow-up. Options A–E remain on the table for human review before any change to `AiFeatureConfig::supportedProviders()`.
+- **AI provider roster** — *Resolved by ADR-020 (D-prime):* curated = directly-verified = `['gemini', 'openai']`; Anthropic blocked/pending; NVIDIA/OpenCode/OpenRouter reclassified as router/probe candidates. ADR-018 fixed the tiering policy; ADR-019 shipped the abstractions + `ThreadStudioProviderPolicy` seam; ADR-020 made the roster decision.
+- **Explanatory provider rejection** — `ThreadStudioProviderPolicy::explain()` / `availability()` to replace the generic "selected provider is invalid" message with a per-provider reason (e.g. Anthropic blocked because structured streaming emits no usable TextDeltas). The next policy method; not yet built.
 - **`AiProbeCommand` iteration direction** — still iterates the curated list (`supportedProviders()`) in the all-providers path. The `TODO (Step 2+)` comment is gone (the probe logic is now the shared `AiCapabilityProbe` service and the persist no-op is an explicit contract), but the direction-of-flow point stands: the probe should iterate diagnostic-eligible providers and write conditions, with curation as the *output* of probing, not the input. Coupled to enabling `--persist` for non-OpenCode providers — both wait on the roster decision.
 - **Next family member** — Commerce Core is slated to follow Base's public release; not yet started.
 

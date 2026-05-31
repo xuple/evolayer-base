@@ -51,8 +51,8 @@ starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.
   ThreadStudio provider eligibility, so callers no longer depend on
   `AiFeatureConfig::supportedProviders()` directly) and a nullable
   `evolayer_base_ai_capabilities.conditions` JSON column carrying
-  True / False / Unknown capability observations. No provider roster
-  change — the curated list is preserved pending a separate decision.
+  True / False / Unknown capability observations. (The roster change
+  itself followed in ADR-020 — see Changed.)
 - Shared `AiCapabilityProbe` service (with a `ProbeResult` value object,
   a `Probeable` agent interface, and a `ConditionsBuilder`) extracted
   from the three `evolayer:ai:*` commands, which previously each
@@ -66,6 +66,33 @@ starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.
   no longer hardcoded to `json_schema` on success (curated catalogue
   modes are preserved on `--force` reprobe), and the persist no-op for
   modelless probes is now an explicit "model required" contract.
+
+### Changed
+- **Curated ThreadStudio provider roster (ADR-020, D-prime):**
+  `AiFeatureConfig::supportedProviders()` changed from
+  `['anthropic', 'gemini', 'nvidia', 'opencode', 'openrouter']` to
+  `['gemini', 'openai']`. Curated now means *directly verified*
+  provider-specific structured streaming.
+  - **OpenAI** added (matrix-verified) and selectable; OpenAI gains a
+    default model via `OPENAI_CHAT_MODEL` (`gpt-4o-mini` default).
+  - **Anthropic** removed from curated support and classified
+    **blocked/pending** — its structured streaming currently emits no
+    usable `TextDelta` events, so it is no longer selectable in
+    ThreadStudio (rejected with a 422 at request validation).
+  - **NVIDIA / OpenCode / OpenRouter** removed from curated runtime
+    support and reclassified as OpenAI-compatible router / probe
+    candidates.
+
+  Nothing is deleted — labels, the OpenCode model catalogue, and the
+  capability ledger are retained as probe/router infrastructure and for
+  future adaptive mode. Smoke/probe diagnostics stay broad (any Lab
+  provider), so Anthropic and the routers remain exercisable via
+  `evolayer:ai:probe` / `smoke-test` / `stream-smoke`. **Migration
+  note:** a host that set `AI_THREAD_STUDIO_PROVIDER` to anthropic,
+  nvidia, opencode, or openrouter will now get a 422 from ThreadStudio;
+  switch to `gemini` (default) or `openai`. The explanatory per-provider
+  rejection message (`ThreadStudioProviderPolicy::explain()`) is the next
+  policy method and is not yet built.
 
 ### Fixed
 - `stubs/ontology.yaml` `change_event` entity caught up to the actual

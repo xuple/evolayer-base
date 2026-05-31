@@ -84,7 +84,9 @@ Provider drivers, capability probing, and the AI capability ledger live here. Do
 - **Feature policy** (`ThreadStudioProviderPolicy`) makes the *product decision* — which providers ThreadStudio curates, and (later) why a given provider is rejected. Consumers deciding ThreadStudio eligibility depend on the policy, **not** on `AiFeatureConfig::supportedProviders()` directly. Passing `evolayer:ai:stream-smoke` is eligibility for consideration, not automatic curation.
 - **Runtime selection** uses the explicit configured `provider` + `model` only — **no silent fallback across providers**. Adaptivity, when it lands, happens at config / validation / probe time, never inside a live request.
 
-Do not change `AiFeatureConfig::supportedProviders()` (a roster change) inside an unrelated commit — a regression-guard test pins the current list, and roster changes are tracked as their own decision (ADR-019 → Options A-E). Feature flags (`EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO`) gate *visibility*, not provider readiness — the two are separate predicates.
+**Curated roster (ADR-020, D-prime):** `AiFeatureConfig::supportedProviders()` is `['gemini', 'openai']` — *directly verified* providers only. Anthropic is **blocked/pending** (diagnostic-known, but its structured streaming emits no usable `TextDelta` events, so it is not selectable in ThreadStudio); NVIDIA / OpenCode / OpenRouter are **router/probe candidates**, not curated. Their labels, the OpenCode catalogue, and the capability ledger are retained as probe/router infrastructure — reclassified, not deleted. Do not re-add a provider to the curated roster without a direct structured-streaming verification and a regression-test update (a test pins `['gemini', 'openai']`). Do not change the roster inside an unrelated commit.
+
+Smoke/probe diagnostics (`evolayer:ai:probe` / `smoke-test` / `stream-smoke`) stay broad — they accept any `Lab` provider, so Anthropic and the routers remain exercisable. Passing a smoke is eligibility for consideration, not curation. Feature flags (`EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO`) gate *visibility*, not provider readiness — separate predicates.
 
 ## Verification gauntlet
 

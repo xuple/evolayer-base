@@ -17,6 +17,7 @@ class AiCapability extends Model
     {
         return [
             'probe_passed' => 'boolean',
+            'conditions' => 'array',
             'probed_at' => 'immutable_datetime',
             'superseded_at' => 'immutable_datetime',
         ];

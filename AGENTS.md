@@ -78,6 +78,14 @@ The package's AI command surface is intentionally minimal:
 
 Provider drivers, capability probing, and the AI capability ledger live here. Do not import provider-platform expansions (model sweeps, cost estimation, stale-reprobe workflows, billing) without an explicit `DECISIONS.md` ADR. The starter's "AI providers" doc section should reference these commands but should not duplicate provider-platform UX.
 
+**Observed capability is not product policy (ADR-019).** Keep three layers distinct:
+
+- **Capability ledger** (`AiCapability` / `evolayer_base_ai_capabilities`) records *observed facts* — what a probe saw for a `provider × model × agent × schema_hash`. Conditions express `True / False / Unknown` (the `conditions` JSON column); `Unknown` means "untested", not "failed". The ledger does not decide what ThreadStudio allows.
+- **Feature policy** (`ThreadStudioProviderPolicy`) makes the *product decision* — which providers ThreadStudio curates, and (later) why a given provider is rejected. Consumers deciding ThreadStudio eligibility depend on the policy, **not** on `AiFeatureConfig::supportedProviders()` directly. Passing `evolayer:ai:stream-smoke` is eligibility for consideration, not automatic curation.
+- **Runtime selection** uses the explicit configured `provider` + `model` only — **no silent fallback across providers**. Adaptivity, when it lands, happens at config / validation / probe time, never inside a live request.
+
+Do not change `AiFeatureConfig::supportedProviders()` (a roster change) inside an unrelated commit — a regression-guard test pins the current list, and roster changes are tracked as their own decision (ADR-019 → Options A-E). Feature flags (`EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO`) gate *visibility*, not provider readiness — the two are separate predicates.
+
 ## Verification gauntlet
 
 Run before opening a PR:

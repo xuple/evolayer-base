@@ -20,6 +20,8 @@ final class ProbeResult
      * @param  'supported'|'blocked'|'unsupported'|'unknown'  $status
      * @param  list<array<string, mixed>>  $conditions
      * @param  array<string, mixed>|null  $payload
+     * @param  string|null  $model  The model actually probed (post provider-specific default resolution); null when the probe short-circuited before resolving one.
+     * @param  string|null  $schemaHash  The agent schema hash the probe ran against.
      */
     public function __construct(
         public readonly bool $ok,
@@ -29,6 +31,8 @@ final class ProbeResult
         public readonly array $conditions = [],
         public readonly ?int $latencyMs = null,
         public readonly ?array $payload = null,
+        public readonly ?string $model = null,
+        public readonly ?string $schemaHash = null,
     ) {}
 
     /**

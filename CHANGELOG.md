@@ -90,9 +90,16 @@ starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.
   `evolayer:ai:probe` / `smoke-test` / `stream-smoke`. **Migration
   note:** a host that set `AI_THREAD_STUDIO_PROVIDER` to anthropic,
   nvidia, opencode, or openrouter will now get a 422 from ThreadStudio;
-  switch to `gemini` (default) or `openai`. The explanatory per-provider
-  rejection message (`ThreadStudioProviderPolicy::explain()`) is the next
-  policy method and is not yet built.
+  switch to `gemini` (default) or `openai`.
+- **Explanatory provider rejection.** `ThreadStudioProviderPolicy::explain(provider)`
+  returns a `ProviderAvailability` (curated / blocked / candidate /
+  unknown) with a per-provider reason, wired into
+  `ComposeThreadStudioRequest` — so a rejected provider gets, e.g.,
+  *"Anthropic is known to the diagnostic layer but is blocked for
+  ThreadStudio because structured streaming currently emits no usable
+  TextDelta events."* instead of the framework's generic "selected
+  provider is invalid". Provider-level only; model-level capability-ledger
+  gating remains future (adaptive mode).
 
 ### Fixed
 - `stubs/ontology.yaml` `change_event` entity caught up to the actual

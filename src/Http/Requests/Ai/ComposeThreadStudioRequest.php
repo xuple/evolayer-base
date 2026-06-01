@@ -2,6 +2,7 @@
 
 namespace Xuple\EvoLayer\Base\Http\Requests\Ai;
 
+use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -22,11 +23,11 @@ class ComposeThreadStudioRequest extends FormRequest
      * Get the validation rules that apply to the request.
      *
      * Provider eligibility flows through `ThreadStudioProviderPolicy` per
-     * ADR-019 — the policy is the consumer-facing seam, not the underlying
-     * curated list. Today the policy delegates to
-     * `ThreadStudioAiConfig::supportedProviders()`; the seam exists so
-     * future policy changes (capability-ledger gating, per-provider
-     * rejection messages) land in one place.
+     * ADR-019/ADR-020 — the policy is the consumer-facing seam. The provider
+     * rule uses `explain()` so a rejected provider gets a per-provider reason
+     * (e.g. Anthropic is blocked because structured streaming emits no usable
+     * TextDeltas) instead of the framework's generic "selected provider is
+     * invalid".
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
@@ -41,7 +42,17 @@ class ComposeThreadStudioRequest extends FormRequest
         return [
             'customer_message' => ['required', 'string', 'min:10', 'max:10000'],
             'tone' => ['required', 'string', Rule::in(['balanced', 'warm', 'firm'])],
-            'provider' => ['nullable', 'string', Rule::in($curated)],
+            'provider' => ['nullable', 'string', function (string $attribute, mixed $value, Closure $fail) use ($policy): void {
+                if ($value === null || $value === '') {
+                    return;
+                }
+
+                $availability = $policy->explain((string) $value);
+
+                if (! $availability->allowed) {
+                    $fail($availability->message);
+                }
+            }],
             'model' => ['nullable', 'string', Rule::in($aiConfig->selectableModelNames($provider))],
         ];
     }

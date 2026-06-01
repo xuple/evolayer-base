@@ -27,3 +27,42 @@ test('the curated roster is the directly-verified providers (ADR-020 D-prime)', 
 
     expect($policy->curatedProviders())->toBe(['gemini', 'openai']);
 });
+
+test('explain() classifies curated providers as allowed', function () {
+    $policy = app(ThreadStudioProviderPolicy::class);
+
+    foreach (['gemini', 'openai'] as $provider) {
+        $availability = $policy->explain($provider);
+        expect($availability->allowed)->toBeTrue()
+            ->and($availability->status)->toBe('curated');
+    }
+});
+
+test('explain() blocks Anthropic with the structured-streaming reason', function () {
+    $availability = app(ThreadStudioProviderPolicy::class)->explain('anthropic');
+
+    expect($availability->allowed)->toBeFalse()
+        ->and($availability->status)->toBe('blocked')
+        ->and($availability->message)->toBe(
+            'Anthropic is known to the diagnostic layer but is blocked for ThreadStudio because structured streaming currently emits no usable TextDelta events.'
+        );
+});
+
+test('explain() classifies router providers as candidates, not curated', function () {
+    $policy = app(ThreadStudioProviderPolicy::class);
+
+    foreach (['nvidia', 'opencode', 'openrouter'] as $provider) {
+        $availability = $policy->explain($provider);
+        expect($availability->allowed)->toBeFalse()
+            ->and($availability->status)->toBe('candidate')
+            ->and($availability->message)->toContain('router/probe candidate');
+    }
+});
+
+test('explain() classifies an unrecognised provider as unknown', function () {
+    $availability = app(ThreadStudioProviderPolicy::class)->explain('not-a-provider');
+
+    expect($availability->allowed)->toBeFalse()
+        ->and($availability->status)->toBe('unknown')
+        ->and($availability->message)->toContain('Unknown ThreadStudio provider');
+});

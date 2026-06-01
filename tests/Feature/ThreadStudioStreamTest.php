@@ -136,17 +136,31 @@ test('the stream endpoint uses the selected provider', function () use ($fakeRes
     });
 });
 
-test('the stream endpoint rejects a non-curated provider (anthropic blocked/pending)', function () {
+test('the stream endpoint rejects a non-curated provider (anthropic blocked/pending) with an explanatory reason', function () {
     $user = makeAdmin();
 
     // Anthropic is diagnostic-known but not curated for ThreadStudio (ADR-020)
     // — its structured streaming emits no usable TextDelta events. It must not
-    // be selectable in the curated runtime.
+    // be selectable, and the rejection explains why (ThreadStudioProviderPolicy::explain).
     $this->actingAs($user)->postJson('/ai/thread-studio/stream', [
         'customer_message' => 'A customer asks how to install the starter kit locally.',
         'provider' => 'anthropic',
         'tone' => 'balanced',
-    ])->assertUnprocessable()->assertInvalid(['provider']);
+    ])->assertUnprocessable()->assertInvalid([
+        'provider' => 'Anthropic is known to the diagnostic layer but is blocked for ThreadStudio because structured streaming currently emits no usable TextDelta events.',
+    ]);
+});
+
+test('the stream endpoint rejects a router-candidate provider with an explanatory reason', function () {
+    $user = makeAdmin();
+
+    $this->actingAs($user)->postJson('/ai/thread-studio/stream', [
+        'customer_message' => 'A customer asks how to install the starter kit locally.',
+        'provider' => 'openrouter',
+        'tone' => 'balanced',
+    ])->assertUnprocessable()->assertInvalid([
+        'provider' => 'router/probe candidate',
+    ]);
 });
 
 // ---- Invocation recording ----

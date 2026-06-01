@@ -6,41 +6,78 @@ namespace Xuple\EvoLayer\Base\Support;
  * Feature-specific product policy for ThreadStudio's provider eligibility.
  *
  * This class is the consumer-facing API for "which providers may a host
- * configure as `AI_THREAD_STUDIO_PROVIDER`?". It wraps the lower-level
- * curated provider list today and is the future home for explain() (per-
- * provider rejection messages) and adaptive-mode lookups against the
- * capability ledger.
- *
- * Per ADR-019, this class is the seam that consumers should depend on —
- * not `AiFeatureConfig::supportedProviders()` directly. The split exists
- * because future policy decisions (capability-ledger-driven gating, mode
- * toggles, per-provider rejection messages) belong here, not in the
- * config layer that owns the curated list and labels.
- *
- * The first implementation delegates to `ThreadStudioAiConfig::supportedProviders()`
- * so behaviour is preserved exactly. Subsequent ADRs / commits will widen
- * this class without disturbing its callers.
+ * configure as `AI_THREAD_STUDIO_PROVIDER`?" and "why is this one rejected?".
+ * Per ADR-019 it is the seam consumers depend on — not
+ * `AiFeatureConfig::supportedProviders()` directly — because product
+ * decisions (curation + per-provider rejection reasons, and later
+ * capability-ledger-driven gating) belong here, not in the config layer
+ * that owns the curated list and labels.
  */
 class ThreadStudioProviderPolicy
 {
+    /**
+     * Providers diagnostic-known but blocked for ThreadStudio, with the reason.
+     * Reclassified by ADR-020 (not deleted — still exercisable via the broad
+     * smoke/probe diagnostics).
+     *
+     * @var array<string, string>
+     */
+    protected const BLOCKED = [
+        'anthropic' => 'Anthropic is known to the diagnostic layer but is blocked for ThreadStudio because structured streaming currently emits no usable TextDelta events.',
+    ];
+
+    /**
+     * OpenAI-compatible router / probe candidates — not directly verified per
+     * provider, so not curated for ThreadStudio runtime selection (ADR-020).
+     *
+     * @var array<int, string>
+     */
+    protected const CANDIDATES = ['nvidia', 'opencode', 'openrouter'];
+
     public function __construct(
         protected readonly ThreadStudioAiConfig $config,
     ) {}
 
     /**
-     * Providers the policy currently allows as ThreadStudio's
-     * `AI_THREAD_STUDIO_PROVIDER` setting and accepts in request validation.
-     *
-     * Today this is the curated list owned by ThreadStudioAiConfig. Per
-     * ADR-019 the criteria for membership are deliberate product decisions
-     * (matrix-verified OR documented OpenAI-compatible router path), not
-     * purely the output of smoke results — `evolayer:ai:stream-smoke`
-     * passing is eligibility for consideration, not automatic curation.
+     * Providers the policy allows as ThreadStudio's `AI_THREAD_STUDIO_PROVIDER`
+     * setting and accepts in request validation — the directly-verified
+     * curated roster (ADR-020: Gemini + OpenAI).
      *
      * @return array<int, string>
      */
     public function curatedProviders(): array
     {
         return $this->config->supportedProviders();
+    }
+
+    /**
+     * Explain whether a provider may be used for ThreadStudio, and why not.
+     *
+     * Provider-level only today. Model-level / capability-ledger gating
+     * (`availability(provider, model)`) is adaptive mode and stays deferred.
+     */
+    public function explain(string $provider): ProviderAvailability
+    {
+        if (in_array($provider, $this->curatedProviders(), true)) {
+            return ProviderAvailability::curated($provider);
+        }
+
+        if (isset(self::BLOCKED[$provider])) {
+            return ProviderAvailability::blocked($provider, self::BLOCKED[$provider]);
+        }
+
+        if (in_array($provider, self::CANDIDATES, true)) {
+            return ProviderAvailability::candidate(
+                $provider,
+                ucfirst($provider).' is an OpenAI-compatible router/probe candidate for ThreadStudio, not a directly-verified provider. '
+                .'Exercise it with `evolayer:ai:stream-smoke` / `evolayer:ai:probe`; it is not selectable in ThreadStudio until verified. '
+                .'Curated providers are: '.implode(', ', $this->curatedProviders()).'.',
+            );
+        }
+
+        return ProviderAvailability::unknown(
+            $provider,
+            "Unknown ThreadStudio provider [{$provider}]. Curated providers are: ".implode(', ', $this->curatedProviders()).'.',
+        );
     }
 }

@@ -88,6 +88,8 @@ Provider drivers, capability probing, and the AI capability ledger live here. Do
 
 Smoke/probe diagnostics (`evolayer:ai:probe` / `smoke-test` / `stream-smoke`) stay broad — they accept any `Lab` provider, so Anthropic and the routers remain exercisable. Passing a smoke is eligibility for consideration, not curation. Feature flags (`EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO`) gate *visibility*, not provider readiness — separate predicates.
 
+**Never write "verified provider" without naming the verification scope** — `matrix-verified`, `stream-verified`, `ThreadStudio-verified`, or `locally verified`. Bare "verified" is the kind of overloaded term that drove the `supportedProviders()` confusion; the canonical provider vocabulary (curated / runtime-approved, diagnostic-eligible, router-backed, blocked, pending-verification, matrix-verified, locally-verified) is defined in [`DECISIONS.md`](DECISIONS.md) → "Provider taxonomy (canonical glossary)".
+
 ## Verification gauntlet
 
 Run before opening a PR:

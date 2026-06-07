@@ -455,6 +455,18 @@ This is the honest, provider-specific-support-first posture. It is stricter than
 - Hosts that had set `AI_THREAD_STUDIO_PROVIDER=anthropic` (or a router) now get a 422 at ThreadStudio request time. The default is `gemini`, so the starter's kitchen-sink install is unaffected; only hosts that explicitly opted into a now-uncurated provider feel the cutover. Recorded under CHANGELOG `### Changed`.
 - Pest 172 / 596. Diagnostic-layer tests using Anthropic/OpenCode stayed green (broad surface preserved).
 
+### Provider taxonomy (canonical glossary)
+
+The terms below are the canonical vocabulary for provider status. Use them with their stated scope; in particular, **never write "verified" without naming the verification scope** (matrix-verified, stream-verified, ThreadStudio-verified, or locally verified). "D-prime" is the historical codename for this ADR (ADR-020) — fine in maintainer/changelog context, but prose should prefer the plain terms below.
+
+- **Curated provider** (a.k.a. *runtime-approved provider*) — a provider accepted by ThreadStudio request validation for the current release, i.e. selectable as `AI_THREAD_STUDIO_PROVIDER`. In 0.1, curated providers must be **directly verified** for ThreadStudio's structured-streaming path. Source of truth: `AiFeatureConfig::supportedProviders()` (today `['gemini', 'openai']`); consumer-facing seam: `ThreadStudioProviderPolicy::curatedProviders()`. Public docs already phrase this as "curated (directly-verified)" — keep that.
+- **Diagnostic-eligible provider** — a provider the diagnostic commands (`evolayer:ai:probe` / `smoke-test` / `stream-smoke`) may attempt. Implies **no** ThreadStudio runtime support. The diagnostic surface is intentionally broad (any `Lab` provider); passing a smoke/probe is eligibility for consideration, not curation.
+- **Router-backed provider** — an OpenAI-compatible router/endpoint (NVIDIA, OpenCode, OpenRouter) retained as a probe candidate. It exposes an OpenAI-compatible API surface, but actual behaviour depends on the routed model, quota, endpoint, and streaming semantics, so it is **not** runtime-approved unless directly probed. Do not infer that OpenAI's verification transfers to a router-backed provider.
+- **Blocked provider** — a known provider intentionally unavailable for ThreadStudio runtime (today: `anthropic`). Returns a 422 with an explanatory reason via `ThreadStudioProviderPolicy::explain()`. Remains diagnostic-eligible.
+- **Pending verification** — the forward half of a blocked status: the provider may be reconsidered for curation if new matrix/probe evidence appears (e.g. Anthropic if its structured streaming starts emitting usable `TextDelta` events).
+- **Matrix-verified provider** — verified in the maintained structured-streaming matrix (`patches/README.md`) for that specific capability. Today: Gemini, OpenAI. Matrix-verified is the *evidence* that makes a provider eligible for curation — it is not automatically curation.
+- **Locally verified provider/model** — *future / adaptive mode*: a `provider × model × schema` combination a host's own capability ledger (`AiCapability` conditions) has observed passing. Not wired into runtime gating yet.
+
 ---
 
 ## Cross-cutting lesson

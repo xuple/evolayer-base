@@ -38,6 +38,112 @@ tagged. SemVer once 1.0 ships.
 > `scripts/apply-patches.php` (post-install/update). Consumers apply the patch
 > through their host project — the starter does this with composer-patches.
 
+## 0.1.0 Release Rehearsal Runbook
+
+A `0.1.0` is a **publicly installable, credible developer preview** — the bar is a
+best-in-class first-hour `composer create-project` experience. This runbook is the
+rehearsal that must pass before tagging, and again before public announcement.
+
+**Failure standard.** Required paths (install, setup, build, boot, doctor) must not
+fail unnecessarily. Optional AI paths may fail, but only with a **clear, diagnostic**
+message — never a stack trace or a silently broken UI.
+
+Run from a clean directory outside both working trees (e.g.
+`/tmp/evolayer-rehearsal-<date>`), with **no** sibling-path override, in two phases:
+
+- **Phase A — VCS rehearsal (before publication).** Resolves from the Forge VCS
+  source. **Gates the tag.**
+- **Phase B — Packagist rehearsal (before public announcement).** Resolves from
+  Packagist exactly as the public will. **Gates the announcement.**
+
+### 0. Pre-flight — both repos green at HEAD
+- [ ] Package: `composer test`, `composer validate --strict`, `php artisan evolayer:doctor --strict`.
+- [ ] Starter: `composer test`, `composer validate --strict`, `npm run types:check`, `npm run build`, `npm run lint:check`, `npm run format:check`.
+- [ ] Both clean and pushed to `origin` + `github`.
+
+### 1. Fresh install — Phase A (VCS source)
+The starter is not on Packagist yet, so point `create-project` at the starter's VCS;
+the package resolves via the starter's committed Forge `repositories` entry.
+
+```bash
+cd /tmp && rm -rf evolayer-rehearsal && \
+composer create-project xuple/evolayer-base-starter evolayer-rehearsal \
+  --repository='{"type":"vcs","url":"ssh://git@forge.dev.home.arpa:222/xupleteam/evolayer-base-starter.git"}' \
+  --stability=dev
+cd evolayer-rehearsal
+```
+
+- [ ] Resolves the starter **and** `xuple/evolayer-base` (dev-main) from VCS.
+- [ ] `cweagans/composer-patches` applies the `laravel/ai` structured-streaming patch (watch for the patch line — a `--no-dev` install would silently skip it and break streaming).
+- [ ] `post-create-project-cmd` ran: `key:generate`, SQLite created, `migrate --seed`, `wayfinder:generate`, `evolayer:ontology:compile`.
+
+### 2. Build + boot (the post-create gap)
+`post-create-project-cmd` does **not** build the frontend — these are explicit
+first-hour steps (documented in the starter README):
+
+```bash
+npm install && npm run build    # client + SSR
+php artisan serve               # or: composer dev
+```
+
+- [ ] `npm run build` green.
+- [ ] App boots with no Vite-manifest error.
+
+### 3. Required-path verification (in the created project)
+- [ ] `composer validate --strict` clean.
+- [ ] `composer test` green (PHPUnit).
+- [ ] `php artisan evolayer:doctor --strict --no-ansi` passes.
+
+### 4. No-key AI experience — must be clear, not broken
+With **no** provider keys in `.env`:
+- [ ] App, `/login`, authenticated home, and ThreadStudio all load.
+- [ ] An AI compose attempt surfaces a clear "key not configured" message — not a trace, not a silently dead UI.
+- [ ] `evolayer:doctor` advisories about absent keys read as guidance, not failure.
+
+### 5. Live AI — Gemini (**tag gate**)
+```bash
+# add GEMINI_API_KEY to .env
+php artisan evolayer:ai:stream-check gemini
+```
+- [ ] `stream-check gemini` shows TextDelta events + all fields completed + "verified end-to-end".
+- [ ] **Gemini ThreadStudio compose round-trip** in the UI returns a structured result. *(Both required before tag.)*
+
+### 6. Live AI — OpenAI (**announcement gate**)
+```bash
+# add OPENAI_API_KEY to .env
+php artisan evolayer:ai:stream-check openai
+```
+- [ ] `stream-check openai` green. *(Required before public announcement.)*
+- [ ] OpenAI ThreadStudio round-trip — *strongly preferred, not required for tag.*
+
+### 7. Screenshot surfaces — reshare-worthy
+Capture and eyeball for credibility (demo admin `test@example.com` / `password`):
+- [ ] Public landing (`/`).
+- [ ] Authenticated home.
+- [ ] ThreadStudio (ideally mid/post a Gemini compose).
+
+### 8. Phase B — Packagist rehearsal (**before announcement**)
+After the package is tagged + published and the starter flipped to `^0.1` (see
+*Package tag flow* above):
+
+```bash
+cd /tmp && rm -rf evolayer-packagist && \
+composer create-project xuple/evolayer-base-starter evolayer-packagist
+```
+
+- [ ] Resolves with **no** `--repository` / `--stability` flags — pure Packagist, exactly as the public will.
+- [ ] Repeat steps 2–4 (build, boot, doctor, no-key clarity) green.
+
+### Docs + wording gates
+- [ ] **README self-contained at tag** (a reader can install + run from the README alone).
+- [ ] **Minimal `docs.evodevops.com/base` before public announcement** (not required for the tag itself).
+- [ ] README + release notes use developer-preview wording: *"0.1 developer preview — publicly installable, intended for early builders; pre-1.0, APIs may change before 1.0."* Not "stable". Position as a serious Laravel AI starter with a verified first-hour experience.
+
+### Gate summary
+- **Before tag:** steps 0–5 + step 7 green; README self-contained.
+- **Before public announcement:** step 6 (OpenAI stream-check) + step 8 (Packagist rehearsal) green; minimal docs site live.
+- **Tag/publish order:** package first (tag → Packagist), starter second (flip `dev-main`→`^0.1`, remove Forge `repositories` entry, Phase B clean → Packagist).
+
 ## Starter create-project flow
 
 End users will run:

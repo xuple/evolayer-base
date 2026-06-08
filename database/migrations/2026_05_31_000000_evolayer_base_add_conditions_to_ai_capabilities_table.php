@@ -14,10 +14,9 @@ return new class extends Migration
             // schema_hash?, observed_at} tuples describing what a probe observed,
             // distinct from the product policy that consumes those observations.
             //
-            // NULL today — no probe writes conditions yet (deferred to a separate
-            // probe-evolution commit). probe_passed stays the authoritative
-            // boolean and is the backwards-compatible projection of the
-            // StructuredStreaming condition once conditions are populated.
+            // AiCapabilityProbe now writes the StructuredStreaming condition.
+            // probe_passed stays the backwards-compatible boolean projection of
+            // that condition so old readers do not need to parse the JSON.
             $table->json('conditions')->nullable()->after('note');
         });
     }

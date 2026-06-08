@@ -29,6 +29,10 @@ starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.
   `done`, `error`.
 - Ontology compiler (`evolayer:ontology:compile`) with multi-file namespace
   merge; Base registers `evolayer.base`.
+- Ontology↔migration drift guard: package-owned ontology entities are now
+  tested against their migrated columns, and `morph_to` relations are tested
+  against polymorphic `*_type` / `*_id` column pairs so metadata drift is caught
+  automatically.
 - Console commands: `evolayer:install`, `evolayer:doctor`, `evolayer:user:promote`,
   `evolayer:ontology:compile`, `evolayer:ai:probe`, `evolayer:ai:smoke-test`,
   `evolayer:ai:stream-check`.
@@ -76,11 +80,12 @@ starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.
   - **OpenAI** added (matrix-verified) and selectable; OpenAI gains a
     default model via `OPENAI_CHAT_MODEL` (`gpt-4o-mini` default).
   - **Anthropic** removed from runtime-approved support and classified
-    **blocked / pending re-verification** — its structured streaming currently emits no
-    usable `TextDelta` events, so it is no longer selectable in
-    ThreadStudio (rejected with a 422 at request validation).
+    **blocked for ThreadStudio runtime / pending re-verification** — its
+    structured streaming currently emits no usable `TextDelta` events, so it is
+    no longer selectable in ThreadStudio (rejected with a 422 at request
+    validation).
   - **NVIDIA / OpenCode / OpenRouter** removed from runtime-approved
-    support and reclassified as router-backed probe
+    support and reclassified as router-backed diagnostic-eligible probe
     candidates.
 
   Nothing is deleted — labels, the OpenCode model catalogue, and the
@@ -114,6 +119,13 @@ starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.
   spec was stale. Host apps (the starter included) pick up the
   corrected ontology on `composer update xuple/evolayer-base` plus a
   resync that publishes the `evolayer-base-ontology` tag.
+- `stubs/ontology.yaml` now declares the remaining package-owned migration
+  columns for `form_submission`, `ai_invocation`, `ai_invocation_attempt`, and
+  `ai_capability` (including `honeypot`, AI subject/tenant/cost/duration fields,
+  attempt provider metadata, `conditions`, and timestamps). The AI invocation
+  lifecycle enums now match runtime values (`started` / `succeeded` / `failed`),
+  and provider/model details live on invocation attempts rather than the parent
+  invocation entity.
 - Spatie compat polyfill (`Compat\{HasMedia,InteractsWithMedia,HasTags}`):
   `permission` + `activitylog` required; `medialibrary` + `tags` opt-in.
 - Forward-compatible nullable invariant columns on `evolayer_base_ai_invocations`

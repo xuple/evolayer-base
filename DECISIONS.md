@@ -356,7 +356,7 @@ The column and vocabulary landed first (separately from any producer). The produ
 | --- | --- |
 | Gemini | Curated default; structured-streaming verified (matrix ✅). |
 | OpenAI | Structured-streaming verified (matrix ✅); eligible for ThreadStudio consideration; **not** automatically curated by ADR-019 (promoted to curated by ADR-020). |
-| Anthropic | Diagnostic-known; ThreadStudio pending/blocked until structured streaming emits TextDelta events. |
+| Anthropic | Diagnostic-eligible; blocked for ThreadStudio runtime / pending re-verification until structured streaming emits usable `TextDelta` events. |
 | NVIDIA, OpenCode, OpenRouter | Structural / router candidates (share OpenAI's Chat-Completions code path); **Unknown** until directly probed for structured streaming on the actual model the router resolves to. |
 
 ADR-019 left the roster unchanged (`supportedProviders()` still `['anthropic', 'gemini', 'nvidia', 'opencode', 'openrouter']`) and deferred the roster decision. **ADR-020 makes that decision — see below.**

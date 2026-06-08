@@ -97,7 +97,16 @@ abstract class AiFeatureConfig
     public function defaultModel(?string $provider = null): string
     {
         $provider = $this->provider($provider);
-        $defaultModel = config("ai.providers.{$provider}.models.text.default");
+
+        // Read the model default from the package's own 'evolayer-ai' namespace
+        // first. `mergeConfigFrom(evolayer-ai.php, 'ai')` is shallow at
+        // `providers.*`, so the laravel/ai SDK's bare provider blocks win the
+        // merge and the package's `models.text.default` never lands in
+        // config('ai') — leaving this as the 'provider default' sentinel and
+        // breaking ThreadStudio's UI compose for the default provider. The
+        // 'evolayer-ai' namespace carries the package's full provider config.
+        $defaultModel = config("evolayer-ai.providers.{$provider}.models.text.default")
+            ?? config("ai.providers.{$provider}.models.text.default");
 
         return is_string($defaultModel) && $defaultModel !== '' ? $defaultModel : 'provider default';
     }

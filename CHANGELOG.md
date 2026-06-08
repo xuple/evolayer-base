@@ -107,6 +107,17 @@ starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.
   gating remains future (adaptive mode).
 
 ### Fixed
+- ThreadStudio UI compose with the default provider (Gemini / OpenAI) no
+  longer fails with "Provider unavailable" / the `provider default` model
+  sentinel. Root cause: `mergeConfigFrom(evolayer-ai.php, 'ai')` is shallow
+  at `providers.*`, so the `laravel/ai` SDK's bare provider blocks (no
+  `models`) won the merge and the package's `models.text.default` was
+  dropped from `config('ai')`. `AiFeatureConfig::defaultModel()` now reads
+  the model default from the package's own `evolayer-ai` namespace (reliably
+  populated in the host and registered in the package), falling back to
+  `ai`. The CLI `evolayer:ai:stream-check` masked this because it bypasses
+  `defaultModel()`. Caught by the 0.1.0 first-hour install rehearsal;
+  guarded by `tests/Feature/Ai/ThreadStudioModelResolutionTest.php`.
 - `stubs/ontology.yaml` `change_event` entity caught up to the actual
   migration schema: `relations.actor.type` changed from `belongs_to`
   with `target: user` to `morph_to` with `target: any` (the migration

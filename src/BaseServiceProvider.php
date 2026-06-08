@@ -41,6 +41,13 @@ class BaseServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/evolayer.php', 'evolayer');
         $this->mergeConfigFrom(__DIR__.'/../config/evolayer-ai.php', 'ai');
+        // Also expose the package's AI config under its own namespace. The merge
+        // into 'ai' above is shallow at `providers.*`, so the laravel/ai SDK's
+        // bare provider blocks (driver/key/url, no `models`) win and the package's
+        // per-provider `models.text.default` is dropped from config('ai'). The
+        // package reads its model defaults from 'evolayer-ai' instead, which is
+        // reliably populated here (and via the host's published config file).
+        $this->mergeConfigFrom(__DIR__.'/../config/evolayer-ai.php', 'evolayer-ai');
 
         $this->app->singleton(AdminGate::class, SpatieAdminGate::class);
         $this->app->singleton(UserResolver::class, DefaultUserResolver::class);

@@ -27,7 +27,7 @@ class ThreadStudioProviderPolicy
     ];
 
     /**
-     * OpenAI-compatible router / probe candidates — not directly verified per
+     * OpenAI-compatible router-backed probe candidates — not directly verified per
      * provider, so not runtime-approved for ThreadStudio selection (ADR-020).
      *
      * @var array<int, string>

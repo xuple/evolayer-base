@@ -57,8 +57,8 @@ Run from a clean directory outside both working trees (e.g.
   Packagist exactly as the public will. **Gates the announcement.**
 
 ### 0. Pre-flight — both repos green at HEAD
-- [ ] Package: `composer test`, `composer validate --strict`, `php artisan evolayer:doctor --strict`.
-- [ ] Starter: `composer test`, `composer validate --strict`, `npm run types:check`, `npm run build`, `npm run lint:check`, `npm run format:check`.
+- [ ] Package: `composer test`, `composer validate --strict`.
+- [ ] Starter: `composer test`, `composer validate --strict`, `php artisan evolayer:doctor --strict --no-ansi`, `npm run types:check`, `npm run build`, `composer lint:check`, `npm run lint:check`, `npm run format:check`.
 - [ ] Both clean and pushed to `origin` + `github`.
 
 ### 1. Fresh install — Phase A (VCS source)

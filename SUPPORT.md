@@ -17,6 +17,6 @@ Please include:
 - Laravel, PHP, Node, npm, and database versions where relevant.
 - Whether you installed the package directly or started from `xuple/evolayer-base-starter`.
 - Exact commands run and the full error output.
-- Whether the feature is default behavior or enabled by an `EVOLAYER_BASE_*` flag.
+- Whether the feature is default behaviour or enabled by an `EVOLAYER_BASE_*` flag.
 
 Issues without enough reproduction detail may be closed or converted to a discussion.

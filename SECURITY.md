@@ -15,6 +15,6 @@ Please include:
 - Affected package version or commit SHA.
 - Laravel, PHP, database, and browser/runtime versions where relevant.
 - Reproduction steps or a minimal proof of concept.
-- Whether the issue affects default install behavior or an opt-in feature flag.
+- Whether the issue affects default install behaviour or an opt-in feature flag.
 
 We will acknowledge valid reports as soon as practical and coordinate fixes before public disclosure.

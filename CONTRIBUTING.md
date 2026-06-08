@@ -33,7 +33,7 @@ composer test
 
 ## Documentation
 
-Update README, CHANGELOG, RELEASE, or DECISIONS when changing public behavior, release posture, naming, install flow, feature flags, commands, config keys, or database tables.
+Update README, CHANGELOG, RELEASE, or DECISIONS when changing public behaviour, release posture, naming, install flow, feature flags, commands, config keys, or database tables.
 
 ## Pull Request Checklist
 

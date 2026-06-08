@@ -31,7 +31,7 @@ starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.
   merge; Base registers `evolayer.base`.
 - Console commands: `evolayer:install`, `evolayer:doctor`, `evolayer:user:promote`,
   `evolayer:ontology:compile`, `evolayer:ai:probe`, `evolayer:ai:smoke-test`,
-  `evolayer:ai:stream-smoke`.
+  `evolayer:ai:stream-check`.
 - Package-side `AGENTS.md` / `CLAUDE.md` with library-constrained
   Laravel Boost guidance for agent-assisted maintenance. Project-specific
   guidance (package/starter routing rule, ontology contract, AI provider
@@ -49,7 +49,7 @@ starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.
 - Provider capability model (ADR-018 → ADR-019): the
   `ThreadStudioProviderPolicy` seam (the consumer-facing API for
   ThreadStudio provider eligibility, so callers no longer depend on
-  `AiFeatureConfig::supportedProviders()` directly) and a nullable
+  `AiFeatureConfig::runtimeApprovedProviders()` directly) and a nullable
   `evolayer_base_ai_capabilities.conditions` JSON column carrying
   True / False / Unknown capability observations. (The roster change
   itself followed in ADR-020 — see Changed.)
@@ -63,36 +63,36 @@ starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.
   write path (creation, 24h cooldown, `--force`, stale-row supersession,
   output_mode preservation) now has feature-test coverage where it had
   none. Two latent bugs fixed at the single chokepoint: `output_mode` is
-  no longer hardcoded to `json_schema` on success (curated catalogue
+  no longer hardcoded to `json_schema` on success (hand-maintained catalogue
   modes are preserved on `--force` reprobe), and the persist no-op for
   modelless probes is now an explicit "model required" contract.
 
 ### Changed
-- **Curated ThreadStudio provider roster (ADR-020, D-prime):**
-  `AiFeatureConfig::supportedProviders()` changed from
+- **Verified Runtime Strategy (ADR-020):**
+  `AiFeatureConfig::runtimeApprovedProviders()` changed from
   `['anthropic', 'gemini', 'nvidia', 'opencode', 'openrouter']` to
-  `['gemini', 'openai']`. Curated now means *directly verified*
+  `['gemini', 'openai']`. Runtime-approved now means *directly verified*
   provider-specific structured streaming.
   - **OpenAI** added (matrix-verified) and selectable; OpenAI gains a
     default model via `OPENAI_CHAT_MODEL` (`gpt-4o-mini` default).
-  - **Anthropic** removed from curated support and classified
-    **blocked/pending** — its structured streaming currently emits no
+  - **Anthropic** removed from runtime-approved support and classified
+    **blocked / pending re-verification** — its structured streaming currently emits no
     usable `TextDelta` events, so it is no longer selectable in
     ThreadStudio (rejected with a 422 at request validation).
-  - **NVIDIA / OpenCode / OpenRouter** removed from curated runtime
-    support and reclassified as OpenAI-compatible router / probe
+  - **NVIDIA / OpenCode / OpenRouter** removed from runtime-approved
+    support and reclassified as router-backed probe
     candidates.
 
   Nothing is deleted — labels, the OpenCode model catalogue, and the
   capability ledger are retained as probe/router infrastructure and for
   future adaptive mode. Smoke/probe diagnostics stay broad (any Lab
   provider), so Anthropic and the routers remain exercisable via
-  `evolayer:ai:probe` / `smoke-test` / `stream-smoke`. **Migration
+  `evolayer:ai:probe` / `smoke-test` / `stream-check`. **Migration
   note:** a host that set `AI_THREAD_STUDIO_PROVIDER` to anthropic,
   nvidia, opencode, or openrouter will now get a 422 from ThreadStudio;
   switch to `gemini` (default) or `openai`.
 - **Explanatory provider rejection.** `ThreadStudioProviderPolicy::explain(provider)`
-  returns a `ProviderAvailability` (curated / blocked / candidate /
+  returns a `ProviderAvailability` (runtime-approved / blocked / candidate /
   unknown) with a per-provider reason, wired into
   `ComposeThreadStudioRequest` — so a rejected provider gets, e.g.,
   *"Anthropic is known to the diagnostic layer but is blocked for

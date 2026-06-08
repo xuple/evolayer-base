@@ -39,7 +39,7 @@ The cross-repo routing matrix is mirrored in both repos. Keep the package and st
 - `resources/**` — committed React stubs (TSX) and views.
 - `config/evolayer.php`, `config/evolayer-ai.php` — config shape + env-key names + defaults (all defaults are `false`).
 - `patches/laravel-ai-structured-streaming.patch` + `scripts/apply-patches.php` — vendor patch dossier and the runner that applies it.
-- All `evolayer:*` artisan commands: `install`, `doctor`, `ontology:compile`, `user:promote`, `ai:probe`, `ai:smoke-test`, `ai:stream-smoke`.
+- All `evolayer:*` artisan commands: `install`, `doctor`, `ontology:compile`, `user:promote`, `ai:probe`, `ai:smoke-test`, `ai:stream-check`.
 - Pest tests under `tests/Feature/**` and `tests/Unit/**`.
 
 **Starter (edit upstream, never here):**
@@ -73,7 +73,7 @@ The cross-repo routing matrix is mirrored in both repos. Keep the package and st
 The package's AI command surface is intentionally minimal:
 
 - `evolayer:ai:smoke-test {provider}` — non-streaming smoke test against a provider.
-- `evolayer:ai:stream-smoke {provider}` — structured-streaming smoke test (depends on the `laravel/ai` patch in `patches/`).
+- `evolayer:ai:stream-check {provider}` — structured-streaming smoke test (depends on the `laravel/ai` patch in `patches/`).
 - `evolayer:ai:probe` — capability probe and ledger update.
 
 Provider drivers, capability probing, and the AI capability ledger live here. Do not import provider-platform expansions (model sweeps, cost estimation, stale-reprobe workflows, billing) without an explicit `DECISIONS.md` ADR. The starter's "AI providers" doc section should reference these commands but should not duplicate provider-platform UX.
@@ -81,16 +81,16 @@ Provider drivers, capability probing, and the AI capability ledger live here. Do
 **Observed capability is not product policy (ADR-019).** Keep three layers distinct:
 
 - **Capability ledger** (`AiCapability` / `evolayer_base_ai_capabilities`) records *observed facts* — what a probe saw for a `provider × model × agent × schema_hash`. Conditions express `True / False / Unknown` (the `conditions` JSON column); `Unknown` means "untested", not "failed". The ledger does not decide what ThreadStudio allows.
-- **Feature policy** (`ThreadStudioProviderPolicy`) makes the *product decision* — which providers ThreadStudio curates (`curatedProviders()`) and why a given provider is rejected (`explain(provider): ProviderAvailability`, classifying curated / blocked / candidate / unknown with a per-provider message, wired into `ComposeThreadStudioRequest`). Consumers deciding ThreadStudio eligibility depend on the policy, **not** on `AiFeatureConfig::supportedProviders()` directly. Passing `evolayer:ai:stream-smoke` is eligibility for consideration, not automatic curation.
+- **Feature policy** (`ThreadStudioProviderPolicy`) makes the *product decision* — which providers ThreadStudio runtime-approves (`runtimeApprovedProviders()`) and why a given provider is rejected (`explain(provider): ProviderAvailability`, classifying runtime-approved / blocked / candidate / unknown with a per-provider message, wired into `ComposeThreadStudioRequest`). Consumers deciding ThreadStudio eligibility depend on the policy, **not** on `AiFeatureConfig::runtimeApprovedProviders()` directly. Passing `evolayer:ai:stream-check` is eligibility for consideration, not automatic runtime approval.
 - **Runtime selection** uses the explicit configured `provider` + `model` only — **no silent fallback across providers**. Adaptivity, when it lands, happens at config / validation / probe time, never inside a live request.
 
-**Curated roster (ADR-020, D-prime):** `AiFeatureConfig::supportedProviders()` is `['gemini', 'openai']` — *directly verified* providers only. Anthropic is **blocked/pending** (diagnostic-known, but its structured streaming emits no usable `TextDelta` events, so it is not selectable in ThreadStudio); NVIDIA / OpenCode / OpenRouter are **router/probe candidates**, not curated. Their labels, the OpenCode catalogue, and the capability ledger are retained as probe/router infrastructure — reclassified, not deleted. Do not re-add a provider to the curated roster without a direct structured-streaming verification and a regression-test update (a test pins `['gemini', 'openai']`). Do not change the roster inside an unrelated commit.
+**Runtime-approved roster (ADR-020, Verified Runtime Strategy):** `AiFeatureConfig::runtimeApprovedProviders()` is `['gemini', 'openai']` — *directly verified* providers only. Anthropic is **blocked / pending re-verification** (diagnostic-known, but its structured streaming emits no usable `TextDelta` events, so it is not selectable in ThreadStudio); NVIDIA / OpenCode / OpenRouter are **router-backed probe candidates**, not runtime-approved. Their labels, the OpenCode catalogue, and the capability ledger are retained as probe/router infrastructure — reclassified, not deleted. Do not re-add a provider to the runtime-approved roster without a direct structured-streaming verification and a regression-test update (a test pins `['gemini', 'openai']`). Do not change the roster inside an unrelated commit.
 
-Smoke/probe diagnostics (`evolayer:ai:probe` / `smoke-test` / `stream-smoke`) stay broad — they accept any `Lab` provider, so Anthropic and the routers remain exercisable. Passing a smoke is eligibility for consideration, not curation. Feature flags (`EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO`) gate *visibility*, not provider readiness — separate predicates.
+Smoke/probe diagnostics (`evolayer:ai:probe` / `smoke-test` / `stream-check`) stay broad — they accept any `Lab` provider, so Anthropic and the routers remain exercisable. Passing a smoke is eligibility for consideration, not runtime approval. Feature flags (`EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO`) gate *visibility*, not provider readiness — separate predicates.
 
-**Never write "verified provider" without naming the verification scope** — `matrix-verified`, `stream-verified`, `ThreadStudio-verified`, or `locally verified`. Bare "verified" is the kind of overloaded term that drove the `supportedProviders()` confusion; the canonical provider vocabulary (curated / runtime-approved, diagnostic-eligible, router-backed, blocked, pending-verification, matrix-verified, locally-verified) is defined in [`DECISIONS.md`](DECISIONS.md) → "Provider taxonomy (canonical glossary)".
+**Never write "verified provider" without naming the verification scope** — `matrix-verified`, `stream-verified`, `ThreadStudio-verified`, or `locally verified`. Bare "verified" is the kind of overloaded term that drove the old `supportedProviders()` confusion; the canonical provider vocabulary (runtime-approved, diagnostic-eligible, router-backed, blocked, pending re-verification, matrix-verified, locally verified) is defined in [`DECISIONS.md`](DECISIONS.md) → "Provider taxonomy (canonical glossary)".
 
-## Verification gauntlet
+## Verification suite
 
 Run before opening a PR:
 

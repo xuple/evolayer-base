@@ -73,7 +73,7 @@ The sidebar/header/branding layer the EvoDevOps shell sits on:
 
 ### Backend (`app/`, 49 files)
 - **`app/Ai/Agents/`** (6) — `ThreadStudioAgent`, `PrdAgent`, `TriageAgent`, `SubjectHintsAgent`, `TextAssistAgent`, `MediaAnalysisAgent`
-- **`app/Console/Commands/`** (6) — `OntologyCompileCommand`, `AiProbeCommand`, `AiSmokeTest`, `Ai/AiStreamSmokeTest`, `FontsSelfHost`, `PromoteUserCommand`
+- **`app/Console/Commands/`** (6) — `OntologyCompileCommand`, `AiProbeCommand`, `AiSmokeTest`, `Ai/AiStreamCheck`, `FontsSelfHost`, `PromoteUserCommand`
 - **`app/Http/Controllers/`** (7) — `ContactController`, `Admin/{Inbox,Prd,Submissions}Controller`, `Ai/{ThreadStudio,VoiceInput,AiTextAssist}Controller`
 - **`app/Http/Requests/`** (6) — `ContactFormRequest`, `Admin/{GeneratePrd,SearchInbox}Request`, `Ai/{ComposeThreadStudio,StreamTextAssist,TranscribeAudio}Request`
 - **`app/Http/Middleware/`** (1) — `EnsureExampleEnabled`

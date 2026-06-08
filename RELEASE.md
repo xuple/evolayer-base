@@ -109,7 +109,7 @@ Still need a human decision before a real release:
 - **Final version/tag** — `0.1.0` is provisional; no tag has been created.
 - **Live AI verification** — Gemini structured streaming remains the primary
   green path. Anthropic structured output passes the non-streaming smoke test,
-  but `evolayer:ai:stream-smoke anthropic` currently returns zero `TextDelta`
+  but `evolayer:ai:stream-check anthropic` currently returns zero `TextDelta`
   events and an empty final payload. That failure mode is now covered by the
   package command tests and remains a release investigation item before claiming
   Anthropic structured-streaming support.

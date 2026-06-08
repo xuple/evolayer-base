@@ -428,13 +428,13 @@ runtimeApprovedProviders(): ['anthropic','gemini','nvidia','opencode','openroute
 ```
 
 - **OpenAI** is promoted to runtime-approved (matrix ✅, granular TextDeltas).
-- **Anthropic** is removed from runtime-approved support and classified **blocked / pending re-verification** until its structured streaming emits usable deltas. It must not be selectable in ThreadStudio while broken.
-- **NVIDIA / OpenCode / OpenRouter** are removed from runtime-approved support and reclassified as **router-backed / probe candidates** — Unknown until directly probed per provider/model.
+- **Anthropic** is removed from runtime-approved support and classified **blocked for ThreadStudio runtime / pending re-verification** until its structured streaming emits usable deltas. It must not be selectable in ThreadStudio while broken.
+- **NVIDIA / OpenCode / OpenRouter** are removed from runtime-approved support and reclassified as **router-backed diagnostic-eligible probe candidates** — Unknown until directly probed per provider/model.
 
 **The 0.1 provider promise this establishes:**
 
 - Runtime-approved ThreadStudio providers are directly verified.
-- Router-backed providers are probe candidates.
+- Router-backed providers are diagnostic-eligible probe candidates.
 - Local verification can promote exact provider/model pairs later (the future adaptive/verified mode, ADR-021+).
 
 This is the honest, provider-specific-support-first posture. It is stricter than C (which would keep the structural-inference router tier in the runtime-approved set); the Verified Runtime Strategy treats "verified" as empirical, not structural.
@@ -449,7 +449,7 @@ This is the honest, provider-specific-support-first posture. It is stricter than
 
 **OpenAI default model.** OpenAI had no `models.text.default` configured — a newly runtime-approved provider with no default model would resolve the `defaultModel()` sentinel (`'provider default'`) and fail at request time. `config/evolayer-ai.php` now sets `openai.models.text.default = env('OPENAI_CHAT_MODEL', 'gpt-4o-mini')`; the starter's `.env.example` ships `OPENAI_CHAT_MODEL` for parity with the Gemini/Anthropic model env lines.
 
-**Explanatory rejection — landed.** A blocked provider is now rejected with a per-provider reason via `ThreadStudioProviderPolicy::explain(provider): ProviderAvailability` (e.g. *"Anthropic is known to the diagnostic layer but is blocked for ThreadStudio because structured streaming currently emits no usable TextDelta events."*), wired into `ComposeThreadStudioRequest`'s provider rule — replacing the framework's generic "selected provider is invalid". `explain()` classifies a provider as runtime-approved / blocked / candidate / unknown. Provider-level only; model-level / capability-ledger gating (`availability(provider, model)`) is adaptive mode and stays deferred.
+**Explanatory rejection — landed.** A blocked provider is now rejected with a per-provider reason via `ThreadStudioProviderPolicy::explain(provider): ProviderAvailability` (e.g. *"Anthropic is diagnostic-eligible but blocked for ThreadStudio runtime and pending re-verification because structured streaming currently emits no usable TextDelta events."*), wired into `ComposeThreadStudioRequest`'s provider rule — replacing the framework's generic "selected provider is invalid". `explain()` classifies a provider as runtime-approved / blocked / candidate / unknown. Provider-level only; model-level / capability-ledger gating (`availability(provider, model)`) is adaptive mode and stays deferred.
 
 **Non-goals (unchanged from ADR-019).** No adaptive/verified runtime mode yet; no runtime provider fallback; no verification receipts; no admin probing UI; no removal of router-provider probe infrastructure.
 
@@ -482,7 +482,7 @@ Almost every painful cascade — namespacing breaking imports, opt-in breaking t
 - **Full Phase D** — a live ThreadStudio compose round-trip on a fresh starter (the thin probes covered install/build/types, not a live AI call). Blocked on a provider API key.
 - **Anthropic structured-streaming verification** — blocked on credits.
 - **Upstream `laravel/ai` PR** — deferred; tracked in `patches/README.md`.
-- **AI provider roster** — *Resolved by ADR-020 (Verified Runtime Strategy):* runtime-approved = directly verified = `['gemini', 'openai']`; Anthropic blocked / pending re-verification; NVIDIA/OpenCode/OpenRouter reclassified as router-backed probe candidates. ADR-018 fixed the tiering policy; ADR-019 shipped the abstractions + `ThreadStudioProviderPolicy` seam; ADR-020 made the roster decision.
+- **AI provider roster** — *Resolved by ADR-020 (Verified Runtime Strategy):* runtime-approved = directly verified = `['gemini', 'openai']`; Anthropic blocked for ThreadStudio runtime / pending re-verification; NVIDIA/OpenCode/OpenRouter reclassified as router-backed diagnostic-eligible probe candidates. ADR-018 fixed the tiering policy; ADR-019 shipped the abstractions + `ThreadStudioProviderPolicy` seam; ADR-020 made the roster decision.
 - **Explanatory provider rejection** — *Done:* `ThreadStudioProviderPolicy::explain(provider)` returns a `ProviderAvailability` (runtime-approved / blocked / candidate / unknown) with a per-provider reason, wired into `ComposeThreadStudioRequest`. Model-level `availability(provider, model)` (capability-ledger gating) remains future / adaptive mode.
 - **`AiProbeCommand` iteration direction** — still iterates the runtime-approved list (`runtimeApprovedProviders()`) in the all-providers path. The `TODO (Step 2+)` comment is gone (the probe logic is now the shared `AiCapabilityProbe` service and the persist no-op is an explicit contract), but the direction-of-flow point stands: the probe should iterate diagnostic-eligible providers and write conditions, with runtime approval as the *output* of probing, not the input. Coupled to enabling `--persist` for non-OpenCode providers — both wait on the diagnostic-iteration decision.
 - **Next family member** — Commerce Core is slated to follow Base's public release; not yet started.

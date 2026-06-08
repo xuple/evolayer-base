@@ -16,14 +16,14 @@ namespace Xuple\EvoLayer\Base\Support;
 class ThreadStudioProviderPolicy
 {
     /**
-     * Providers diagnostic-known but blocked for ThreadStudio, with the reason.
+     * Providers diagnostic-eligible but blocked for ThreadStudio, with the reason.
      * Reclassified by ADR-020 (not deleted — still exercisable via the broad
      * smoke/probe diagnostics).
      *
      * @var array<string, string>
      */
     protected const BLOCKED = [
-        'anthropic' => 'Anthropic is known to the diagnostic layer but is blocked for ThreadStudio because structured streaming currently emits no usable TextDelta events.',
+        'anthropic' => 'Anthropic is diagnostic-eligible but blocked for ThreadStudio runtime and pending re-verification because structured streaming currently emits no usable TextDelta events.',
     ];
 
     /**
@@ -69,8 +69,8 @@ class ThreadStudioProviderPolicy
         if (in_array($provider, self::CANDIDATES, true)) {
             return ProviderAvailability::candidate(
                 $provider,
-                ucfirst($provider).' is an OpenAI-compatible router/probe candidate for ThreadStudio, not a directly-verified provider. '
-                .'Exercise it with `evolayer:ai:stream-check` / `evolayer:ai:probe`; it is not selectable in ThreadStudio until verified. '
+                ucfirst($provider).' is an OpenAI-compatible router-backed provider and diagnostic-eligible probe candidate for ThreadStudio, not a directly verified provider. '
+                .'Exercise it with `evolayer:ai:stream-check` / `evolayer:ai:probe`; it is not selectable in ThreadStudio until it is directly verified and runtime-approved. '
                 .'Runtime-approved providers are: '.implode(', ', $this->runtimeApprovedProviders()).'.',
             );
         }

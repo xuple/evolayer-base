@@ -38,7 +38,7 @@ class AiSmokeTest extends Command
 
     private function runAllProviders(int $timeout): int
     {
-        $this->components->info('Testing all configured AI providers…');
+        $this->components->info('Testing runtime-approved AI providers…');
 
         $providers = app(ThreadStudioAiConfig::class)->runtimeApprovedProviders();
         $results = [];

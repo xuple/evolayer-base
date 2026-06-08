@@ -7,7 +7,7 @@ namespace Xuple\EvoLayer\Base\Support;
  * provider may be used for ThreadStudio, and — when it may not — why.
  *
  * This is a product-policy answer, not a capability observation: the reason
- * a provider is rejected (blocked / router-candidate / unknown) is a
+ * a provider is rejected (blocked / router-backed candidate / unknown) is a
  * deliberate runtime-approval decision (ADR-020), distinct from what a probe
  * observed about it (which lives on the `AiCapability` ledger). The `message`
  * is human/agent-facing and is surfaced as the request-validation rejection.

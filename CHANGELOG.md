@@ -95,9 +95,9 @@ starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.
   returns a `ProviderAvailability` (runtime-approved / blocked / candidate /
   unknown) with a per-provider reason, wired into
   `ComposeThreadStudioRequest` — so a rejected provider gets, e.g.,
-  *"Anthropic is known to the diagnostic layer but is blocked for
-  ThreadStudio because structured streaming currently emits no usable
-  TextDelta events."* instead of the framework's generic "selected
+  *"Anthropic is diagnostic-eligible but blocked for ThreadStudio runtime
+  and pending re-verification because structured streaming currently emits
+  no usable TextDelta events."* instead of the framework's generic "selected
   provider is invalid". Provider-level only; model-level capability-ledger
   gating remains future (adaptive mode).
 

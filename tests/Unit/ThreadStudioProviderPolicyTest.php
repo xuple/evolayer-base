@@ -45,7 +45,7 @@ test('explain() blocks Anthropic with the structured-streaming reason', function
     expect($availability->allowed)->toBeFalse()
         ->and($availability->status)->toBe('blocked')
         ->and($availability->message)->toBe(
-            'Anthropic is known to the diagnostic layer but is blocked for ThreadStudio because structured streaming currently emits no usable TextDelta events.'
+            'Anthropic is diagnostic-eligible but blocked for ThreadStudio runtime and pending re-verification because structured streaming currently emits no usable TextDelta events.'
         );
 });
 
@@ -56,7 +56,7 @@ test('explain() classifies router providers as candidates, not runtime-approved'
         $availability = $policy->explain($provider);
         expect($availability->allowed)->toBeFalse()
             ->and($availability->status)->toBe('candidate')
-            ->and($availability->message)->toContain('router/probe candidate');
+            ->and($availability->message)->toContain('router-backed provider and diagnostic-eligible probe candidate');
     }
 });
 

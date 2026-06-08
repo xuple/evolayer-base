@@ -136,7 +136,7 @@ test('the stream endpoint uses the selected provider', function () use ($fakeRes
     });
 });
 
-test('the stream endpoint rejects a non-runtime-approved provider (anthropic blocked/pending) with an explanatory reason', function () {
+test('the stream endpoint rejects a non-runtime-approved provider (anthropic blocked / pending re-verification) with an explanatory reason', function () {
     $user = makeAdmin();
 
     // Anthropic is diagnostic-eligible but not runtime-approved for ThreadStudio
@@ -148,11 +148,11 @@ test('the stream endpoint rejects a non-runtime-approved provider (anthropic blo
         'provider' => 'anthropic',
         'tone' => 'balanced',
     ])->assertUnprocessable()->assertInvalid([
-        'provider' => 'Anthropic is known to the diagnostic layer but is blocked for ThreadStudio because structured streaming currently emits no usable TextDelta events.',
+        'provider' => 'Anthropic is diagnostic-eligible but blocked for ThreadStudio runtime and pending re-verification because structured streaming currently emits no usable TextDelta events.',
     ]);
 });
 
-test('the stream endpoint rejects a router-candidate provider with an explanatory reason', function () {
+test('the stream endpoint rejects a router-backed candidate provider with an explanatory reason', function () {
     $user = makeAdmin();
 
     $this->actingAs($user)->postJson('/ai/thread-studio/stream', [
@@ -160,7 +160,7 @@ test('the stream endpoint rejects a router-candidate provider with an explanator
         'provider' => 'openrouter',
         'tone' => 'balanced',
     ])->assertUnprocessable()->assertInvalid([
-        'provider' => 'router/probe candidate',
+        'provider' => 'router-backed provider and diagnostic-eligible probe candidate',
     ]);
 });
 

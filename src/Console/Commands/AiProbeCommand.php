@@ -153,7 +153,7 @@ class AiProbeCommand extends Command
         // providers means resolving a per-provider default model up front
         // (via AiFeatureConfig::defaultModel), which is coupled to the
         // provider-roster decision (DECISIONS.md → Open decisions, Options A-E).
-        $this->components->info('Probing all configured AI providers…');
+        $this->components->info('Probing runtime-approved AI providers…');
 
         $providers = app(ThreadStudioAiConfig::class)->runtimeApprovedProviders();
         $results = [];

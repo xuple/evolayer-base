@@ -88,7 +88,7 @@ Provider drivers, capability probing, and the AI capability ledger live here. Do
 
 Smoke/probe diagnostics (`evolayer:ai:probe` / `smoke-test` / `stream-check`) stay broad — they accept any `Lab` provider, so Anthropic and the routers remain exercisable. Passing a smoke is eligibility for consideration, not runtime approval. Feature flags (`EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO`) gate *visibility*, not provider readiness — separate predicates.
 
-**Never write "verified provider" without naming the verification scope** — `matrix-verified`, `stream-verified`, `ThreadStudio-verified`, or `locally verified`. Bare "verified" is the kind of overloaded term that drove the old `supportedProviders()` confusion; the canonical provider vocabulary (runtime-approved, diagnostic-eligible, router-backed, blocked, pending re-verification, matrix-verified, locally verified) is defined in [`DECISIONS.md`](DECISIONS.md) → "Provider taxonomy (canonical glossary)".
+**Never write "verified provider" without naming the verification scope** — `matrix-verified`, `stream-verified`, `ThreadStudio-verified`, or `locally verified`. Bare "verified" collapses capability evidence and product policy into one unsafe word; the canonical provider vocabulary (runtime-approved, diagnostic-eligible, router-backed, blocked, pending re-verification, matrix-verified, locally verified) is defined in [`DECISIONS.md`](DECISIONS.md) → "Provider taxonomy (canonical glossary)".
 
 ## Verification suite
 
@@ -96,7 +96,7 @@ Run before opening a PR:
 
 ```bash
 composer validate --strict
-composer test                              # Pest Feature + Unit, 149 baseline at HEAD
+composer test                              # Pest Feature + Unit
 vendor/bin/testbench boost:install --guidelines --no-interaction   # only if AGENTS.md needs refresh
 ```
 

@@ -220,9 +220,9 @@ class AiCapabilityProbe
 
     /**
      * Detect output_mode for a successful probe. For models present in the
-     * curated OpenCode catalogue, preserve the declared mode rather than
-     * stamping `json_schema` — this prevents a `--force` reprobe from
-     * clobbering a hand-curated `json_object`/`experimental` classification.
+     * hand-maintained OpenCode catalogue, preserve the declared mode rather
+     * than stamping `json_schema` — this prevents a `--force` reprobe from
+     * clobbering a hand-maintained `json_object`/`experimental` classification.
      */
     protected function detectOutputMode(?string $model): string
     {

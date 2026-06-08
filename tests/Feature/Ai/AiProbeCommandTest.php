@@ -130,7 +130,7 @@ test('reprobe-stale supersedes the old-hash row and writes a live-hash row', fun
         ->and($live->model)->toBe('kimi-k2.6');
 });
 
-test('output_mode is preserved, not clobbered to json_schema, on a curated json_object model', function () {
+test('output_mode is preserved, not clobbered to json_schema, on a catalogue json_object model', function () {
     // mimo-v2.5 is declared json_object/experimental in opencodeModelCompatibility().
     // A successful --force reprobe must preserve the declared output_mode.
     $reply = [

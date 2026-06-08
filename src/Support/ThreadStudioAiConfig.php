@@ -266,7 +266,7 @@ class ThreadStudioAiConfig extends AiFeatureConfig
     {
         return array_map(
             fn (string $provider): array => $this->metadata($provider),
-            $this->supportedProviders(),
+            $this->runtimeApprovedProviders(),
         );
     }
 }

@@ -12,45 +12,46 @@ abstract class AiFeatureConfig
     ) {}
 
     /**
-     * The curated ThreadStudio provider roster — providers with **directly
-     * verified** provider-specific structured-streaming support (ADR-020,
-     * D-prime). This is NOT every SDK-known or diagnostically-smokable
-     * provider.
+     * The runtime-approved ThreadStudio provider roster — providers with
+     * **directly verified** provider-specific structured-streaming support
+     * (ADR-020, the Verified Runtime Strategy). This is NOT every SDK-known or
+     * diagnostically-eligible provider.
      *
-     * Per ADR-019, consumers deciding ThreadStudio eligibility should depend
-     * on {@see ThreadStudioProviderPolicy::curatedProviders()} (the
-     * feature-policy seam), not call this method directly.
+     * Feature-generic: this base method owns the runtime-approved list; the
+     * consumer-facing seam is {@see ThreadStudioProviderPolicy::runtimeApprovedProviders()}
+     * (per ADR-019), which consumers should depend on rather than calling this
+     * directly.
      *
      * Membership means a provider passed structured streaming on its own
      * matrix row — Gemini and OpenAI today. Notably NOT here:
-     * - `anthropic` — diagnostic-known but **blocked/pending**: its structured
-     *   streaming currently emits no usable `TextDelta` events.
-     * - `nvidia`, `opencode`, `openrouter` — OpenAI-compatible **router
+     * - `anthropic` — diagnostic-eligible but **blocked / pending re-verification**:
+     *   its structured streaming currently emits no usable `TextDelta` events.
+     * - `nvidia`, `opencode`, `openrouter` — OpenAI-compatible **router-backed
      *   candidates**, probeable but not directly verified per provider.
      * Their labels, the OpenCode catalogue, and the capability ledger are
      * retained as probe/router infrastructure (and for future adaptive mode);
-     * they are simply not curated for ThreadStudio runtime selection.
+     * they are simply not runtime-approved for ThreadStudio selection.
      *
      * Smoke/probe diagnostics stay broad and accept any Lab provider, so a
-     * router or Anthropic can still be exercised via `evolayer:ai:stream-smoke`
+     * router or Anthropic can still be exercised via `evolayer:ai:stream-check`
      * / `evolayer:ai:probe`. Passing a smoke is eligibility for consideration,
-     * not automatic curation. See ADR-019 (classification) and ADR-020 (this
-     * roster).
+     * not automatic runtime approval. See ADR-019 (classification) and ADR-020
+     * (this roster).
      *
      * @return array<int, string>
      */
-    public function supportedProviders(): array
+    public function runtimeApprovedProviders(): array
     {
         return ['gemini', 'openai'];
     }
 
     /**
-     * Display labels. Includes both curated providers (gemini, openai) and
-     * the reclassified router/blocked candidates (anthropic, nvidia, opencode,
-     * openrouter) — the latter are retained for probe tooling, diagnostics,
-     * and future adaptive mode, NOT because they are curated. `providerLabel()`
-     * only resolves labels for curated providers (it routes through
-     * `provider()`, which rejects non-curated names).
+     * Display labels. Includes both runtime-approved providers (gemini, openai)
+     * and the reclassified router-backed/blocked candidates (anthropic, nvidia,
+     * opencode, openrouter) — the latter are retained for probe tooling,
+     * diagnostics, and future adaptive mode, NOT because they are runtime-approved.
+     * `providerLabel()` only resolves labels for runtime-approved providers (it
+     * routes through `provider()`, which rejects non-approved names).
      *
      * @return array<string, string>
      */
@@ -59,7 +60,7 @@ abstract class AiFeatureConfig
         return [
             'gemini' => 'Google Gemini',
             'openai' => 'OpenAI',
-            // Reclassified (not curated) — retained as probe/router metadata:
+            // Reclassified (not runtime-approved) — retained as probe/router metadata:
             'anthropic' => 'Anthropic',
             'nvidia' => 'NVIDIA',
             'opencode' => 'OpenCode Go',
@@ -73,12 +74,12 @@ abstract class AiFeatureConfig
             ? $provider
             : (string) config("ai.{$this->featureKey}.provider", 'gemini');
 
-        if (! in_array($provider, $this->supportedProviders(), true)) {
+        if (! in_array($provider, $this->runtimeApprovedProviders(), true)) {
             throw new InvalidArgumentException(sprintf(
-                'Unsupported %s provider [%s]. Supported providers are: %s.',
-                $this->featureName,
+                'Provider [%s] is not runtime-approved for %s. Runtime-approved providers are: %s.',
                 $provider,
-                implode(', ', $this->supportedProviders()),
+                $this->featureName,
+                implode(', ', $this->runtimeApprovedProviders()),
             ));
         }
 

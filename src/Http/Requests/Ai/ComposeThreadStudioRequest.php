@@ -33,9 +33,9 @@ class ComposeThreadStudioRequest extends FormRequest
      */
     public function rules(ThreadStudioAiConfig $aiConfig, ThreadStudioProviderPolicy $policy): array
     {
-        $curated = $policy->curatedProviders();
+        $runtimeApproved = $policy->runtimeApprovedProviders();
         $providerInput = $this->string('provider')->toString() ?: null;
-        $provider = in_array($providerInput, $curated, true)
+        $provider = in_array($providerInput, $runtimeApproved, true)
             ? $providerInput
             : null;
 

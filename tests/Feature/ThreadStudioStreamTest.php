@@ -116,8 +116,8 @@ test('the stream endpoint prompts the agent with the customer message and tone',
 test('the stream endpoint uses the selected provider', function () use ($fakeResult) {
     $user = makeAdmin();
 
-    // Default is gemini; select the other curated provider (openai) to prove
-    // the explicitly-selected provider/model is the one used.
+    // Default is gemini; select the other runtime-approved provider (openai) to
+    // prove the explicitly-selected provider/model is the one used.
     config()->set('ai.thread_studio.provider', 'gemini');
     config()->set('ai.providers.openai.models.text.default', 'gpt-4o-mini');
 
@@ -136,12 +136,13 @@ test('the stream endpoint uses the selected provider', function () use ($fakeRes
     });
 });
 
-test('the stream endpoint rejects a non-curated provider (anthropic blocked/pending) with an explanatory reason', function () {
+test('the stream endpoint rejects a non-runtime-approved provider (anthropic blocked/pending) with an explanatory reason', function () {
     $user = makeAdmin();
 
-    // Anthropic is diagnostic-known but not curated for ThreadStudio (ADR-020)
-    // — its structured streaming emits no usable TextDelta events. It must not
-    // be selectable, and the rejection explains why (ThreadStudioProviderPolicy::explain).
+    // Anthropic is diagnostic-eligible but not runtime-approved for ThreadStudio
+    // (ADR-020) — its structured streaming emits no usable TextDelta events. It
+    // must not be selectable, and the rejection explains why
+    // (ThreadStudioProviderPolicy::explain).
     $this->actingAs($user)->postJson('/ai/thread-studio/stream', [
         'customer_message' => 'A customer asks how to install the starter kit locally.',
         'provider' => 'anthropic',
@@ -321,8 +322,8 @@ test('the stream endpoint validates the selected model belongs to the selected p
 
     config()->set('ai.providers.openai.models.text.default', 'gpt-4o-mini');
 
-    // openai is curated, so the provider passes; a gemini model does not belong
-    // to openai, so model validation fails.
+    // openai is runtime-approved, so the provider passes; a gemini model does not
+    // belong to openai, so model validation fails.
     $this->actingAs($user)->postJson('/ai/thread-studio/stream', [
         'customer_message' => 'A customer asks how to install the starter kit locally.',
         'model' => 'gemini-3-flash-preview',

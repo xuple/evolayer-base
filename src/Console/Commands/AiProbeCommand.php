@@ -155,7 +155,7 @@ class AiProbeCommand extends Command
         // provider-roster decision (DECISIONS.md → Open decisions, Options A-E).
         $this->components->info('Probing all configured AI providers…');
 
-        $providers = app(ThreadStudioAiConfig::class)->supportedProviders();
+        $providers = app(ThreadStudioAiConfig::class)->runtimeApprovedProviders();
         $results = [];
 
         foreach ($providers as $provider) {

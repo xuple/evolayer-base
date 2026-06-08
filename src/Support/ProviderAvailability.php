@@ -8,13 +8,13 @@ namespace Xuple\EvoLayer\Base\Support;
  *
  * This is a product-policy answer, not a capability observation: the reason
  * a provider is rejected (blocked / router-candidate / unknown) is a
- * deliberate curation decision (ADR-020), distinct from what a probe observed
- * about it (which lives on the `AiCapability` ledger). The `message` is
- * human/agent-facing and is surfaced as the request-validation rejection.
+ * deliberate runtime-approval decision (ADR-020), distinct from what a probe
+ * observed about it (which lives on the `AiCapability` ledger). The `message`
+ * is human/agent-facing and is surfaced as the request-validation rejection.
  */
 final class ProviderAvailability
 {
-    public const STATUS_CURATED = 'curated';
+    public const STATUS_RUNTIME_APPROVED = 'runtime-approved';
 
     public const STATUS_BLOCKED = 'blocked';
 
@@ -29,9 +29,9 @@ final class ProviderAvailability
         public readonly string $message,
     ) {}
 
-    public static function curated(string $provider): self
+    public static function runtimeApproved(string $provider): self
     {
-        return new self($provider, true, self::STATUS_CURATED, "Provider [{$provider}] is curated for ThreadStudio.");
+        return new self($provider, true, self::STATUS_RUNTIME_APPROVED, "Provider [{$provider}] is runtime-approved for ThreadStudio.");
     }
 
     public static function blocked(string $provider, string $message): self

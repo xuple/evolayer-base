@@ -3,38 +3,39 @@
 use Xuple\EvoLayer\Base\Support\ThreadStudioAiConfig;
 use Xuple\EvoLayer\Base\Support\ThreadStudioProviderPolicy;
 
-test('curatedProviders delegates to the ThreadStudio config curated list', function () {
+test('runtimeApprovedProviders delegates to the ThreadStudio config runtime-approved list', function () {
     $config = new ThreadStudioAiConfig;
     $policy = new ThreadStudioProviderPolicy($config);
 
-    expect($policy->curatedProviders())->toBe($config->supportedProviders());
+    expect($policy->runtimeApprovedProviders())->toBe($config->runtimeApprovedProviders());
 });
 
 test('the policy is resolvable from the container with its config dependency', function () {
     $policy = app(ThreadStudioProviderPolicy::class);
 
     expect($policy)->toBeInstanceOf(ThreadStudioProviderPolicy::class)
-        ->and($policy->curatedProviders())->toBeArray()
-        ->and($policy->curatedProviders())->not->toBeEmpty();
+        ->and($policy->runtimeApprovedProviders())->toBeArray()
+        ->and($policy->runtimeApprovedProviders())->not->toBeEmpty();
 });
 
-test('the curated roster is the directly-verified providers (ADR-020 D-prime)', function () {
-    // Curated = directly verified provider-specific structured streaming:
-    // Gemini and OpenAI. Anthropic (blocked/pending) and the router
-    // candidates (nvidia/opencode/openrouter) are intentionally excluded.
-    // This pins the roster so a future change must update it explicitly.
+test('the runtime-approved roster is the directly-verified providers (ADR-020)', function () {
+    // Runtime-approved = directly verified provider-specific structured
+    // streaming: Gemini and OpenAI. Anthropic (blocked / pending re-verification)
+    // and the router-backed candidates (nvidia/opencode/openrouter) are
+    // intentionally excluded. This pins the roster so a future change must
+    // update it explicitly.
     $policy = app(ThreadStudioProviderPolicy::class);
 
-    expect($policy->curatedProviders())->toBe(['gemini', 'openai']);
+    expect($policy->runtimeApprovedProviders())->toBe(['gemini', 'openai']);
 });
 
-test('explain() classifies curated providers as allowed', function () {
+test('explain() classifies runtime-approved providers as allowed', function () {
     $policy = app(ThreadStudioProviderPolicy::class);
 
     foreach (['gemini', 'openai'] as $provider) {
         $availability = $policy->explain($provider);
         expect($availability->allowed)->toBeTrue()
-            ->and($availability->status)->toBe('curated');
+            ->and($availability->status)->toBe('runtime-approved');
     }
 });
 
@@ -48,7 +49,7 @@ test('explain() blocks Anthropic with the structured-streaming reason', function
         );
 });
 
-test('explain() classifies router providers as candidates, not curated', function () {
+test('explain() classifies router providers as candidates, not runtime-approved', function () {
     $policy = app(ThreadStudioProviderPolicy::class);
 
     foreach (['nvidia', 'opencode', 'openrouter'] as $provider) {

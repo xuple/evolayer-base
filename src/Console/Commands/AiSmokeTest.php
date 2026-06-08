@@ -40,7 +40,7 @@ class AiSmokeTest extends Command
     {
         $this->components->info('Testing all configured AI providers…');
 
-        $providers = app(ThreadStudioAiConfig::class)->supportedProviders();
+        $providers = app(ThreadStudioAiConfig::class)->runtimeApprovedProviders();
         $results = [];
 
         foreach ($providers as $provider) {

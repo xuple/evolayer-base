@@ -8,10 +8,10 @@ namespace Xuple\EvoLayer\Base\Support;
  * This class is the consumer-facing API for "which providers may a host
  * configure as `AI_THREAD_STUDIO_PROVIDER`?" and "why is this one rejected?".
  * Per ADR-019 it is the seam consumers depend on — not
- * `AiFeatureConfig::supportedProviders()` directly — because product
- * decisions (curation + per-provider rejection reasons, and later
+ * `AiFeatureConfig::runtimeApprovedProviders()` directly — because product
+ * decisions (runtime approval + per-provider rejection reasons, and later
  * capability-ledger-driven gating) belong here, not in the config layer
- * that owns the curated list and labels.
+ * that owns the runtime-approved list and labels.
  */
 class ThreadStudioProviderPolicy
 {
@@ -28,7 +28,7 @@ class ThreadStudioProviderPolicy
 
     /**
      * OpenAI-compatible router / probe candidates — not directly verified per
-     * provider, so not curated for ThreadStudio runtime selection (ADR-020).
+     * provider, so not runtime-approved for ThreadStudio selection (ADR-020).
      *
      * @var array<int, string>
      */
@@ -41,13 +41,13 @@ class ThreadStudioProviderPolicy
     /**
      * Providers the policy allows as ThreadStudio's `AI_THREAD_STUDIO_PROVIDER`
      * setting and accepts in request validation — the directly-verified
-     * curated roster (ADR-020: Gemini + OpenAI).
+     * runtime-approved roster (ADR-020: Gemini + OpenAI).
      *
      * @return array<int, string>
      */
-    public function curatedProviders(): array
+    public function runtimeApprovedProviders(): array
     {
-        return $this->config->supportedProviders();
+        return $this->config->runtimeApprovedProviders();
     }
 
     /**
@@ -58,8 +58,8 @@ class ThreadStudioProviderPolicy
      */
     public function explain(string $provider): ProviderAvailability
     {
-        if (in_array($provider, $this->curatedProviders(), true)) {
-            return ProviderAvailability::curated($provider);
+        if (in_array($provider, $this->runtimeApprovedProviders(), true)) {
+            return ProviderAvailability::runtimeApproved($provider);
         }
 
         if (isset(self::BLOCKED[$provider])) {
@@ -70,14 +70,14 @@ class ThreadStudioProviderPolicy
             return ProviderAvailability::candidate(
                 $provider,
                 ucfirst($provider).' is an OpenAI-compatible router/probe candidate for ThreadStudio, not a directly-verified provider. '
-                .'Exercise it with `evolayer:ai:stream-smoke` / `evolayer:ai:probe`; it is not selectable in ThreadStudio until verified. '
-                .'Curated providers are: '.implode(', ', $this->curatedProviders()).'.',
+                .'Exercise it with `evolayer:ai:stream-check` / `evolayer:ai:probe`; it is not selectable in ThreadStudio until verified. '
+                .'Runtime-approved providers are: '.implode(', ', $this->runtimeApprovedProviders()).'.',
             );
         }
 
         return ProviderAvailability::unknown(
             $provider,
-            "Unknown ThreadStudio provider [{$provider}]. Curated providers are: ".implode(', ', $this->curatedProviders()).'.',
+            "Unknown ThreadStudio provider [{$provider}]. Runtime-approved providers are: ".implode(', ', $this->runtimeApprovedProviders()).'.',
         );
     }
 }

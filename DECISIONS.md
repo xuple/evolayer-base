@@ -316,7 +316,7 @@ Three real tensions follow from this surface:
 - `AiStreamCheck` accepts any `Lab` provider (already decoupled from `supportedProviders()`), establishing precedent that the diagnostic surface is broader than the curated surface.
 - Pre-0.1 is the cheapest window to surface the right abstractions. After public release, the `AiCapability` schema, the `status` enum values, and the public-method name `supportedProviders()` all become compatibility commitments for downstream hosts that have started persisting capability rows or reading the method.
 
-ADR-018's policy framing is correct but incomplete: it names the tiers but doesn't name the seams. Future surfaces (`doctor --json`, receipts, admin probing UI, agent-readable failure messages, the starter's first-run readiness screen) will all need vocabulary for "provider exists / provider tested / provider untested / provider blocked / provider stale." Defining that vocabulary now is cheaper than refactoring after each surface invents its own.
+ADR-018's policy framing is correct but incomplete: it names the tiers but doesn't name the seams. Future surfaces (`doctor --json`, verification receipts, admin probing UI, agent-readable failure messages, the starter's first-run readiness screen) will all need vocabulary for "provider exists / provider tested / provider untested / provider blocked / provider stale." Defining that vocabulary now is cheaper than refactoring after each surface invents its own.
 
 **Decision.** Introduce a named abstraction model with seven boundaries; document it; ship the minimum policy seam now; leave most implementation for follow-up ADRs and commits.
 
@@ -342,11 +342,11 @@ A capability row records observations as a collection of typed conditions. First
 | `StructuredStreaming` | The patched flow emits `TextDelta` events end-to-end |
 | `ThreadStudioSchemaValid` | The current `ThreadStudioAgent` schema hash passed structured streaming against this provider/model |
 
-`ThreadStudioReady` is **not** a stored ledger condition — it is a **policy-derived availability result** computed by `ThreadStudioProviderPolicy` from observed conditions plus the curated roster. Keeping it out of the table preserves the ledger-records-observations / policy-decides rule: a row records what a probe saw, not whether the product currently allows the provider. `ThreadStudioReady` may surface in future doctor/receipt output, computed on demand.
+`ThreadStudioReady` is **not** a stored ledger condition — it is a **policy-derived availability result** computed by `ThreadStudioProviderPolicy` from observed conditions plus the curated roster. Keeping it out of the table preserves the ledger-records-observations / policy-decides rule: a row records what a probe saw, not whether the product currently allows the provider. `ThreadStudioReady` may surface in future doctor / verification-receipt output, computed on demand.
 
 Each condition is `(type, status ∈ {True, False, Unknown}, reason, message, schema_hash?, observed_at)`. `Unknown` is the load-bearing value — it distinguishes "untested" from "tested and failed." A provider with no probe row is Unknown; a probe row with `probe_passed=false` is False; a probe row with `probe_passed=true` is True for the conditions its probe exercised.
 
-Conditions stored on `AiCapability` describe the probe context for that `provider × model × agent × schema_hash` row — what was true at probe time. Some condition *types* are environment-wide (`PatchPresent`, `CredentialsConfigured`) rather than provider-specific; when stored on a capability row they record what was observed *during that probe*, not universal system truth. Environment-wide health may also surface separately in future doctor/receipt output, but the capability row is always the per-probe snapshot.
+Conditions stored on `AiCapability` describe the probe context for that `provider × model × agent × schema_hash` row — what was true at probe time. Some condition *types* are environment-wide (`PatchPresent`, `CredentialsConfigured`) rather than provider-specific; when stored on a capability row they record what was observed *during that probe*, not universal system truth. Environment-wide health may also surface separately in future doctor / verification-receipt output, but the capability row is always the per-probe snapshot.
 
 The column and vocabulary landed first (separately from any producer). The producer now exists: `AiCapabilityProbe` (the shared service extracted from the three `evolayer:ai:*` commands) synthesises a `StructuredStreaming` condition via `ConditionsBuilder` and `persist()` writes it on every recorded probe, with `probe_passed` derived from that condition's status so the boolean and the conditions array cannot drift. Only the `StructuredStreaming` condition is synthesised today; future probes add the remaining types (`CredentialsConfigured`, `PatchPresent`, `ThreadStudioSchemaValid`). The `Unknown` vs `False` distinction is enforced at the producer: the credentials short-circuit records `Unknown` (the agent was never run), never `False`.
 
@@ -388,7 +388,7 @@ This ADR explicitly does NOT:
 - Change `AiFeatureConfig::supportedProviders()`. Anthropic stays, OpenAI is not added.
 - Implement adaptive mode (capability-ledger-driven ThreadStudio gating).
 - Build admin / in-app probing UI.
-- Build `doctor --json` or receipts.
+- Build `doctor --json` or verification receipts.
 - Extract `ProviderRegistry`, `AiCapabilityProbe`, or `AiCapabilityLedger` as separate named classes. They remain implicit inside `AiFeatureConfig`, `AiProbeCommand`, and the `AiCapability` model respectively. The boundaries are documented; extraction is future work that happens when a second consumer needs the seam.
 - Rename `supportedProviders()`. Renaming with a compatibility alias is a clean future change; deferred to avoid scope creep here.
 - Wire `AiProbeCommand` to write conditions. The column lands; the probe-to-conditions write path is the next probe-evolution commit.
@@ -408,7 +408,7 @@ The two non-goals scoped as "next probe-evolution commit" subsequently landed, b
 - **The conditions producer is wired**: `persist()` writes the `StructuredStreaming` condition and derives `probe_passed` from it. The probe→ledger write path — previously untested — now has feature coverage (creation, cooldown, `--force`, supersession, conditions tuple, output_mode preservation).
 - Two latent bugs were fixed at the single chokepoint: `output_mode` is no longer hardcoded to `json_schema` on success (hand-maintained catalogue modes are preserved), and the persist no-op is now an explicit "model required" contract.
 
-Still deferred to ADR-020+: the roster change (A-E), the policy's `explain()`/`availability()` method, adaptive mode, `doctor --json`/receipts, and enabling `--persist` for non-OpenCode providers in the all-providers path (roster-coupled).
+Still deferred to ADR-020+: the roster change (A-E), the policy's `explain()`/`availability()` method, adaptive mode, `doctor --json` / verification receipts, and enabling `--persist` for non-OpenCode providers in the all-providers path (roster-coupled).
 
 ---
 
@@ -451,7 +451,7 @@ This is the honest, provider-specific-support-first posture. It is stricter than
 
 **Explanatory rejection — landed.** A blocked provider is now rejected with a per-provider reason via `ThreadStudioProviderPolicy::explain(provider): ProviderAvailability` (e.g. *"Anthropic is known to the diagnostic layer but is blocked for ThreadStudio because structured streaming currently emits no usable TextDelta events."*), wired into `ComposeThreadStudioRequest`'s provider rule — replacing the framework's generic "selected provider is invalid". `explain()` classifies a provider as runtime-approved / blocked / candidate / unknown. Provider-level only; model-level / capability-ledger gating (`availability(provider, model)`) is adaptive mode and stays deferred.
 
-**Non-goals (unchanged from ADR-019).** No adaptive/verified runtime mode yet; no runtime provider fallback; no receipts; no admin probing UI; no removal of router-provider probe infrastructure.
+**Non-goals (unchanged from ADR-019).** No adaptive/verified runtime mode yet; no runtime provider fallback; no verification receipts; no admin probing UI; no removal of router-provider probe infrastructure.
 
 **Side effects.**
 - Hosts that had set `AI_THREAD_STUDIO_PROVIDER=anthropic` (or a router) now get a 422 at ThreadStudio request time. The default is `gemini`, so the starter's kitchen-sink install is unaffected; only hosts that explicitly opted into a now non-runtime-approved provider feel the cutover. Recorded under CHANGELOG `### Changed`.

@@ -86,7 +86,7 @@ Provider drivers, capability probing, and the AI capability ledger live here. Do
 
 **Runtime-approved roster (ADR-020, Verified Runtime Strategy):** `AiFeatureConfig::runtimeApprovedProviders()` is `['gemini', 'openai']` — *directly verified* providers only. Anthropic is **blocked for ThreadStudio runtime / pending re-verification** (diagnostic-eligible, but its structured streaming emits no usable `TextDelta` events, so it is not selectable in ThreadStudio); NVIDIA / OpenCode / OpenRouter are **router-backed diagnostic-eligible probe candidates**, not runtime-approved. Their labels, the OpenCode catalogue, and the capability ledger are retained as probe/router infrastructure — reclassified, not deleted. Do not re-add a provider to the runtime-approved roster without a direct structured-streaming verification and a regression-test update (a test pins `['gemini', 'openai']`). Do not change the roster inside an unrelated commit.
 
-Smoke/probe diagnostics (`evolayer:ai:probe` / `smoke-test` / `stream-check`) stay broad — they accept any `Lab` provider, so Anthropic and the routers remain exercisable. Passing a smoke is eligibility for consideration, not runtime approval. Feature flags (`EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO`) gate *visibility*, not provider readiness — separate predicates.
+Smoke/probe diagnostics stay broad when a provider is explicit: `evolayer:ai:probe --provider=...`, `smoke-test {provider}`, and `stream-check {provider}` can exercise any SDK-known `Lab` provider, so Anthropic and the routers remain exercisable. No-argument `probe` / `smoke-test` checks run against the runtime-approved roster only. Passing a smoke is eligibility for consideration, not runtime approval. Feature flags (`EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO`) gate *visibility*, not provider readiness — separate predicates.
 
 **Never write "verified provider" without naming the verification scope** — `matrix-verified`, `stream-verified`, `ThreadStudio-verified`, or `locally verified`. Bare "verified" collapses capability evidence and product policy into one unsafe word; the canonical provider vocabulary (runtime-approved, diagnostic-eligible, router-backed, blocked, pending re-verification, matrix-verified, locally verified) is defined in [`DECISIONS.md`](DECISIONS.md) → "Provider taxonomy (canonical glossary)".
 
@@ -100,7 +100,7 @@ composer test                              # Pest Feature + Unit
 vendor/bin/testbench boost:install --guidelines --no-interaction   # only if AGENTS.md needs refresh
 ```
 
-CI runs `composer test` on push.
+GitHub Actions are manual during private pre-release; run `composer validate --strict` and `composer test` locally before pushing. Re-enable push/PR triggers after Packagist publication.
 
 ## Library MCP workflow (for contributors)
 

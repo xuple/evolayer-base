@@ -20,7 +20,7 @@ package also exposes that page at `/about`.
 
 ## What you get
 
-- Structured AI streaming built on `laravel/ai`, with ThreadStudio, PRD generation, text assist, and provider smoke-test commands.
+- Structured AI streaming built on `laravel/ai`, with ThreadStudio, PRD generation, text assist, `evolayer:ai:smoke-test`, `evolayer:ai:probe`, and `evolayer:ai:stream-check`.
 - A small ontology compiler and TypeScript contract generator for describing app entities, routes, and blocks.
 - React blocks and example pages that publish into the host app without taking over the starter.
 - Admin and lineage primitives (`AdminGate`, `ChangeEvent`, AI invocation ledger) intended for reuse by Commerce, SaaS, and RLS packages.

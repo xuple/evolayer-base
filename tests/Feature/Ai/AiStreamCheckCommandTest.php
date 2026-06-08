@@ -11,10 +11,10 @@ $threadStudioResult = [
     'internal_note' => 'Investigate invoice download permissions after billing plan upgrade.',
 ];
 
-test('the stream smoke command verifies a faked structured stream end to end', function () use ($threadStudioResult) {
+test('the stream-check command verifies a faked structured stream end to end', function () use ($threadStudioResult) {
     ThreadStudioAgent::fake([$threadStudioResult])->preventStrayPrompts();
 
-    $this->artisan('evolayer:ai:stream-smoke', ['provider' => 'anthropic'])
+    $this->artisan('evolayer:ai:stream-check', ['provider' => 'anthropic'])
         ->expectsOutputToContain('Starting live stream via anthropic')
         ->expectsOutputToContain('TextDelta events')
         ->expectsOutputToContain('Fields completed: summary, urgency, sentiment, recommended_tone, customer_reply, internal_note')
@@ -23,19 +23,19 @@ test('the stream smoke command verifies a faked structured stream end to end', f
         ->assertSuccessful();
 });
 
-test('the stream smoke command fails when a provider returns an empty final payload', function () {
+test('the stream-check command fails when a provider returns an empty final payload', function () {
     ThreadStudioAgent::fake([''])->preventStrayPrompts();
 
-    $this->artisan('evolayer:ai:stream-smoke', ['provider' => 'anthropic'])
+    $this->artisan('evolayer:ai:stream-check', ['provider' => 'anthropic'])
         ->expectsOutputToContain('Starting live stream via anthropic')
         ->expectsOutputToContain('Could not decode final payload (length=0)')
         ->assertFailed();
 });
 
-test('the stream smoke command rejects unknown providers before prompting', function () {
+test('the stream-check command rejects unknown providers before prompting', function () {
     ThreadStudioAgent::fake(fn () => throw new RuntimeException('The agent should not be called.'));
 
-    $this->artisan('evolayer:ai:stream-smoke', ['provider' => 'not-a-provider'])
+    $this->artisan('evolayer:ai:stream-check', ['provider' => 'not-a-provider'])
         ->expectsOutput("Unknown provider 'not-a-provider'.")
         ->assertFailed();
 });

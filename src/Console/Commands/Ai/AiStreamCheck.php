@@ -11,9 +11,9 @@ use Throwable;
 use Xuple\EvoLayer\Base\Ai\Agents\ThreadStudioAgent;
 use Xuple\EvoLayer\Base\Support\PartialJsonExtractor;
 
-#[Signature('evolayer:ai:stream-smoke {provider=gemini : Provider key (gemini, openai, anthropic, ...)}')]
-#[Description('Live smoke test of structured streaming through ThreadStudioAgent. Use to verify a provider supports field-level streaming end-to-end.')]
-class AiStreamSmokeTest extends Command
+#[Signature('evolayer:ai:stream-check {provider=gemini : Provider key (gemini, openai, anthropic, ...)}')]
+#[Description('Live check of structured streaming through ThreadStudioAgent. Use to verify a provider supports field-level streaming end-to-end.')]
+class AiStreamCheck extends Command
 {
     public function handle(): int
     {

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Xuple\EvoLayer\Base\Auth\DefaultUserResolver;
 use Xuple\EvoLayer\Base\Auth\SpatieAdminGate;
-use Xuple\EvoLayer\Base\Console\Commands\Ai\AiStreamSmokeTest;
+use Xuple\EvoLayer\Base\Console\Commands\Ai\AiStreamCheck;
 use Xuple\EvoLayer\Base\Console\Commands\AiProbeCommand;
 use Xuple\EvoLayer\Base\Console\Commands\AiSmokeTest;
 use Xuple\EvoLayer\Base\Console\Commands\DoctorCommand;
@@ -82,7 +82,7 @@ class BaseServiceProvider extends ServiceProvider
                 DoctorCommand::class,
                 AiProbeCommand::class,
                 AiSmokeTest::class,
-                AiStreamSmokeTest::class,
+                AiStreamCheck::class,
                 FontsSelfHost::class,
                 OntologyCompileCommand::class,
                 PromoteUserCommand::class,

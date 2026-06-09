@@ -140,9 +140,53 @@ composer create-project xuple/evolayer-base-starter evolayer-packagist
 - [ ] README + release notes use developer-preview wording: *"0.1 developer preview — publicly installable, intended for early builders; pre-1.0, APIs may change before 1.0."* Not "stable". Position as a serious Laravel AI starter with a verified first-hour experience.
 
 ### Gate summary
-- **Before tag:** steps 0–5 + step 7 green; README self-contained.
-- **Before public announcement:** step 6 (OpenAI stream-check) + step 8 (Packagist rehearsal) green; minimal docs site live.
+- **Before tag:** steps 0–5 green + step 7 as *functional proof only* — the current ThreadStudio live run is sufficient; a polished hero screenshot is **not** a tag blocker; README self-contained.
+- **Before public announcement:** step 6 (OpenAI stream-check) + step 8 (Packagist rehearsal) green; minimal docs site live; redesigned ThreadStudio hero screenshot if ThreadStudio is shown prominently.
 - **Tag/publish order:** package first (tag → Packagist), starter second (flip `dev-main`→`^0.1`, remove Forge `repositories` entry, Phase B clean → Packagist).
+
+## 0.1.0 Tag / Packagist Bridge
+
+Run **after** the rehearsal runbook above passes. **Do not execute any tag/publish step without explicit go — tagging and Packagist publication are one-way doors.**
+
+**Ratified decisions (public contract):**
+- Package first, starter second.
+- Starter consumes `xuple/evolayer-base:^0.1` before the starter tag.
+- **GitHub is the public publication source**; Forge is internal/staging.
+- Final names: `xuple/evolayer-base`, `xuple/evolayer-base-starter` (no alternates in public docs).
+
+### Phase 0 — Go-public prerequisites (the actual launch switch)
+- [ ] Make **both GitHub repos public** (`xuple/evolayer-base`, `xuple/evolayer-base-starter`) — they are a private mirror today, and Packagist needs public access. *This is the launch moment.*
+- [ ] Both repos clean, `main` even on `origin` (Forge) + `github`; **no `composer.lock` tracked** (CI fails if present).
+
+### Phase 1 — Package publication
+- [ ] Final package verification on the tag commit: `composer test` + `composer validate --strict` (the package has **no `artisan`** — no `evolayer:doctor` here).
+- [ ] Move package `CHANGELOG.md` `[Unreleased]` → `[0.1.0] - <date>`; commit; re-run `composer test` on that final commit.
+- [ ] Tag from the proven commit: `git tag v0.1.0 && git push origin v0.1.0 && git push github v0.1.0`.
+- [ ] Submit `xuple/evolayer-base` to Packagist (first time) + enable the GitHub→Packagist webhook (auto-update on push).
+- [ ] Confirm Packagist resolves `xuple/evolayer-base:^0.1`.
+
+### Phase 2 — Starter public dependency
+- [ ] In starter `composer.json`: set `"xuple/evolayer-base": "^0.1"` **and delete the private Forge `repositories` (vcs) block**. (Keep the uncommitted local-path-override workflow documented for sibling-package dev only.)
+- [ ] `composer update xuple/evolayer-base`; `composer evolayer:resync` if any published stubs changed.
+- [ ] Full starter verification suite green: `composer validate --strict`, `composer test`, `php artisan evolayer:doctor --strict`, `npm run types:check`, `npm run build`, `composer lint:check`, `npm run lint:check`, `npm run format:check`.
+- [ ] Move starter `CHANGELOG.md` `[Unreleased]` → `[0.1.0]`.
+
+### Phase 3 — Starter publication (gated on the guardrail below)
+- [ ] **Packagist-only** rehearsal from a clean dir — the bare public command, **no `--repository` / `--stability` flags**:
+      `composer create-project xuple/evolayer-base-starter my-app`
+- [ ] Repeat runbook steps 2–4 (build, boot, doctor, no-key clarity) green on the Packagist install.
+- [ ] Tag starter: `git tag v0.1.0 && git push origin v0.1.0 && git push github v0.1.0`; submit to Packagist + webhook.
+- [ ] Confirm the bare `composer create-project xuple/evolayer-base-starter my-app` works end-to-end from Packagist.
+
+### Phase 4 — Announcement readiness (after tag)
+- [ ] Swap README/docs wording from **private-staging** to **public developer-preview**: *"0.1 developer preview — publicly installable, intended for early builders; pre-1.0, APIs may change before 1.0."* Drop the "staged on a private Forge" framing; prefer GitHub for source links; keep Forge VCS instructions private/pre-release only.
+- [ ] Re-enable GitHub Actions push/PR triggers; drop the temporary `EVOLAYER_BASE_GITHUB_TOKEN` workaround (CI can now resolve from Packagist).
+- [ ] Minimal `docs.evodevops.com/base` live.
+- [ ] **Small, scope-boxed ThreadStudio public-demo polish** (richer dogfood example, clearer no-key/provider states, stronger result hierarchy, optional compact provider/verification badge) — **NOT** a feature pass: no adaptive mode, no new provider policy, no new backend schema, no admin probing UI, no receipts. Then capture the public ThreadStudio hero screenshot.
+- [ ] Public landing/home screenshot selection.
+
+### 🔴 Guardrail
+**Do not tag the starter (Phase 3) until a Packagist-only `create-project` proves `^0.1` resolves cleanly with no private-staging assumptions.** That is the whole point of this posture: *no private staging in the public first-hour experience.*
 
 ## Starter create-project flow
 

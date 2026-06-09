@@ -60,7 +60,7 @@ For a one-shot install into an existing app, use:
 php artisan evolayer:install
 ```
 
-Then run `php artisan evolayer:doctor` to verify the package bindings, ontology cache, and AI patch state.
+Then run `php artisan evolayer:doctor` to verify the package bindings, ontology cache, and AI patch state from the CLI runtime. `doctor` does not prove that a separate web-server or PHP-FPM user can write Laravel cache or storage paths; hosted filesystem permissions belong to the host application or starter deployment docs.
 
 ### Enabling a feature (two coupled steps)
 

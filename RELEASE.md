@@ -1,11 +1,10 @@
 # Releasing EvoLayer Base
 
-This documents the intended release flow for the package (`xuple/evolayer-base`)
-and the starter (`xuple/evolayer-base-starter`). Base and the starter are
-free/public MIT projects. GitHub is the public publication source and Packagist
-is the public Composer source; the self-hosted Forge remote remains internal
-staging. The package becomes public first, then the starter follows after its
-dependency is flipped to the Packagist package.
+This documents the current release flow for the package
+(`xuple/evolayer-base`). Base is a public MIT Composer package: GitHub is the
+public source repository and Packagist is the public Composer source. The
+self-hosted Forge remote, when present in a maintainer checkout, is internal
+staging only and is not the public package resolution path.
 
 ## Identity
 
@@ -19,269 +18,121 @@ dependency is flipped to the Packagist package.
   routes expose that same page at `/about`.
 - See `DECISIONS.md` ADR-017 for why this identity was chosen.
 
-## Provisional version
+## Current public state
 
-First release target: **0.1.0** (pre-1.0, expect breaking changes). Not yet
-tagged. SemVer once 1.0 ships.
+- Current package release line: **v0.1.1** (`^0.1` for consumers).
+- Public install path: `composer require xuple/evolayer-base`.
+- Starter consumption path: `xuple/evolayer-base-starter` resolves Base from
+  Packagist using `^0.1`.
+- Public CI is live on `push`, `pull_request`, and `workflow_dispatch`.
+- This package is a library and has no `artisan` script. Package verification is
+  `composer validate --strict` and `composer test`.
+- `evolayer:doctor` is installed into host applications. It verifies package and
+  app configuration from the CLI runtime; it does not prove that a web-server or
+  PHP-FPM user can write Laravel cache or storage paths.
 
-## Package tag flow (0.1.0)
+EvoLayer Base is pre-1.0. Treat `0.1.x` as a public developer-preview line:
+publicly installable and supported for early builders, but APIs may change
+before 1.0.
 
-1. Ensure green: `composer test`, `composer validate --strict`.
-2. Confirm `xuple/evolayer-base` is public on GitHub and submitted to Packagist.
-3. Update `CHANGELOG.md`: move `[Unreleased]` to `[0.1.0] - <date>`.
-4. Commit, then tag: `git tag v0.1.0 && git push origin v0.1.0 && git push github v0.1.0`.
-5. Confirm Packagist sees `v0.1.0`.
-6. Update the starter to require `xuple/evolayer-base:^0.1`, remove the private
-   VCS repository, validate a clean `composer create-project`, then publish
-   `xuple/evolayer-base-starter` to Packagist.
+## Package release checklist
 
-> The `cweagans/composer-patches` plugin is **not** a dependency of the package.
-> The package applies its own `laravel/ai` patch in development via
-> `scripts/apply-patches.php` (post-install/update). Consumers apply the patch
-> through their host project — the starter does this with composer-patches.
+Run this from the package repository.
 
-## 0.1.0 Release Rehearsal Runbook
+1. Confirm the change belongs in Base, not the starter or a downstream
+   application.
+2. Confirm the worktree is clean except for the intended release changes.
+3. Confirm `composer.lock`, credentials, `.env`, `auth.json`, and generated
+   secrets are not tracked.
+4. If `AGENTS.md` changes, mirror it byte-identically to `CLAUDE.md`.
+5. Run:
 
-A `0.1.0` is a **publicly installable, credible developer preview** — the bar is a
-best-in-class first-hour `composer create-project` experience. This runbook is the
-rehearsal that must pass before tagging, and again before public announcement.
+   ```bash
+   composer validate --strict
+   composer test
+   cmp -s AGENTS.md CLAUDE.md && echo "AGENTS/CLAUDE mirrored"
+   ```
 
-**Failure standard.** Required paths (install, setup, build, boot, doctor) must not
-fail unnecessarily. Optional AI paths may fail, but only with a **clear, diagnostic**
-message — never a stack trace or a silently broken UI.
+6. For changes that alter public behaviour, commands, config keys, published
+   stubs, migrations, provider policy, or install flow, update `CHANGELOG.md`
+   and any relevant notes in `README.md`, `CONTRIBUTING.md`, or `DECISIONS.md`.
+7. Commit the release-prep changes.
+8. Tag only after explicit maintainer approval:
 
-Run from a clean directory outside both working trees (e.g.
-`/tmp/evolayer-rehearsal-<date>`), with **no** sibling-path override, in two phases:
+   ```bash
+   git tag vX.Y.Z
+   git push origin vX.Y.Z
+   git push github vX.Y.Z
+   ```
 
-- **Phase A — VCS rehearsal (before publication).** Resolves from the Forge VCS
-  source. **Gates the tag.**
-- **Phase B — Packagist rehearsal (before public announcement).** Resolves from
-  Packagist exactly as the public will. **Gates the announcement.**
+9. Confirm Packagist sees the tag:
 
-### 0. Pre-flight — both repos green at HEAD
-- [ ] Package: `composer test`, `composer validate --strict`.
-- [ ] Starter: `composer test`, `composer validate --strict`, `php artisan evolayer:doctor --strict --no-ansi`, `npm run types:check`, `npm run build`, `composer lint:check`, `npm run lint:check`, `npm run format:check`.
-- [ ] Both clean and pushed to `origin` + `github`.
+   ```bash
+   composer show xuple/evolayer-base --all
+   ```
 
-### 1. Fresh install — Phase A (VCS source)
-The starter is not on Packagist yet, so point `create-project` at the starter's VCS;
-the package resolves via the starter's committed Forge `repositories` entry.
+Do not tag from an unverified commit. Do not tag as part of a docs cleanup unless
+that tag was explicitly approved after reviewing the diff.
 
-```bash
-cd /tmp && rm -rf evolayer-rehearsal && \
-composer create-project xuple/evolayer-base-starter evolayer-rehearsal \
-  --repository='{"type":"vcs","url":"ssh://git@<private-forge-host>/<owner>/evolayer-base-starter.git"}' \
-  --stability=dev
-cd evolayer-rehearsal
-```
+## Patch release notes
 
-- [ ] Resolves the starter **and** `xuple/evolayer-base` (dev-main) from VCS.
-- [ ] `cweagans/composer-patches` applies the `laravel/ai` structured-streaming patch (watch for the patch line — a `--no-dev` install would silently skip it and break streaming).
-- [ ] `post-create-project-cmd` ran: `key:generate`, SQLite created, `migrate --seed`, `wayfinder:generate`, `evolayer:ontology:compile`.
+For a package-only docs patch, the expected scope is small:
 
-### 2. Build + boot (the post-create gap)
-`post-create-project-cmd` does **not** build the frontend — these are explicit
-first-hour steps (documented in the starter README):
+- stale public-state wording removed or clearly marked historical;
+- `README.md`, `RELEASE.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `AGENTS.md`, and
+  `CLAUDE.md` remain consistent;
+- no provider roster changes;
+- no runtime fallback or adaptive-mode changes;
+- no starter, hosting, Nginx, deployment, or client-app instructions added.
 
-```bash
-npm install && npm run build    # client + SSR
-php artisan serve               # or: composer dev
-```
+For package code or published-stub changes, coordinate separately with the
+starter after the Base change is available through a resolvable ref or tag. The
+starter owns its host shell, `.env.example` values, route wiring, generated
+Wayfinder outputs, and application verification suite.
 
-- [ ] `npm run build` green.
-- [ ] App boots with no Vite-manifest error.
+## AI provider policy gate
 
-### 3. Required-path verification (in the created project)
-- [ ] `composer validate --strict` clean.
-- [ ] `composer test` green (PHPUnit).
-- [ ] `php artisan evolayer:doctor --strict --no-ansi` passes.
+Provider policy is package-owned and must not drift in unrelated releases:
 
-### 4. No-key AI experience — must be clear, not broken
-With **no** provider keys in `.env`:
-- [ ] App, `/login`, authenticated home, and ThreadStudio all load.
-- [ ] An AI compose attempt surfaces a clear "key not configured" message — not a trace, not a silently dead UI.
-- [ ] `evolayer:doctor` advisories about absent keys read as guidance, not failure.
+- Runtime-approved ThreadStudio providers remain `gemini` and `openai`.
+- Anthropic remains diagnostic-eligible but blocked for ThreadStudio runtime and
+  pending re-verification.
+- NVIDIA, OpenCode, and OpenRouter remain router-backed diagnostic/probe
+  candidates, not ThreadStudio runtime-approved providers.
+- Runtime selection uses the configured provider and model only. Do not add
+  silent fallback across providers.
+- Adaptive provider selection remains deferred unless a dedicated ADR and tests
+  land with the implementation.
 
-### 5. Live AI — Gemini (**tag gate**)
-```bash
-# add GEMINI_API_KEY to .env
-php artisan evolayer:ai:stream-check gemini
-```
-- [ ] `stream-check gemini` shows TextDelta events + all fields completed + "verified end-to-end".
-- [ ] **Gemini ThreadStudio compose round-trip** in the UI returns a structured result. *(Both required before tag.)*
+The package commands remain:
 
-### 6. Live AI — OpenAI (**announcement gate**)
-```bash
-# add OPENAI_API_KEY to .env
-php artisan evolayer:ai:stream-check openai
-```
-- [ ] `stream-check openai` green. *(Required before public announcement.)*
-- [ ] OpenAI ThreadStudio round-trip — *strongly preferred, not required for tag.*
+- `evolayer:ai:smoke-test {provider}`
+- `evolayer:ai:probe`
+- `evolayer:ai:stream-check {provider}`
 
-### 7. Screenshot surfaces — reshare-worthy
-Capture and eyeball for credibility (demo admin `test@example.com` / `password`):
-- [ ] Public landing (`/`).
-- [ ] Authenticated home.
-- [ ] ThreadStudio (ideally mid/post a Gemini compose).
+Passing a smoke, probe, or stream check is evidence for consideration; it is not
+automatic ThreadStudio runtime approval.
 
-### 8. Phase B — Packagist rehearsal (**before announcement**)
-After the package is tagged + published and the starter flipped to `^0.1` (see
-*Package tag flow* above):
+## Host diagnostics boundary
 
-```bash
-cd /tmp && rm -rf evolayer-packagist && \
-composer create-project xuple/evolayer-base-starter evolayer-packagist
-```
+`evolayer:doctor` is intentionally a package/app configuration check from the
+CLI runtime. Hosted filesystem permissions depend on the host deployment model,
+PHP-FPM pool user, web-server user, container image, volume mounts, and Laravel
+storage/cache setup. Those operational recipes belong in the starter or the
+host application, not in the Base package release guide.
 
-- [ ] Resolves with **no** `--repository` / `--stability` flags — pure Packagist, exactly as the public will.
-- [ ] Repeat steps 2–4 (build, boot, doctor, no-key clarity) green.
+If Base ever adds a hosted diagnostic command, it should be designed behind an
+explicit ADR because a CLI process can inspect paths and explain likely
+problems, but it cannot generally prove the effective write permissions of a
+separate web-server/PHP-FPM runtime without deployment-specific assumptions.
 
-### Docs + wording gates
-- [ ] **README self-contained at tag** (a reader can install + run from the README alone).
-- [ ] **Minimal `docs.evodevops.com/base` before public announcement** (not required for the tag itself).
-- [ ] README + release notes use developer-preview wording: *"0.1 developer preview — publicly installable, intended for early builders; pre-1.0, APIs may change before 1.0."* Not "stable". Position as a serious Laravel AI starter with a verified first-hour experience.
+## Distribution and remotes
 
-### Gate summary
-- **Before tag:** steps 0–5 green + step 7 as *functional proof only* — the current ThreadStudio live run is sufficient; a polished hero screenshot is **not** a tag blocker; README self-contained.
-- **Before public announcement:** step 6 (OpenAI stream-check) + step 8 (Packagist rehearsal) green; minimal docs site live; redesigned ThreadStudio hero screenshot if ThreadStudio is shown prominently.
-- **Tag/publish order:** package first (tag → Packagist), starter second (flip `dev-main`→`^0.1`, remove Forge `repositories` entry, Phase B clean → Packagist).
+- **Public source:** `https://github.com/xuple/evolayer-base`
+- **Public Composer source:** Packagist package `xuple/evolayer-base`
+- **Internal staging:** self-hosted Forge remotes may exist in maintainer
+  checkouts, but they are not a public dependency path.
 
-## 0.1.0 Tag / Packagist Bridge
-
-Run **after** the rehearsal runbook above passes. **Do not execute any tag/publish step without explicit go — tagging and Packagist publication are one-way doors.**
-
-**Ratified decisions (public contract):**
-- Package first, starter second.
-- Starter consumes `xuple/evolayer-base:^0.1` before the starter tag.
-- **GitHub is the public publication source**; Forge is internal/staging.
-- Final names: `xuple/evolayer-base`, `xuple/evolayer-base-starter` (no alternates in public docs).
-
-### Phase 0 — Go-public prerequisites (the actual launch switch)
-- [ ] Make **`xuple/evolayer-base` public first** so Packagist can ingest the package. Leave **`xuple/evolayer-base-starter` private** until the package tag is visible, the starter dependency is flipped to `^0.1`, and a Packagist-only rehearsal is ready.
-- [ ] Both repos clean, `main` even on `origin` (Forge) + `github`; **no `composer.lock` tracked** (CI fails if present).
-
-### Phase 1 — Package publication
-- [ ] Final package verification on the tag commit: `composer test` + `composer validate --strict` (the package has **no `artisan`** — no `evolayer:doctor` here).
-- [ ] Submit `xuple/evolayer-base` to Packagist (first time) + enable the GitHub→Packagist webhook (auto-update on push).
-- [ ] Move package `CHANGELOG.md` `[Unreleased]` → `[0.1.0] - <date>`; commit; re-run `composer test` on that final commit.
-- [ ] Tag from the proven commit: `git tag v0.1.0 && git push origin v0.1.0 && git push github v0.1.0`.
-- [ ] Confirm Packagist resolves `xuple/evolayer-base:^0.1`.
-
-### Phase 2 — Starter public dependency
-- [ ] In starter `composer.json`: set `"xuple/evolayer-base": "^0.1"` **and delete the private Forge `repositories` (vcs) block**. (Keep the uncommitted local-path-override workflow documented for sibling-package dev only.)
-- [ ] `composer update xuple/evolayer-base`; `composer evolayer:resync` if any published stubs changed.
-- [ ] Full starter verification suite green: `composer validate --strict`, `composer test`, `php artisan evolayer:doctor --strict`, `npm run types:check`, `npm run build`, `composer lint:check`, `npm run lint:check`, `npm run format:check`.
-- [ ] Move starter `CHANGELOG.md` `[Unreleased]` → `[0.1.0]`.
-
-### Phase 3 — Starter publication (gated on the guardrail below)
-- [ ] **Packagist-only** rehearsal from a clean dir — the bare public command, **no `--repository` / `--stability` flags**:
-      `composer create-project xuple/evolayer-base-starter my-app`
-- [ ] Repeat runbook steps 2–4 (build, boot, doctor, no-key clarity) green on the Packagist install.
-- [ ] Tag starter: `git tag v0.1.0 && git push origin v0.1.0 && git push github v0.1.0`; submit to Packagist + webhook.
-- [ ] Confirm the bare `composer create-project xuple/evolayer-base-starter my-app` works end-to-end from Packagist.
-
-### Phase 4 — Announcement readiness (after tag)
-- [ ] Swap README/docs wording from **private-staging** to **public developer-preview**: *"0.1 developer preview — publicly installable, intended for early builders; pre-1.0, APIs may change before 1.0."* Drop the "staged on a private Forge" framing; prefer GitHub for source links; keep Forge VCS instructions private/pre-release only.
-- [ ] Re-enable GitHub Actions push/PR triggers; drop the temporary `EVOLAYER_BASE_GITHUB_TOKEN` workaround (CI can now resolve from Packagist).
-- [ ] Minimal `docs.evodevops.com/base` live.
-- [ ] **Small, scope-boxed ThreadStudio public-demo polish** (richer dogfood example, clearer no-key/provider states, stronger result hierarchy, optional compact provider/verification badge) — **NOT** a feature pass: no adaptive mode, no new provider policy, no new backend schema, no admin probing UI, no receipts. Then capture the public ThreadStudio hero screenshot.
-- [ ] Public landing/home screenshot selection.
-
-### 🔴 Guardrail
-**Do not tag the starter (Phase 3) until a Packagist-only `create-project` proves `^0.1` resolves cleanly with no private-staging assumptions.** That is the whole point of this posture: *no private staging in the public first-hour experience.*
-
-## Starter create-project flow
-
-End users will run:
-
-```bash
-composer create-project xuple/evolayer-base-starter my-app
-```
-
-The starter's `post-create-project-cmd` runs `key:generate`, creates the SQLite
-database, `migrate --seed`, `wayfinder:generate`, and `evolayer:ontology:compile`.
-The frontend is committed, so `npm install && npm run build` works without a
-publish step. See the starter's `README.md`.
-
-## How the starter resolves the package (pre-tag)
-
-The starter consumes the package from the **forge `vcs` repository** at `dev-main`
-— so `create-project` works from any machine with forge access:
-
-```jsonc
-// xuple/evolayer-base-starter composer.json
-"require":      { "xuple/evolayer-base": "dev-main" },
-"repositories": [{ "type": "vcs",
-                   "url": "ssh://git@<private-forge-host>/<owner>/evolayer-base.git" }]
-```
-
-- The starter does **not** commit `composer.lock` (a committed lock pinned the
-  package to a machine-local source and broke `create-project` elsewhere). Each
-  created project resolves fresh and commits its own lock.
-- `dev-main` is a bound constraint → `composer validate --strict` is clean. It
-  becomes `^0.1` once the package is tagged.
-- The physical directory stays `evodevops-base-pkg` (filesystem ≠ package
-  identity); only the Composer **name** is `xuple/evolayer-base`.
-- For local side-by-side package dev, add an *uncommitted* path override in the
-  starter: `composer config repositories.local path ../evodevops-base-pkg`.
-
-Verified from `/tmp` on a clean install using the Forge VCS repository argument:
-`composer create-project` resolved `xuple/evolayer-base-starter` and
-`xuple/evolayer-base`, applied the `laravel/ai` patch, migrated/seeded the
-prefixed tables, generated Wayfinder + ontology, and then `npm install`,
-`npm run build`, `php artisan evolayer:doctor`, and `composer test` all passed.
-
-## Distribution & remotes
-
-- **Public launch target:** GitHub (`xuple/evolayer-base`,
-  `xuple/evolayer-base-starter`) plus Packagist for Composer resolution.
-- **Internal staging remote:** self-hosted Forge (`origin`), URL intentionally
-  omitted from public docs.
-- **GitHub publication remote:** `git@github.com:xuple/evolayer-base.git`.
-- **Private staging:** while private, the starter consumes the package from a
-  **Forge `vcs` repository** at `dev-main`:
-
-  ```jsonc
-  "require":      { "xuple/evolayer-base": "dev-main" },
-  "repositories": [{ "type": "vcs",
-                     "url": "ssh://git@<private-forge-host>/<owner>/evolayer-base.git" }]
-  ```
-
-  Authentication for private staging goes in `auth.json` (gitignored),
-  Composer config, or CI secrets, never committed.
-- **At public launch:** the starter's `dev-main` dependency becomes `^0.1`, the
-  private Forge `repositories` entry is removed, and GitHub Actions push/PR
-  triggers are restored because Composer can resolve the package from Packagist.
-  Local side-by-side package dev remains an uncommitted path override (see above).
-
-## Open decisions
-
-Still need a human decision before a real release:
-
-- **Final version/tag** — `0.1.0` is provisional; no tag has been created.
-- **Live AI verification** — Gemini structured streaming remains the primary
-  green path. Anthropic structured output passes the non-streaming smoke test,
-  but `evolayer:ai:stream-check anthropic` currently returns zero `TextDelta`
-  events and an empty final payload. That failure mode is now covered by the
-  package command tests and remains a release investigation item before claiming
-  Anthropic structured-streaming support.
-
-## Push recipe
-
-Both repos are clean, on `main`, with no secrets tracked (`.env`/`auth.json`
-gitignored). Push the self-hosted origin and GitHub mirror together:
-
-```bash
-# in each repo (evodevops-base-pkg, evodevops-base-starter):
-git push origin main
-git push github main
-```
-
-## GitHub Actions during private pre-release
-
-GitHub workflows are intentionally manual (`workflow_dispatch`) while the repos
-remain private and the starter depends on the private package repository. This
-avoids noisy failure emails from GitHub-hosted runners that do not yet have the
-package-access secret. Re-enable push/PR triggers once `xuple/evolayer-base` is
-tagged and published on Packagist. A temporary GitHub package-access secret can
-be used before then, but Packagist is the intended public distribution path.
+For local side-by-side package development, use an uncommitted path repository
+override in the host project. Do not commit local path repositories or internal
+remote configuration as public package guidance.

@@ -100,7 +100,7 @@ composer test                              # Pest Feature + Unit
 vendor/bin/testbench boost:install --guidelines --no-interaction   # only if AGENTS.md needs refresh
 ```
 
-GitHub Actions are manual during private pre-release; run `composer validate --strict` and `composer test` locally before pushing. Re-enable push/PR triggers after Packagist publication.
+Public GitHub Actions run on `push`, `pull_request`, and `workflow_dispatch`. Still run `composer validate --strict` and `composer test` locally before opening a PR, because Packagist-facing package regressions are costly even when CI catches them.
 
 ## Library MCP workflow (for contributors)
 
@@ -125,7 +125,7 @@ The Boost MCP server (`boost:mcp`) is designed for app contexts where `php artis
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — package PR checklist.
 - [`DECISIONS.md`](DECISIONS.md) — ADRs (identity, ontology, schema).
 - [`PORT_INVENTORY.md`](PORT_INVENTORY.md) — extraction inventory from the legacy lab.
-- [`RELEASE.md`](RELEASE.md) — pre-release / tag workflow.
+- [`RELEASE.md`](RELEASE.md) — public package release workflow.
 - [`CHANGELOG.md`](CHANGELOG.md) — `[Unreleased]` covers everything between extraction and the first tag.
 - [`SECURITY.md`](SECURITY.md), [`SUPPORT.md`](SUPPORT.md) — community policies.
 - [`patches/`](patches/) — committed vendor patch dossier.

@@ -6,6 +6,14 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- Aligned package docs and agent guidance with the current public package state:
+  Packagist publication is live, the current public release line is `v0.1.1`,
+  public CI runs on push/PR/workflow dispatch, and the starter consumes Base
+  through `^0.1`.
+- Clarified that `evolayer:doctor` verifies package/app configuration from the
+  CLI runtime and does not prove web-server or PHP-FPM filesystem writability.
+
 ## [0.1.1] - 2026-06-09
 
 ### Fixed

@@ -6,8 +6,10 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-Provisional first release: **0.1.0** (not yet tagged or published — see
-`RELEASE.md`).
+## [0.1.0] - 2026-06-09
+
+First public release — a publicly installable, pre-1.0 **developer preview**
+intended for early builders. APIs may change before 1.0 (SemVer once 1.0 ships).
 
 EvoLayer Base — the AI / ontology / blocks layer for the Laravel React Inertia
 starter, part of the EvoDevOps starter-kit family. Vendor/namespace: Xuple.

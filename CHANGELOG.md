@@ -6,6 +6,8 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-06-10
+
 ### Changed
 - Aligned package docs and agent guidance with the current public package state:
   Packagist publication is live, the current public release line is `v0.1.1`,

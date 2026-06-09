@@ -2,9 +2,10 @@
 
 This documents the intended release flow for the package (`xuple/evolayer-base`)
 and the starter (`xuple/evolayer-base-starter`). Base and the starter are
-free/public MIT projects. The self-hosted Forge and private GitHub repositories
-are pre-launch staging; the launch target is public GitHub plus Packagist.
-Version numbers and tags are still open decisions (see [Open decisions](#open-decisions)).
+free/public MIT projects. GitHub is the public publication source and Packagist
+is the public Composer source; the self-hosted Forge remote remains internal
+staging. The package becomes public first, then the starter follows after its
+dependency is flipped to the Packagist package.
 
 ## Identity
 
@@ -23,14 +24,15 @@ Version numbers and tags are still open decisions (see [Open decisions](#open-de
 First release target: **0.1.0** (pre-1.0, expect breaking changes). Not yet
 tagged. SemVer once 1.0 ships.
 
-## Package tag flow (when a version is chosen)
+## Package tag flow (0.1.0)
 
 1. Ensure green: `composer test`, `composer validate --strict`.
-2. Update `CHANGELOG.md`: move `[Unreleased]` to `[0.1.0] - <date>`.
-3. Commit, then tag: `git tag v0.1.0 && git push origin v0.1.0 && git push github v0.1.0`.
-4. Publish `xuple/evolayer-base` to Packagist.
-5. Update the starter to require `xuple/evolayer-base:^0.1`, remove the private
-   Forge VCS repository, validate a clean `composer create-project`, then publish
+2. Confirm `xuple/evolayer-base` is public on GitHub and submitted to Packagist.
+3. Update `CHANGELOG.md`: move `[Unreleased]` to `[0.1.0] - <date>`.
+4. Commit, then tag: `git tag v0.1.0 && git push origin v0.1.0 && git push github v0.1.0`.
+5. Confirm Packagist sees `v0.1.0`.
+6. Update the starter to require `xuple/evolayer-base:^0.1`, remove the private
+   VCS repository, validate a clean `composer create-project`, then publish
    `xuple/evolayer-base-starter` to Packagist.
 
 > The `cweagans/composer-patches` plugin is **not** a dependency of the package.
@@ -68,7 +70,7 @@ the package resolves via the starter's committed Forge `repositories` entry.
 ```bash
 cd /tmp && rm -rf evolayer-rehearsal && \
 composer create-project xuple/evolayer-base-starter evolayer-rehearsal \
-  --repository='{"type":"vcs","url":"ssh://git@forge.dev.home.arpa:222/xupleteam/evolayer-base-starter.git"}' \
+  --repository='{"type":"vcs","url":"ssh://git@<private-forge-host>/<owner>/evolayer-base-starter.git"}' \
   --stability=dev
 cd evolayer-rehearsal
 ```
@@ -155,14 +157,14 @@ Run **after** the rehearsal runbook above passes. **Do not execute any tag/publi
 - Final names: `xuple/evolayer-base`, `xuple/evolayer-base-starter` (no alternates in public docs).
 
 ### Phase 0 — Go-public prerequisites (the actual launch switch)
-- [ ] Make **both GitHub repos public** (`xuple/evolayer-base`, `xuple/evolayer-base-starter`) — they are a private mirror today, and Packagist needs public access. *This is the launch moment.*
+- [ ] Make **`xuple/evolayer-base` public first** so Packagist can ingest the package. Leave **`xuple/evolayer-base-starter` private** until the package tag is visible, the starter dependency is flipped to `^0.1`, and a Packagist-only rehearsal is ready.
 - [ ] Both repos clean, `main` even on `origin` (Forge) + `github`; **no `composer.lock` tracked** (CI fails if present).
 
 ### Phase 1 — Package publication
 - [ ] Final package verification on the tag commit: `composer test` + `composer validate --strict` (the package has **no `artisan`** — no `evolayer:doctor` here).
+- [ ] Submit `xuple/evolayer-base` to Packagist (first time) + enable the GitHub→Packagist webhook (auto-update on push).
 - [ ] Move package `CHANGELOG.md` `[Unreleased]` → `[0.1.0] - <date>`; commit; re-run `composer test` on that final commit.
 - [ ] Tag from the proven commit: `git tag v0.1.0 && git push origin v0.1.0 && git push github v0.1.0`.
-- [ ] Submit `xuple/evolayer-base` to Packagist (first time) + enable the GitHub→Packagist webhook (auto-update on push).
 - [ ] Confirm Packagist resolves `xuple/evolayer-base:^0.1`.
 
 ### Phase 2 — Starter public dependency
@@ -210,7 +212,7 @@ The starter consumes the package from the **forge `vcs` repository** at `dev-mai
 // xuple/evolayer-base-starter composer.json
 "require":      { "xuple/evolayer-base": "dev-main" },
 "repositories": [{ "type": "vcs",
-                   "url": "ssh://git@forge.dev.home.arpa:222/xupleteam/evolayer-base.git" }]
+                   "url": "ssh://git@<private-forge-host>/<owner>/evolayer-base.git" }]
 ```
 
 - The starter does **not** commit `composer.lock` (a committed lock pinned the
@@ -231,18 +233,18 @@ prefixed tables, generated Wayfinder + ontology, and then `npm install`,
 
 ## Distribution & remotes
 
-- **Pre-launch primary remote:** self-hosted Forge (`origin`) at
-  `ssh://git@forge.dev.home.arpa:222/xupleteam/evolayer-base.git`.
-- **Pre-launch GitHub mirror:** `git@github.com:xuple/evolayer-base.git`.
 - **Public launch target:** GitHub (`xuple/evolayer-base`,
   `xuple/evolayer-base-starter`) plus Packagist for Composer resolution.
+- **Internal staging remote:** self-hosted Forge (`origin`), URL intentionally
+  omitted from public docs.
+- **GitHub publication remote:** `git@github.com:xuple/evolayer-base.git`.
 - **Private staging:** while private, the starter consumes the package from a
   **Forge `vcs` repository** at `dev-main`:
 
   ```jsonc
   "require":      { "xuple/evolayer-base": "dev-main" },
   "repositories": [{ "type": "vcs",
-                     "url": "ssh://git@forge.dev.home.arpa:222/xupleteam/evolayer-base.git" }]
+                     "url": "ssh://git@<private-forge-host>/<owner>/evolayer-base.git" }]
   ```
 
   Authentication for private staging goes in `auth.json` (gitignored),

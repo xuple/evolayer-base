@@ -6,6 +6,12 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- Corrected the package PHP floor to `^8.4`, matching the Laravel 13 /
+  `spatie/laravel-activitylog` 5.x dependency reality exposed by public CI.
+  The package never resolved cleanly on PHP 8.3; this makes the Composer
+  contract honest for the next patch release.
+
 ## [0.1.0] - 2026-06-09
 
 First public release — a publicly installable, pre-1.0 **developer preview**

@@ -48,7 +48,7 @@ The cross-repo routing matrix is mirrored in both repos. Keep the package and st
 - Host integration files (`HandleInertiaRequests.php`, `User.php`, `routes/web.php`, `app-sidebar.tsx`, `DatabaseSeeder.php`, etc.).
 - Spatie host-published migrations with ULID morphs.
 - Starter CI workflows.
-- The starter's overridden landing pages (`evolayer/about.tsx`, `evolayer/home.tsx` are starter-owned brand overrides of the defaults published from this repo's `stubs/`).
+- The starter's overridden landing pages (`evolayer/about.tsx`, `evolayer/home.tsx` are starter-owned brand overrides of the defaults published from this repo's `resources/`). `composer evolayer:resync` publishes `marketing-pages` with `--force`, which overwrites them; the starter has a `_STARTER_OWNED_PAGE_` sentinel check and recovery script to catch this. Open follow-up: a stable extension point (e.g. a `--keep-overrides` flag or a `marketing-pages-safe` publish tag) would remove the need for post-resync override restoration.
 
 ## Hard rules
 
@@ -59,6 +59,7 @@ The cross-repo routing matrix is mirrored in both repos. Keep the package and st
 - **All `config/evolayer.php` defaults stay `false`** — the starter flips them on via `.env.example`. Do not flip defaults to `true` here to make tests easier; tests should set config explicitly.
 - **No starter-side `.env.example` edits from here.** The package owns the key shape; the value lives upstream.
 - **Do not add features that belong in sibling layers** (Commerce / SaaS / RLS). They ship as their own packages.
+- **Do not push to any remote unless explicitly instructed.** Agents may create local commits only when asked. If asked to push, the agent must state which remote(s) and branch it will push to before running `git push`.
 
 ## Ontology contract
 

@@ -48,7 +48,7 @@ The cross-repo routing matrix is mirrored in both repos. Keep the package and st
 - Host integration files (`HandleInertiaRequests.php`, `User.php`, `routes/web.php`, `app-sidebar.tsx`, `DatabaseSeeder.php`, etc.).
 - Spatie host-published migrations with ULID morphs.
 - Starter CI workflows.
-- The starter's overridden landing pages (`evolayer/about.tsx`, `evolayer/home.tsx` are starter-owned brand overrides of the defaults published from this repo's `resources/`). `composer evolayer:resync` publishes `marketing-pages` with `--force`, which overwrites them; the starter has a `_STARTER_OWNED_PAGE_` sentinel check and recovery script to catch this. Open follow-up: a stable extension point (e.g. a `--keep-overrides` flag or a `marketing-pages-safe` publish tag) would remove the need for post-resync override restoration.
+- The starter's overridden landing pages (`evolayer/about.tsx`, `evolayer/home.tsx` are starter-owned brand overrides of the defaults published from this repo's `resources/`). Use the `evolayer-base-frontend-preserve-overrides` publish tag for starter-style forced resyncs so package-owned frontend stubs refresh without overwriting those host-owned landing pages. The legacy `evolayer-base-frontend` and `evolayer-base-frontend-marketing-pages` tags still publish the package defaults for normal consumers.
 
 ## Hard rules
 

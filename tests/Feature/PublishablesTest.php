@@ -77,6 +77,14 @@ test('per-feature frontend tags publish only their own page sets', function () {
     expect(File::exists(resource_path('js/pages/evolayer/admin/inbox/index.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/pages/evolayer/admin/submissions/index.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/pages/evolayer/admin/submissions/show.tsx')))->toBeTrue();
+
+    $this->artisan('vendor:publish', [
+        '--tag' => 'evolayer-base-frontend-marketing-pages',
+        '--force' => true,
+    ])->assertSuccessful();
+
+    expect(File::exists(resource_path('js/pages/evolayer/about.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/pages/evolayer/home.tsx')))->toBeTrue();
 });
 
 test('the evolayer-base-frontend meta tag publishes core plus every feature page set', function () {
@@ -90,9 +98,34 @@ test('the evolayer-base-frontend meta tag publishes core plus every feature page
         ->and(File::exists(resource_path('js/pages/evolayer/admin/inbox/index.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/pages/evolayer/admin/prd.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/pages/evolayer/contact.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/pages/evolayer/about.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/pages/evolayer/home.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/hooks/use-thread-studio-stream.ts')))->toBeTrue()
         ->and(File::exists(resource_path('js/types/evolayer.d.ts')))->toBeTrue();
+});
+
+test('the preserve-overrides frontend tag skips host-owned landing pages', function () {
+    File::ensureDirectoryExists(resource_path('js/pages/evolayer'));
+
+    $aboutOverride = "// _STARTER_OWNED_PAGE_\nexport default function AboutOverride() { return null; }\n";
+    $homeOverride = "// _STARTER_OWNED_PAGE_\nexport default function HomeOverride() { return null; }\n";
+
+    File::put(resource_path('js/pages/evolayer/about.tsx'), $aboutOverride);
+    File::put(resource_path('js/pages/evolayer/home.tsx'), $homeOverride);
+
+    $this->artisan('vendor:publish', [
+        '--tag' => 'evolayer-base-frontend-preserve-overrides',
+        '--force' => true,
+    ])->assertSuccessful();
+
+    expect(File::get(resource_path('js/pages/evolayer/about.tsx')))->toBe($aboutOverride)
+        ->and(File::get(resource_path('js/pages/evolayer/home.tsx')))->toBe($homeOverride)
+        ->and(File::exists(resource_path('js/blocks/ai-text-field/index.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/components/command-bar.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/pages/evolayer/ai/thread-studio.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/pages/evolayer/admin/inbox/index.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/pages/evolayer/admin/prd.tsx')))->toBeTrue()
+        ->and(File::exists(resource_path('js/pages/evolayer/contact.tsx')))->toBeTrue();
 });
 
 test('publishing evolayer-base-npm drops the package-json additions snippet', function () {

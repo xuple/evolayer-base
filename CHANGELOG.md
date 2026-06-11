@@ -6,6 +6,12 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Added the `evolayer-base-frontend-preserve-overrides` publish tag so host
+  apps can force-resync package-owned frontend stubs without overwriting
+  host-owned `evolayer/about.tsx` and `evolayer/home.tsx` landing pages.
+
 ## [0.1.2] - 2026-06-10
 
 ### Changed

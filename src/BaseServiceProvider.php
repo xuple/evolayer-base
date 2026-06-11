@@ -152,15 +152,26 @@ class BaseServiceProvider extends ServiceProvider
         ];
 
         $everything = $coreFrontend;
+        $preserveOverrides = $coreFrontend;
         foreach ($featureFrontend as $feature => $paths) {
             $this->publishes($paths, "evolayer-base-frontend-{$feature}");
             $everything = array_merge($everything, $paths);
+
+            if ($feature !== 'marketing-pages') {
+                $preserveOverrides = array_merge($preserveOverrides, $paths);
+            }
         }
 
         // Convenience meta-tag: publishes core + every feature page set at once.
         // Intended for demos / "show me everything"; production installs should
         // publish core + only the feature tags they've enabled.
         $this->publishes($everything, 'evolayer-base-frontend');
+
+        // Safe resync meta-tag for host apps that intentionally own their
+        // marketing landing pages. The starter uses this to avoid overwriting
+        // resources/js/pages/evolayer/{about,home}.tsx while still refreshing
+        // package-owned frontend stubs.
+        $this->publishes($preserveOverrides, 'evolayer-base-frontend-preserve-overrides');
 
         $this->publishes([
             __DIR__.'/../database/migrations' => database_path('migrations'),

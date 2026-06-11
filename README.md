@@ -87,6 +87,16 @@ php artisan wayfinder:generate --with-form
 
 To publish everything at once (demo / kitchen-sink), use the meta tag `evolayer-base-frontend` and enable all flags.
 
+Host apps that intentionally own the landing pages at
+`resources/js/pages/evolayer/about.tsx` and `resources/js/pages/evolayer/home.tsx`
+should use `evolayer-base-frontend-preserve-overrides` for forced frontend
+resyncs. It publishes core plus the non-marketing feature page sets, but does
+not touch those two landing-page overrides. The normal `evolayer-base-frontend`
+and `evolayer-base-frontend-marketing-pages` tags remain unchanged for package
+consumers that want the package defaults. The starter still keeps its
+`_STARTER_OWNED_PAGE_` sentinel check as a defensive guard, not as the primary
+resync strategy.
+
 ---
 
 ## Standard features (installed once, always on)

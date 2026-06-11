@@ -6,6 +6,8 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-06-11
+
 ### Added
 
 - Added the `evolayer-base-frontend-preserve-overrides` publish tag so host

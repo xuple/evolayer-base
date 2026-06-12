@@ -142,10 +142,12 @@ class BaseServiceProvider extends ServiceProvider
         // publish core + only the feature tags they've enabled.
         $this->publishes($everything, 'evolayer-base-frontend');
 
-        // Safe resync meta-tag for host apps that intentionally own their
-        // marketing landing pages. The starter uses this to avoid overwriting
-        // resources/js/pages/evolayer/{about,home}.tsx while still refreshing
-        // package-owned frontend stubs.
+        // DEPRECATED — superseded by `evolayer:resync` + `evolayer:eject`.
+        // about/home are no longer a bespoke exclusion: rebrand them via
+        // config('evolayer.base.brand') (shared through Support\EvoLayerProps),
+        // or take ownership with `evolayer:eject marketing-pages`. Kept only for
+        // backward compatibility with hosts that still call this vendor:publish
+        // tag directly; remove once the starter adopts the resync command.
         $this->publishes($preserveOverrides, 'evolayer-base-frontend-preserve-overrides');
 
         $this->publishes([

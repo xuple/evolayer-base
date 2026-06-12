@@ -15,6 +15,7 @@ use Xuple\EvoLayer\Base\Console\Commands\EjectCommand;
 use Xuple\EvoLayer\Base\Console\Commands\FontsSelfHost;
 use Xuple\EvoLayer\Base\Console\Commands\InstallCommand;
 use Xuple\EvoLayer\Base\Console\Commands\OntologyCompileCommand;
+use Xuple\EvoLayer\Base\Console\Commands\ProfileCommand;
 use Xuple\EvoLayer\Base\Console\Commands\PromoteUserCommand;
 use Xuple\EvoLayer\Base\Console\Commands\ResyncCommand;
 use Xuple\EvoLayer\Base\Contracts\AdminGate;
@@ -98,6 +99,7 @@ class BaseServiceProvider extends ServiceProvider
                 PromoteUserCommand::class,
                 ResyncCommand::class,
                 EjectCommand::class,
+                ProfileCommand::class,
             ]);
 
             $this->registerPublishables();

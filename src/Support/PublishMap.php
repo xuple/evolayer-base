@@ -34,6 +34,7 @@ class PublishMap
             $r.'/resources/js/providers' => resource_path('js/providers'),
             $r.'/resources/js/layouts' => resource_path('js/layouts'),
             $r.'/resources/js/config' => resource_path('js/config'),
+            $r.'/resources/js/hooks/use-brand.ts' => resource_path('js/hooks/use-brand.ts'),
             $r.'/resources/js/hooks/use-evolayer-props.ts' => resource_path('js/hooks/use-evolayer-props.ts'),
             $r.'/resources/js/hooks/use-example-nav-items.ts' => resource_path('js/hooks/use-example-nav-items.ts'),
             $r.'/resources/js/types/layout.ts' => resource_path('js/types/layout.ts'),

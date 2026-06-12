@@ -11,15 +11,18 @@ use Xuple\EvoLayer\Base\Console\Commands\Ai\AiStreamCheck;
 use Xuple\EvoLayer\Base\Console\Commands\AiProbeCommand;
 use Xuple\EvoLayer\Base\Console\Commands\AiSmokeTest;
 use Xuple\EvoLayer\Base\Console\Commands\DoctorCommand;
+use Xuple\EvoLayer\Base\Console\Commands\EjectCommand;
 use Xuple\EvoLayer\Base\Console\Commands\FontsSelfHost;
 use Xuple\EvoLayer\Base\Console\Commands\InstallCommand;
 use Xuple\EvoLayer\Base\Console\Commands\OntologyCompileCommand;
 use Xuple\EvoLayer\Base\Console\Commands\PromoteUserCommand;
+use Xuple\EvoLayer\Base\Console\Commands\ResyncCommand;
 use Xuple\EvoLayer\Base\Contracts\AdminGate;
 use Xuple\EvoLayer\Base\Contracts\UserResolver;
 use Xuple\EvoLayer\Base\Http\Middleware\EnsureExampleEnabled;
 use Xuple\EvoLayer\Base\Http\Middleware\RequireAdmin;
 use Xuple\EvoLayer\Base\Support\OntologyRegistry;
+use Xuple\EvoLayer\Base\Support\PublishMap;
 
 class BaseServiceProvider extends ServiceProvider
 {
@@ -93,6 +96,8 @@ class BaseServiceProvider extends ServiceProvider
                 FontsSelfHost::class,
                 OntologyCompileCommand::class,
                 PromoteUserCommand::class,
+                ResyncCommand::class,
+                EjectCommand::class,
             ]);
 
             $this->registerPublishables();
@@ -109,47 +114,17 @@ class BaseServiceProvider extends ServiceProvider
         // ── Frontend: core (always-on UI primitives, no feature flag) ──────────
         // Blocks, command palette, shared hooks/types/config/layouts. Publish
         // this once; it has no cross-feature route dependencies.
-        $coreFrontend = [
-            __DIR__.'/../resources/js/blocks' => resource_path('js/blocks'),
-            __DIR__.'/../resources/js/components' => resource_path('js/components'),
-            __DIR__.'/../resources/js/providers' => resource_path('js/providers'),
-            __DIR__.'/../resources/js/layouts' => resource_path('js/layouts'),
-            __DIR__.'/../resources/js/config' => resource_path('js/config'),
-            __DIR__.'/../resources/js/hooks/use-evolayer-props.ts' => resource_path('js/hooks/use-evolayer-props.ts'),
-            __DIR__.'/../resources/js/hooks/use-example-nav-items.ts' => resource_path('js/hooks/use-example-nav-items.ts'),
-            __DIR__.'/../resources/js/types/layout.ts' => resource_path('js/types/layout.ts'),
-            __DIR__.'/../resources/js/types/evolayer.d.ts' => resource_path('js/types/evolayer.d.ts'),
-            __DIR__.'/../resources/js/lib/appearance.ts' => resource_path('js/lib/appearance.ts'),
-            __DIR__.'/../resources/js/lib/platform.ts' => resource_path('js/lib/platform.ts'),
-        ];
+        $map = new PublishMap;
+
+        $coreFrontend = $map->core();
         $this->publishes($coreFrontend, 'evolayer-base-frontend-core');
 
         // ── Frontend: per-feature page sets ───────────────────────────────────
         // Each tag mirrors a routes/features/*.php file. Publish only the tags
         // for features you've enabled, so published pages never import a
         // controller whose route isn't registered (which would break tsc).
-        $featureFrontend = [
-            'thread-studio' => [
-                __DIR__.'/../resources/js/pages/evolayer/ai/thread-studio.tsx' => resource_path('js/pages/evolayer/ai/thread-studio.tsx'),
-                __DIR__.'/../resources/js/hooks/use-thread-studio-stream.ts' => resource_path('js/hooks/use-thread-studio-stream.ts'),
-                __DIR__.'/../resources/js/hooks/use-typewriter.ts' => resource_path('js/hooks/use-typewriter.ts'),
-            ],
-            'prd-studio' => [
-                __DIR__.'/../resources/js/pages/evolayer/admin/prd.tsx' => resource_path('js/pages/evolayer/admin/prd.tsx'),
-            ],
-            'admin-inbox' => [
-                __DIR__.'/../resources/js/pages/evolayer/admin/inbox' => resource_path('js/pages/evolayer/admin/inbox'),
-                __DIR__.'/../resources/js/pages/evolayer/admin/submissions' => resource_path('js/pages/evolayer/admin/submissions'),
-            ],
-            'contact-ai' => [
-                __DIR__.'/../resources/js/pages/evolayer/contact.tsx' => resource_path('js/pages/evolayer/contact.tsx'),
-                __DIR__.'/../resources/js/pages/evolayer/contact-thank-you.tsx' => resource_path('js/pages/evolayer/contact-thank-you.tsx'),
-            ],
-            'marketing-pages' => [
-                __DIR__.'/../resources/js/pages/evolayer/about.tsx' => resource_path('js/pages/evolayer/about.tsx'),
-                __DIR__.'/../resources/js/pages/evolayer/home.tsx' => resource_path('js/pages/evolayer/home.tsx'),
-            ],
-        ];
+        // Source of truth: Support\PublishMap (shared with evolayer:resync).
+        $featureFrontend = $map->features();
 
         $everything = $coreFrontend;
         $preserveOverrides = $coreFrontend;

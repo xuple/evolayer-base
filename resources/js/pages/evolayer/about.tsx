@@ -14,6 +14,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { docsBaseUrl } from '@/config/docs';
+import { useBrand } from '@/hooks/use-brand';
 import PublicLayout from '@/layouts/public-layout';
 
 type Layer = {
@@ -95,9 +96,11 @@ const proof = [
 ] as const;
 
 export default function About() {
+    const brand = useBrand();
+
     return (
         <>
-            <Head title="EvoLayer Base" />
+            <Head title={brand.name} />
 
             <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-14 overflow-hidden py-8 sm:py-12">
                 <div className="bg-brand/10 pointer-events-none absolute inset-x-8 top-0 -z-10 h-80 rounded-full blur-3xl" />
@@ -106,19 +109,15 @@ export default function About() {
                     <div className="flex flex-col justify-center rounded-[2.5rem] border border-neutral-200 bg-white/85 p-7 shadow-[0_28px_90px_rgba(15,23,42,0.08)] backdrop-blur sm:p-10 lg:p-12 dark:border-neutral-800 dark:bg-neutral-950/85">
                         <div className="border-brand/20 bg-brand/10 text-brand inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold tracking-[0.18em] uppercase">
                             <Sparkles className="size-3.5" />
-                            EvoLayer Base
+                            {brand.name}
                         </div>
 
                         <h1 className="mt-7 max-w-4xl text-4xl font-semibold tracking-tight text-neutral-950 sm:text-5xl lg:text-6xl dark:text-neutral-50">
-                            The free Laravel React base for AI-enabled product
-                            teams.
+                            {brand.tagline}
                         </h1>
 
                         <p className="mt-6 max-w-2xl text-base leading-8 text-neutral-600 sm:text-lg dark:text-neutral-400">
-                            Start from a working application: Laravel auth,
-                            typed routes, structured AI workflows, admin
-                            screens, ontology tooling, and local verification
-                            commands already wired together.
+                            {brand.description}
                         </p>
 
                         <div className="mt-8 flex flex-wrap gap-3">

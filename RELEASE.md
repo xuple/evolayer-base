@@ -8,22 +8,13 @@ staging only and is not the public package resolution path.
 
 ## Identity
 
-- **Product family:** EvoLayer · **Vendor/legal:** Xuple · **Brand:** EvoDevOps
-  (teaching/site brand, docs only).
-- Package: `xuple/evolayer-base` — namespace `Xuple\EvoLayer\Base`.
-- Starter: `xuple/evolayer-base-starter`.
-- Web IA: `evodevops.com` teaches and markets the family; `docs.evodevops.com/base`
-  is the canonical Base documentation root. The starter homepage (`/`) mounts
-  the EvoLayer Base demo/install explainer; the package's opt-in marketing
-  routes expose that same page at `/about`.
-- See `DECISIONS.md` ADR-017 for why this identity was chosen.
+For canonical definitions of the package vs starter identity and ownership boundaries, see the [EvoLayer Framework Contract](docs/contract.md).
 
 ## Current public state
 
-- Current package release line: **v0.1.1** (`^0.1` for consumers).
+- Current package release line: **v0.1.4**.
 - Public install path: `composer require xuple/evolayer-base`.
-- Starter consumption path: `xuple/evolayer-base-starter` resolves Base from
-  Packagist using `^0.1`.
+- Starter consumption path: `xuple/evolayer-base-starter` exact-pins `xuple/evolayer-base` while `0.x` (currently `0.1.4`), and refreshes its lockfile through deliberate release PRs.
 - Public CI is live on `push`, `pull_request`, and `workflow_dispatch`.
 - This package is a library and has no `artisan` script. Package verification is
   `composer validate --strict` and `composer test`.

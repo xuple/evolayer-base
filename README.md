@@ -1,14 +1,12 @@
 # EvoLayer Base
 
-EvoLayer Base is a Composer package that adds an AI / ontology / React-block substrate to a Laravel 13 + React + Inertia application. It is designed to feel like a clean additive layer for a developer transitioning from `laravel/react-starter-kit`. **Installing it adds zero routes and no active request surface by default.** Shared props and feature pages are host opt-in via flags and publish tags.
+EvoLayer Base is a Composer package that adds an AI / ontology / React-block substrate to a Laravel 13 + React + Inertia application.
+
+**Installing it adds zero routes and no active request surface by default.** Shared props and feature pages are host opt-in via flags and publish tags.
+
+For the strict rules on what the framework owns vs what the host app owns, and how updates work, see the **[EvoLayer Framework Contract](docs/contract.md)**.
 
 EvoLayer Base is also the intended foundation for future EvoLayer sibling packages — **Commerce** (product sales), **SaaS** (subscriptions / tenants), and **RLS** (PostgreSQL row-level security) — but those layers ship as separate packages and are not part of this one. EvoDevOps is the teaching/site brand for the family.
-
-Public web strategy: `evodevops.com` is the editorial/teaching home for the
-starter-kit family, while `https://docs.evodevops.com/base` is the canonical
-EvoLayer Base documentation path. The starter's public `/` page mounts the
-EvoLayer Base demo/install explainer; when marketing pages are enabled, the
-package also exposes that page at `/about`.
 
 ## Start here
 

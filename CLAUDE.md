@@ -17,15 +17,11 @@ This file is the short, prescriptive version of [`CONTRIBUTING.md`](CONTRIBUTING
 
 ## Where does my change belong?
 
-Decision rule before any edit:
+Decision rule before any edit: read the [EvoLayer Framework Contract](docs/contract.md). It defines the strict boundary between the package and the starter application.
 
-1. **Is the file under `xuple/evolayer-base-starter`?** That's the host shell — not in this repo. Open the PR against the starter.
-2. **Is the file under `src/`, `stubs/`, `database/`, `routes/`, `resources/`?** Package-scoped. Edit here.
-3. **Is the file an `evolayer.base.*` config key or default?** Package-scoped — `config/evolayer.php` in this repo.
-4. **Is the file the `.env` value for an existing flag?** Starter-scoped.
-5. **Cross-repo change** (new `EVOLAYER_BASE_*` flag): land here first against a resolvable ref, then open the starter PR pointing at it.
-
-The cross-repo routing matrix is mirrored in both repos. Keep the package and starter guidance aligned when changing ownership boundaries.
+1. **Host-owned integration/config**: Open the PR against the starter.
+2. **Framework features/commands**: Edit here.
+3. **Ontology/Blocks**: Edit here.
 
 ## Package-owned, starter-owned
 

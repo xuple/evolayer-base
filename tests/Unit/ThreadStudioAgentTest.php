@@ -20,7 +20,7 @@ test('the thread studio prompt dogfoods evolayer base support context', function
 
     expect($instructions)
         ->toContain('It is commonly used with the EvoLayer Base starter')
-        ->toContain('https://docs.evodevops.com/base')
+        ->toContain('https://evodevops.com/evolayer-base/docs')
         ->toContain('Fortify authentication')
         ->toContain('Wayfinder-generated route helpers')
         ->toContain('using the SQLite fast-start lane with `nvm use` and `composer setup`')

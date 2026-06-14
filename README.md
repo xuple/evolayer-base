@@ -6,6 +6,8 @@ EvoLayer Base is a Composer package that adds an AI / ontology / React-block sub
 
 For the strict rules on what the framework owns vs what the host app owns, and how updates work, see the **[EvoLayer Framework Contract](docs/contract.md)**.
 
+For tutorials, how-to guides, and the public reference, start at **[evodevops.com/evolayer-base/docs](https://evodevops.com/evolayer-base/docs)**.
+
 EvoLayer Base is also the intended foundation for future EvoLayer sibling packages — **Commerce** (product sales), **SaaS** (subscriptions / tenants), and **RLS** (PostgreSQL row-level security) — but those layers ship as separate packages and are not part of this one. EvoDevOps is the teaching/site brand for the family.
 
 ## Start here

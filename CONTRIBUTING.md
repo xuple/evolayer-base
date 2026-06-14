@@ -16,6 +16,18 @@ Before contributing, please read the [EvoLayer Framework Contract](docs/contract
 - Do not rename local pre-release directories as part of normal package changes. Filesystem paths are not public package identity.
 - Prefer small, reviewable PRs with tests or a clear explanation of why tests are not applicable.
 
+## Public docs touchpoints
+
+The canonical package contract remains [`docs/contract.md`](docs/contract.md). The public reader-facing docs live at [`evodevops.com/evolayer-base/docs`](https://evodevops.com/evolayer-base/docs) in the `xuple/evodevops` site repo. When package changes alter any of these surfaces, update or explicitly check the matching site page in the same release window:
+
+| Package change | Site page to check |
+| --- | --- |
+| `evolayer:*` command names, signatures, or behaviour | `reference/artisan-commands` |
+| `EVOLAYER_BASE_*` config keys or defaults | `reference/env-flags`, `how-to/enable-a-feature`, `how-to/disable-a-feature` |
+| `config/evolayer.php` or `config/evolayer-ai.php` shape | `reference/config`, `how-to/configure-ai-provider` |
+| `docs/contract.md` | `reference/framework-contract` |
+| `stubs/ontology.yaml`, SSE event names, or projection vocabulary | `reference/sse-vocabulary`, `explanation/ownership-model` |
+
 ## Local Checks
 
 Run these before opening a PR:

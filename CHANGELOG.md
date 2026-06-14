@@ -6,6 +6,8 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-06-14
+
 ### Added
 
 - Added `docs/contract.md` as the canonical EvoLayer Framework Contract for

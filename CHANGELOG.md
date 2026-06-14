@@ -6,6 +6,36 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Added `docs/contract.md` as the canonical EvoLayer Framework Contract for
+  package/starter ownership boundaries, generated artifacts, managed surfaces,
+  and the `resync` / `eject` / `profile` lifecycle.
+
+### Fixed
+
+- Corrected canonical documentation URLs to
+  `evodevops.com/evolayer-base/docs`.
+
+## [0.1.4] - 2026-06-13
+
+### Added
+
+- Added manifest-driven `evolayer:resync` and `evolayer:eject` commands for
+  ownership-safe frontend stub updates. Pristine framework-managed files can be
+  refreshed, host-modified files are kept by default, `--force` is the explicit
+  overwrite path, and ejected surfaces are skipped.
+- Added `evolayer:profile {demo|lean}` to toggle bundled
+  `EVOLAYER_BASE_EXAMPLE_*` demo surfaces from the host `.env`.
+- Added `evolayer.base.brand`, `EvoLayerProps::base()`, and the published
+  `useBrand()` hook so the package's home/about surfaces render from shared
+  brand config instead of requiring starter-local page overrides.
+
+### Changed
+
+- Centralized frontend publish metadata in `Support\PublishMap` so
+  vendor-publish tags, resync, and eject share the same source/target map.
+
 ## [0.1.3] - 2026-06-11
 
 ### Added

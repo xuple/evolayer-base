@@ -123,7 +123,7 @@ The Boost MCP server (`boost:mcp`) is designed for app contexts where `php artis
 - [`DECISIONS.md`](DECISIONS.md) — ADRs (identity, ontology, schema).
 - [`PORT_INVENTORY.md`](PORT_INVENTORY.md) — extraction inventory from the legacy lab.
 - [`RELEASE.md`](RELEASE.md) — public package release workflow.
-- [`CHANGELOG.md`](CHANGELOG.md) — `[Unreleased]` covers everything between extraction and the first tag.
+- [`CHANGELOG.md`](CHANGELOG.md) — `[Unreleased]` covers everything since the latest tag.
 - [`SECURITY.md`](SECURITY.md), [`SUPPORT.md`](SUPPORT.md) — community policies.
 - [`patches/`](patches/) — committed vendor patch dossier.
 

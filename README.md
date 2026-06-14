@@ -344,7 +344,7 @@ The package's own test suite runs against `require-dev` Spatie packages (mediali
 
 ## Support and project status
 
-EvoLayer is pre-1.0. Breaking changes are expected until the first tagged release. See [CHANGELOG.md](CHANGELOG.md) for changes, [RELEASE.md](RELEASE.md) for the current release process, and [DECISIONS.md](DECISIONS.md) for durable architecture decisions.
+EvoLayer is pre-1.0. Breaking changes are expected until 1.0. See [CHANGELOG.md](CHANGELOG.md) for changes, [RELEASE.md](RELEASE.md) for the current release process, and [DECISIONS.md](DECISIONS.md) for durable architecture decisions.
 
 ## License
 

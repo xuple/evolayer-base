@@ -99,6 +99,18 @@ vendor/bin/testbench boost:install --guidelines --no-interaction   # only if AGE
 
 Public GitHub Actions run on `push`, `pull_request`, and `workflow_dispatch`. Still run `composer validate --strict` and `composer test` locally before opening a PR, because Packagist-facing package regressions are costly even when CI catches them.
 
+## Public docs touchpoints
+
+The canonical package contract remains `docs/contract.md`. The public reader-facing docs live at `evodevops.com/evolayer-base/docs` in the `xuple/evodevops` site repo. Keep this package focused on framework code and package-owned reference docs; do not move editorial website content into this repo. When a package change affects one of these surfaces, update or explicitly check the matching site page in the same release window:
+
+| Package change | Site page to check |
+| --- | --- |
+| `evolayer:*` command names, signatures, or behaviour | `reference/artisan-commands` |
+| `EVOLAYER_BASE_*` config keys or defaults | `reference/env-flags`, `how-to/enable-a-feature`, `how-to/disable-a-feature` |
+| `config/evolayer.php` or `config/evolayer-ai.php` shape | `reference/config`, `how-to/configure-ai-provider` |
+| `docs/contract.md` | `reference/framework-contract` |
+| `stubs/ontology.yaml`, SSE event names, or projection vocabulary | `reference/sse-vocabulary`, `explanation/ownership-model` |
+
 ## Library MCP workflow (for contributors)
 
 The Boost MCP server (`boost:mcp`) is designed for app contexts where `php artisan boost:mcp` runs in-process. This package is `"type": "library"` and has no `artisan` script. As a result:

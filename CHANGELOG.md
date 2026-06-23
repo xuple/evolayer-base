@@ -6,6 +6,8 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-06-23
+
 ### Changed
 
 - Raised the supported `laravel/ai` dependency line to `^0.8.1`; the package

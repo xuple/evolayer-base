@@ -6,6 +6,13 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Raised the supported `laravel/ai` dependency line to `^0.8.1`; the package
+  test suite passes against Laravel AI v0.8.1. The structured-output streaming
+  patch is still required because the patch continues to apply cleanly on
+  v0.8.1.
+
 ## [0.1.5] - 2026-06-14
 
 ### Added

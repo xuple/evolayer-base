@@ -6,7 +6,7 @@
 
 ## `laravel-ai-structured-streaming.patch`
 
-**Target:** `laravel/ai` v0.6.5 — `src/Providers/Concerns/StreamsText.php`
+**Target:** `laravel/ai` v0.6.5 through v0.8.1 — `src/Providers/Concerns/StreamsText.php`
 
 **What it does:** Removes the hard guard that prevented `agent->stream()` on agents implementing `HasStructuredOutput`, and forwards the agent's schema through to `streamText()`. The guard threw:
 
@@ -42,7 +42,9 @@ The fix belongs upstream in `laravel/ai`. We deferred filing it because:
 - The repo's correctness is fully covered locally by the patch and the `ThreadStudioStreamTest` suite.
 - Pursuing it costs more than the value of removing the patch in the short term.
 
-**When to revisit:** When a new `laravel/ai` minor release lands (anything past v0.6.5). At that point:
+**Current status:** The patch still applies cleanly to `laravel/ai` v0.8.1. That means v0.8.1 does not remove the package's structured-output streaming patch requirement yet.
+
+**When to revisit:** When a new `laravel/ai` release lands after v0.8.1. At that point:
 
 1. Run `composer update laravel/ai`. In this package repo, watch for `scripts/apply-patches.php` reporting a failure to apply — that means upstream changed `StreamsText.php` and may have shipped the fix. In a host like the starter using `cweagans/composer-patches`, the equivalent signal is the patches plugin reporting `FAILED to patch`.
 2. Re-run `vendor/bin/testbench evolayer:ai:stream-check gemini` and `openai` against the unpatched vendor copy (or `php artisan evolayer:ai:stream-check ...` from a host app). Also re-check Anthropic once its structured-streaming path emits `TextDelta` events. If runtime-approved providers pass without the patch, delete `patches/laravel-ai-structured-streaming.patch` here AND coordinate removal from any host project's patch configuration (the starter's `extra.patches` entry, for example).

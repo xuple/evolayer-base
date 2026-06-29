@@ -6,6 +6,8 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.7] - 2026-06-29
+
 ### Added
 
 - Added package-side Prettier tooling and CI coverage for the published

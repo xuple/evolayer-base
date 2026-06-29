@@ -1,6 +1,11 @@
 import { Form } from '@inertiajs/react';
 import { useEvoLayerProps } from '@/hooks/use-evolayer-props';
-import { MailIcon, MessageSquareIcon, PaperclipIcon, PhoneIcon } from 'lucide-react';
+import {
+    MailIcon,
+    MessageSquareIcon,
+    PaperclipIcon,
+    PhoneIcon,
+} from 'lucide-react';
 import { useCallback, useRef, useState } from 'react';
 import type { ReactElement } from 'react';
 import ContactController from '@/actions/Xuple/EvoLayer/Base/Http/Controllers/ContactController';
@@ -40,7 +45,8 @@ export default function Contact() {
     const fetchHintsRef = useRef<AbortController | null>(null);
 
     const contactAiEnabled = evolayer.base.examples.contact_ai;
-    const contactAttachmentsEnabled = evolayer.base.features.contact_attachments;
+    const contactAttachmentsEnabled =
+        evolayer.base.features.contact_attachments;
 
     const fetchHints = useCallback(
         async (type: string): Promise<void> => {
@@ -264,7 +270,8 @@ export default function Contact() {
                                         <Label htmlFor="attachments">
                                             Attachments{' '}
                                             <span className="font-normal text-neutral-400">
-                                                (optional, up to 5 files, 10 MB each)
+                                                (optional, up to 5 files, 10 MB
+                                                each)
                                             </span>
                                         </Label>
                                         <label
@@ -282,8 +289,12 @@ export default function Contact() {
                                                 className="sr-only"
                                             />
                                         </label>
-                                        <InputError message={errors['attachments']} />
-                                        <InputError message={errors['attachments.0']} />
+                                        <InputError
+                                            message={errors['attachments']}
+                                        />
+                                        <InputError
+                                            message={errors['attachments.0']}
+                                        />
                                     </div>
                                 )}
 

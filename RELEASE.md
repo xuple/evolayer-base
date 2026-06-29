@@ -12,12 +12,13 @@ For canonical definitions of the package vs starter identity and ownership bound
 
 ## Current public state
 
-- Current package release line: **v0.1.5**.
+- Current package release line: **v0.1.6**.
 - Public install path: `composer require xuple/evolayer-base`.
-- Starter consumption path: `xuple/evolayer-base-starter` exact-pins `xuple/evolayer-base` while `0.x` (currently `0.1.4`), and refreshes its lockfile through deliberate release PRs.
+- Starter consumption path: `xuple/evolayer-base-starter` exact-pins `xuple/evolayer-base` while `0.x` (currently `0.1.6`), and refreshes its lockfile through deliberate release PRs.
 - Public CI is live on `push`, `pull_request`, and `workflow_dispatch`.
 - This package is a library and has no `artisan` script. Package verification is
-  `composer validate --strict` and `composer test`.
+  `composer validate --strict`, `composer test`, and the npm-based frontend
+  stub formatting checks.
 - `evolayer:doctor` is installed into host applications. It verifies package and
   app configuration from the CLI runtime; it does not prove that a web-server or
   PHP-FPM user can write Laravel cache or storage paths.
@@ -41,6 +42,8 @@ Run this from the package repository.
    ```bash
    composer validate --strict
    composer test
+   npm ci --ignore-scripts
+   npm run format:check
    cmp -s AGENTS.md CLAUDE.md && echo "AGENTS/CLAUDE mirrored"
    ```
 
@@ -80,6 +83,13 @@ For package code or published-stub changes, coordinate separately with the
 starter after the Base change is available through a resolvable ref or tag. The
 starter owns its host shell, `.env.example` values, route wiring, generated
 Wayfinder outputs, and application verification suite.
+
+Published frontend stubs under `resources/js` must stay normalized with the
+package's Tailwind-aware Prettier config. Run `npm run format:check` before
+releasing stub changes so host apps do not inherit format-only drift after
+`composer evolayer:resync`. The package `resources/css/app.css` file mirrors
+the starter stylesheet for Prettier's Tailwind v4 class resolver; it is a
+formatting support file, not a package publish target.
 
 ## AI provider policy gate
 

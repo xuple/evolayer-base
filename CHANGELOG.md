@@ -6,6 +6,18 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Added package-side Prettier tooling and CI coverage for the published
+  `resources/js` frontend stubs, matching the starter's Tailwind-aware
+  formatting contract.
+
+### Changed
+
+- Normalized the published `resources/js` frontend stubs with the same
+  Prettier configuration used by host applications so `evolayer:resync` no
+  longer introduces format-only drift.
+
 ## [0.1.6] - 2026-06-23
 
 ### Changed

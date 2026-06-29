@@ -1,5 +1,10 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { AlertCircle, LoaderCircle, PaperclipIcon, Sparkles } from 'lucide-react';
+import {
+    AlertCircle,
+    LoaderCircle,
+    PaperclipIcon,
+    Sparkles,
+} from 'lucide-react';
 import { useState } from 'react';
 import type { ReactElement } from 'react';
 import InboxController from '@/actions/Xuple/EvoLayer/Base/Http/Controllers/Admin/InboxController';

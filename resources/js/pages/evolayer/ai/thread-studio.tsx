@@ -46,7 +46,13 @@ type ThreadStudioCapability = {
 type ThreadStudioProvider = {
     // Runtime-approved ThreadStudio providers (ADR-020) are gemini + openai; the
     // other names remain valid provider keys for diagnostics / future adaptive mode.
-    name: 'gemini' | 'openai' | 'anthropic' | 'nvidia' | 'opencode' | 'openrouter';
+    name:
+        | 'gemini'
+        | 'openai'
+        | 'anthropic'
+        | 'nvidia'
+        | 'opencode'
+        | 'openrouter';
     label: string;
     model: {
         name: string;
@@ -660,8 +666,7 @@ export default function ThreadStudioPage({
                                             <Skeleton className="mt-1 h-4 w-4/5" />
                                         </div>
                                     </div>
-                                ) : result ||
-                                  streamingFields.summary ? (
+                                ) : result || streamingFields.summary ? (
                                     <>
                                         <div className="flex flex-wrap gap-2">
                                             {(result?.urgency ??

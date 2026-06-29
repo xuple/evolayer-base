@@ -235,6 +235,9 @@ export default function SubmissionsIndex({ submissions }: Props) {
 
 SubmissionsIndex.layout = {
     breadcrumbs: [
-        { title: 'Submissions', href: evolayer.base.admin.submissions.index.url() },
+        {
+            title: 'Submissions',
+            href: evolayer.base.admin.submissions.index.url(),
+        },
     ],
 } satisfies AppLayoutPageProps;

@@ -338,9 +338,13 @@ $this->app->singleton(\Xuple\EvoLayer\Base\Contracts\AdminGate::class, MyAdminGa
 composer install
 composer test
 composer validate --strict
+npm ci --ignore-scripts
+npm run format:check
 ```
 
 `composer install` automatically applies the `laravel/ai` patch to the package's own vendor copy so the test suite has structured streaming available.
+The npm checks only guard the published `resources/js` frontend stubs against
+format-only drift before host apps run `composer evolayer:resync`.
 
 The package's own test suite runs against `require-dev` Spatie packages (medialibrary, tags) — meaningful "no Spatie installed" CI verification needs a separate composer install without dev deps. The compat layer's no-op stubs are independently asserted in `tests/Unit/CompatNoopStubsTest.php`.
 

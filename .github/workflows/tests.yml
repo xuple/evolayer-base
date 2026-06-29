@@ -29,14 +29,27 @@ jobs:
           tools: composer:v2
           coverage: none
 
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+
       - name: Validate Composer metadata
         run: composer validate --strict
 
       - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+        run: |
+          composer install --no-interaction --prefer-dist --optimize-autoloader
+          npm ci
 
       - name: Audit dependencies
-        run: composer audit
+        run: |
+          composer audit
+          npm audit --audit-level=high
+
+      - name: Check frontend stub formatting
+        run: npm run format:check
 
       - name: Run tests
         run: composer test

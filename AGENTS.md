@@ -33,6 +33,10 @@ Decision rule before any edit: read the [EvoLayer Framework Contract](docs/contr
 - `stubs/ontology.yaml` — ontology source-of-truth.
 - `stubs/**` — frontend stubs published into host apps via `vendor:publish` tags.
 - `resources/**` — committed React stubs (TSX) and views.
+- `.prettierrc`, `package.json`, `package-lock.json`, `resources/css/app.css`
+  — package-side formatting guardrails for published `resources/js` frontend
+  stubs. Keep this Prettier setup aligned with the starter so
+  `evolayer:resync` does not introduce format-only drift in host apps.
 - `config/evolayer.php`, `config/evolayer-ai.php` — config shape + env-key names + defaults (all defaults are `false`).
 - `patches/laravel-ai-structured-streaming.patch` + `scripts/apply-patches.php` — vendor patch dossier and the runner that applies it.
 - All `evolayer:*` artisan commands: `install`, `doctor`, `ontology:compile`, `user:promote`, `ai:probe`, `ai:smoke-test`, `ai:stream-check`.
@@ -94,10 +98,12 @@ Run before opening a PR:
 ```bash
 composer validate --strict
 composer test                              # Pest Feature + Unit
+npm ci --ignore-scripts                    # first run / after package-lock.json changes
+npm run format:check                       # Tailwind-aware formatting for published resources/js stubs
 vendor/bin/testbench boost:install --guidelines --no-interaction   # only if AGENTS.md needs refresh
 ```
 
-Public GitHub Actions run on `push`, `pull_request`, and `workflow_dispatch`. Still run `composer validate --strict` and `composer test` locally before opening a PR, because Packagist-facing package regressions are costly even when CI catches them.
+Public GitHub Actions run on `push`, `pull_request`, and `workflow_dispatch`. Still run `composer validate --strict`, `composer test`, `npm ci --ignore-scripts`, and `npm run format:check` locally before opening a PR, because Packagist-facing package regressions are costly even when CI catches them.
 
 ## Public docs touchpoints
 

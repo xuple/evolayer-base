@@ -35,6 +35,8 @@ Run these before opening a PR:
 ```bash
 composer validate --strict
 composer test
+npm ci --ignore-scripts
+npm run format:check
 ```
 
 If your change affects published frontend stubs, also verify it in the starter:

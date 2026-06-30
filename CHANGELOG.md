@@ -6,6 +6,31 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.8] - 2026-06-30
+
+### Added
+
+- Public landing chrome (`PublicLayout`, `about.tsx`) now renders entirely from
+  the brand contract (`useBrand()` / `config('evolayer.base.brand')`), removing
+  the last `usePage().props.name` reference so a brand change no longer leaves
+  stale public nav or title text. `PublicLayout` owns the page `<Head>` (the
+  About page no longer emits its own), and the `about.tsx` CTA uses the
+  `login()` Wayfinder route helper instead of a hardcoded `/login`.
+- ADR-021 (`DECISIONS.md`): AI platform scope is frozen until 0.1 ships — a
+  time-boxed scope-discipline decision (no probe-platform expansion, no new
+  `conditions` readers, no ledger-surface growth; receipts / `doctor --json` /
+  adaptive gating stay deferred), with a one-line pointer in AGENTS.md/CLAUDE.md.
+- CONTRIBUTING note recording the accepted package↔starter patch-mechanism
+  asymmetry (package `apply-patches.php` vs starter `cweagans/composer-patches`).
+
+### Fixed
+
+- The authenticated `/home` greeting ("Good morning/afternoon/evening") is now
+  derived from a server-provided `greetingHour` prop instead of `new Date()` in
+  render, eliminating an SSR/hydration mismatch when server and client
+  timezones differ. The `/home` route passes `now()->hour`; `home.tsx` reads the
+  prop with a client-side fallback for resilience against older consumers.
+
 ## [0.1.7] - 2026-06-29
 
 ### Added

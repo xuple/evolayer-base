@@ -77,7 +77,7 @@ The package's AI command surface is intentionally minimal:
 - `evolayer:ai:stream-check {provider}` — structured-streaming smoke test (depends on the `laravel/ai` patch in `patches/`).
 - `evolayer:ai:probe` — capability probe and ledger update.
 
-Provider drivers, capability probing, and the AI capability ledger live here. Do not import provider-platform expansions (model sweeps, cost estimation, stale-reprobe workflows, billing) without an explicit `DECISIONS.md` ADR. The starter's "AI providers" doc section should reference these commands but should not duplicate provider-platform UX.
+Provider drivers, capability probing, and the AI capability ledger live here. Do not import provider-platform expansions (model sweeps, cost estimation, stale-reprobe workflows, billing) without an explicit `DECISIONS.md` ADR. The starter's "AI providers" doc section should reference these commands but should not duplicate provider-platform UX. **AI platform scope is frozen until 0.1 ships — see ADR-021:** no probe-platform expansion, no new `conditions` readers, no ledger-surface growth; receipts / `doctor --json` / adaptive gating stay deferred until the live demo loop is proven.
 
 **Observed capability is not product policy (ADR-019).** Keep three layers distinct:
 

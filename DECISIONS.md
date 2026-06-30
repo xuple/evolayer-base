@@ -435,7 +435,7 @@ runtimeApprovedProviders(): ['anthropic','gemini','nvidia','opencode','openroute
 
 - Runtime-approved ThreadStudio providers are directly verified.
 - Router-backed providers are diagnostic-eligible probe candidates.
-- Local verification can promote exact provider/model pairs later (the future adaptive/verified mode, ADR-021+).
+- Local verification can promote exact provider/model pairs later (the future adaptive/verified mode, a later ADR — itself frozen until 0.1 ships per ADR-021).
 
 This is the honest, provider-specific-support-first posture. It is stricter than C (which would keep the structural-inference router tier in the runtime-approved set); the Verified Runtime Strategy treats "verified" as empirical, not structural.
 
@@ -468,6 +468,25 @@ The terms below are the canonical vocabulary for provider status. Use them with 
 - **Pending re-verification** — the forward half of a blocked status: the provider may be reconsidered for runtime approval if new matrix/probe evidence appears (e.g. Anthropic if its structured streaming starts emitting usable `TextDelta` events).
 - **Matrix-verified provider** — verified in the maintained structured-streaming matrix (`patches/README.md`) for that specific capability. Today: Gemini, OpenAI. Matrix-verified is the *evidence* that makes a provider eligible for runtime approval — it is not automatically runtime approval.
 - **Locally verified provider/model** — *future / adaptive mode*: a `provider × model × schema` combination a host's own capability ledger (`AiCapability` conditions) has observed passing. Not wired into runtime gating yet.
+
+---
+
+## ADR-021 — AI platform scope is frozen until 0.1 ships
+
+**Status:** Accepted (time-boxed)
+
+**Context.** The AI/provider subsystem is the most built-out part of Base — capability ledger, conditions-lite column, `ThreadStudioProviderPolicy`, the shared `AiCapabilityProbe`, broad smoke/probe/stream-check diagnostics. That depth is deliberate and well-governed (ADR-018 → ADR-020), but it is platform-grade machinery around what ships as a *demo* feature. The risk is scope creep: speculative infrastructure (a conditions reader with no consumer, ledger-surface growth, adaptive gating, receipts, `doctor --json`, an admin probing UI) accreting before the demo loop is even proven on a fresh install, eroding Base's "lowest-friction starter" identity.
+
+**Decision.** AI platform scope is **frozen until 0.1 ships and the live demo loop is proven** on a fresh starter. Until then:
+
+- **No probe-platform expansion** — no model sweeps, cost/budget tracking, stale-reprobe workflows, or admin probing UI.
+- **No new `conditions` types or readers** until a real consumer (receipts or adaptive mode) exists. The `AiCapability.conditions` column stays as-is (write-only groundwork from ADR-019).
+- **No `AiCapability` ledger surface growth** — the table and model stay at their current shape.
+- **Receipts / `doctor --json` / adaptive (Tier 5) runtime gating remain deferred design surfaces**, not implementation targets.
+
+**What this does not do.** It does not remove or deprecate any existing infrastructure (all probe/router/ledger tooling is retained per ADR-020), and it does not ban this work permanently — it **time-boxes** it. Once 0.1 ships and the demo loop is verified live, the adaptive/verified-mode line (a later ADR) and the deferred surfaces above reopen on their merits.
+
+**Why an ADR and not just an out-of-scope list.** The rule already lives scattered across the AGENTS/CLAUDE out-of-scope sections and the ADR-018/019/020 non-goals. This consolidates it into one referenceable answer to "is this AI work in scope for 0.1?" — no, unless it serves the provable demo loop.
 
 ---
 

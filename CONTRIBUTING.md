@@ -16,6 +16,14 @@ Before contributing, please read the [EvoLayer Framework Contract](docs/contract
 - Do not rename local pre-release directories as part of normal package changes. Filesystem paths are not public package identity.
 - Prefer small, reviewable PRs with tests or a clear explanation of why tests are not applicable.
 
+## Accepted asymmetries (package ↔ starter)
+
+These differences between this package and `xuple/evolayer-base-starter` are **deliberate, not drift** — don't "fix" them to match:
+
+- **Patch mechanism.** Both repos carry the same `patches/laravel-ai-structured-streaming.patch` and its `patches/README.md` dossier, but apply it differently: the package uses a hand-rolled `apply-patches.php` composer script (kept dependency-free, as befits a library consumed via Composer), while the starter uses the `cweagans/composer-patches` plugin (`extra.patches`), which a root application can carry as a dev dependency. Same patch, mechanism chosen to fit each repo's role.
+
+(The former test-runner asymmetry is gone: both repos are now Pest-first.)
+
 ## Public docs touchpoints
 
 The canonical package contract remains [`docs/contract.md`](docs/contract.md). The public reader-facing docs live at [`evodevops.com/evolayer-base/docs`](https://evodevops.com/evolayer-base/docs) in the `xuple/evodevops` site repo. When package changes alter any of these surfaces, update or explicitly check the matching site page in the same release window:

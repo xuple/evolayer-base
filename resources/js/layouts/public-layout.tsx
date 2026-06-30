@@ -1,6 +1,7 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import AppLogoIcon from '@/components/app-logo-icon';
+import { useBrand } from '@/hooks/use-brand';
 import { login, register } from '@/routes';
 
 interface Props {
@@ -10,16 +11,16 @@ interface Props {
 }
 
 export default function PublicLayout({ title, description, children }: Props) {
-    const { auth, name } = usePage().props;
+    const { auth } = usePage().props;
+    const brand = useBrand();
+    const resolvedTitle = title ?? brand.name;
+    const resolvedDescription = description ?? brand.description;
 
     return (
         <>
-            {title && <Head title={title} />}
-            {description && (
-                <Head>
-                    <meta name="description" content={description} />
-                </Head>
-            )}
+            <Head title={resolvedTitle}>
+                <meta name="description" content={resolvedDescription} />
+            </Head>
             <div className="flex min-h-screen flex-col items-center bg-background p-6 text-foreground lg:p-8">
                 <header className="mb-6 w-full max-w-7xl text-sm not-has-[nav]:hidden">
                     <nav className="flex items-center justify-between gap-4">
@@ -29,7 +30,7 @@ export default function PublicLayout({ title, description, children }: Props) {
                         >
                             <AppLogoIcon className="h-6 w-6 fill-current text-brand" />
                             <span className="text-lg font-semibold tracking-tight">
-                                {name}
+                                {brand.name}
                             </span>
                         </Link>
 

@@ -87,8 +87,8 @@ php artisan wayfinder:generate --with-form
 
 To publish everything at once (demo / kitchen-sink), use the meta tag `evolayer-base-frontend` and enable all flags.
 
-Host apps that intentionally own the landing pages at
-`resources/js/pages/evolayer/about.tsx` and `resources/js/pages/evolayer/home.tsx`
+Host apps that intentionally own the public landing page at
+`resources/js/pages/evolayer/base.tsx`
 should use `evolayer-base-frontend-preserve-overrides` for forced frontend
 resyncs. It publishes core plus the non-marketing feature page sets, but does
 not touch those two landing-page overrides. The normal `evolayer-base-frontend`
@@ -124,7 +124,7 @@ Every feature defaults to **off**. Set the corresponding env flag to `true` to e
 | `EVOLAYER_BASE_EXAMPLE_CONTACT_AI=true` | `/contact` + AI subject hints + AI triage on submission |
 | `EVOLAYER_BASE_EXAMPLE_VOICE_INPUT=true` | `/ai/voice-input/transcribe` — speech-to-text endpoint for the `<VoiceInput>` block |
 | `EVOLAYER_BASE_EXAMPLE_AI_TEXT_FIELD=true` | `/ai/text-assist/stream` — text-suggestion streaming endpoint for the `<AiTextField>` block |
-| `EVOLAYER_BASE_EXAMPLE_MARKETING_PAGES=true` | `/about` + `/home` — showcase landing pages mapped to the published `evolayer/about.tsx` and `evolayer/home.tsx` |
+| `EVOLAYER_BASE_EXAMPLE_MARKETING_PAGES=true` | `/about` — public showcase explainer mapped to the published `evolayer/base.tsx` (authenticated `/home` is host-owned by the starter) |
 | `EVOLAYER_BASE_FEATURE_CONTACT_ATTACHMENTS=true` | File-upload handling on the contact form. Requires `composer require spatie/laravel-medialibrary` (see "Opt-in extras" below) |
 
 After enabling, run `php artisan route:list` to confirm only the routes you asked for are registered.
@@ -211,7 +211,7 @@ createInertiaApp({
     const pages = import.meta.glob('./pages/**/*.tsx', { eager: true });
     const page = pages[`./pages/${name}.tsx`];
 
-    if (name.startsWith('evolayer/') && !name.startsWith('evolayer/admin/') && name !== 'evolayer/home') {
+    if (name.startsWith('evolayer/') && !name.startsWith('evolayer/admin/')) {
       page.default.layout = page.default.layout ?? ((p: ReactElement) => <PublicLayout>{p}</PublicLayout>);
     }
 

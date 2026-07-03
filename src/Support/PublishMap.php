@@ -72,8 +72,7 @@ class PublishMap
                 $r.'/resources/js/pages/evolayer/contact-thank-you.tsx' => resource_path('js/pages/evolayer/contact-thank-you.tsx'),
             ],
             'marketing-pages' => [
-                $r.'/resources/js/pages/evolayer/about.tsx' => resource_path('js/pages/evolayer/about.tsx'),
-                $r.'/resources/js/pages/evolayer/home.tsx' => resource_path('js/pages/evolayer/home.tsx'),
+                $r.'/resources/js/pages/evolayer/base.tsx' => resource_path('js/pages/evolayer/base.tsx'),
             ],
         ];
     }

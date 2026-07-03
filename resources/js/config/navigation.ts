@@ -24,12 +24,14 @@ import type { EvoLayerNavItem } from '@/types/evolayer';
  */
 export const sidebarPrimaryNavItems: EvoLayerNavItem[] = [
     {
+        // /home is the host-owned authenticated launcher (starter route named
+        // `home`), always present — not a gated example. Referenced by stable
+        // path so this core stub never compile-depends on a feature route.
         title: 'Home',
         href: '/home',
         icon: Home,
         isAccent: true,
         description: 'Go to the launcher',
-        exampleKey: 'marketing_pages',
     },
     {
         title: 'ThreadStudio',

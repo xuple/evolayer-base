@@ -6,6 +6,24 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.9] - 2026-07-03
+
+### Changed
+
+- **BREAKING (pre-1.0 route-contract cleanup).** The package no longer owns the
+  authenticated `/home` route. `routes/features/marketing_pages.php` now registers
+  only the public `/about` explainer; the canonical authenticated launcher is
+  **host-owned by the starter** (route named `home`), matching the framework
+  contract that EvoLayer does not assume control over host authentication routing.
+  This removes a hidden Wayfinder compile-time coupling — a core shell nav item no
+  longer depends on a feature-gated package route, so disabling
+  `EVOLAYER_BASE_EXAMPLE_MARKETING_PAGES` can no longer break the host build.
+- **BREAKING.** The public explainer page is renamed `evolayer/about` →
+  `evolayer/base` (component + published stub + `PublishMap`); `/about` and
+  `evolayer.base.about` now render `evolayer/base`. The package-owned
+  `evolayer/home.tsx` is removed (superseded by the starter's host-owned `home`
+  page); `evolayer.base.home` no longer exists.
+
 ## [0.1.8] - 2026-06-30
 
 ### Added

@@ -48,7 +48,7 @@ Decision rule before any edit: read the [EvoLayer Framework Contract](docs/contr
 - Host integration files (`HandleInertiaRequests.php`, `User.php`, `routes/web.php`, `app-sidebar.tsx`, `DatabaseSeeder.php`, etc.).
 - Spatie host-published migrations with ULID morphs.
 - Starter CI workflows.
-- The starter's overridden landing pages (`evolayer/about.tsx`, `evolayer/home.tsx` are starter-owned brand overrides of the defaults published from this repo's `resources/`). Use the `evolayer-base-frontend-preserve-overrides` publish tag for starter-style forced resyncs so package-owned frontend stubs refresh without overwriting those host-owned landing pages. The legacy `evolayer-base-frontend` and `evolayer-base-frontend-marketing-pages` tags still publish the package defaults for normal consumers.
+- The starter's overridden landing page (`evolayer/base.tsx` is a starter-owned brand override of the default published from this repo's `resources/`; the authenticated `/home` launcher is host-owned by the starter, not this package). Use the `evolayer-base-frontend-preserve-overrides` publish tag for starter-style forced resyncs so package-owned frontend stubs refresh without overwriting that host-owned landing page. The legacy `evolayer-base-frontend` and `evolayer-base-frontend-marketing-pages` tags still publish the package defaults for normal consumers.
 
 ## Hard rules
 

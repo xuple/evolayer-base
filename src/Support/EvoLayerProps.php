@@ -7,8 +7,9 @@ namespace Xuple\EvoLayer\Base\Support;
  *
  * Host apps share this from HandleInertiaRequests::share() (under the
  * `evolayer.base` key) so published pages can read brand, example, and feature
- * state. Brand-via-props is what lets a host rebrand home/about without the
- * package overwriting the page files — see config('evolayer.base.brand').
+ * state. Brand-via-props is what lets a host rebrand the public explainer
+ * (evolayer/base) without the package overwriting the page file — see
+ * config('evolayer.base.brand').
  */
 class EvoLayerProps
 {

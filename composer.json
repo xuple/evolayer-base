@@ -3,6 +3,7 @@
     "name": "xuple/evolayer-base",
     "description": "EvoLayer Base — AI agents, ontology, and premium React blocks for the Laravel React Inertia starter. Part of the EvoDevOps starter-kit family.",
     "type": "library",
+    "homepage": "https://evodevops.com/evolayer-base",
     "license": "MIT",
     "keywords": [
         "evolayer",

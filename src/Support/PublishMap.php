@@ -14,6 +14,82 @@ use RecursiveIteratorIterator;
  */
 class PublishMap
 {
+    /**
+     * Canonical definitions for every flag-gated example surface.
+     *
+     * @return array<string, ManagedSurface>
+     */
+    public function surfaces(): array
+    {
+        $r = $this->packageRoot();
+
+        return [
+            'marketing-pages' => new ManagedSurface(
+                id: 'marketing-pages',
+                configKey: 'marketing_pages',
+                routeFile: $r.'/routes/features/marketing_pages.php',
+                ejectable: true,
+                paths: [
+                    $r.'/resources/js/pages/evolayer/base.tsx' => resource_path('js/pages/evolayer/base.tsx'),
+                ],
+            ),
+            'contact-ai' => new ManagedSurface(
+                id: 'contact-ai',
+                configKey: 'contact_ai',
+                routeFile: $r.'/routes/features/contact_ai.php',
+                ejectable: true,
+                paths: [
+                    $r.'/resources/js/pages/evolayer/contact.tsx' => resource_path('js/pages/evolayer/contact.tsx'),
+                    $r.'/resources/js/pages/evolayer/contact-thank-you.tsx' => resource_path('js/pages/evolayer/contact-thank-you.tsx'),
+                ],
+            ),
+            'admin-inbox' => new ManagedSurface(
+                id: 'admin-inbox',
+                configKey: 'admin_inbox',
+                routeFile: $r.'/routes/features/admin_inbox.php',
+                ejectable: true,
+                paths: [
+                    $r.'/resources/js/pages/evolayer/admin/inbox' => resource_path('js/pages/evolayer/admin/inbox'),
+                    $r.'/resources/js/pages/evolayer/admin/submissions' => resource_path('js/pages/evolayer/admin/submissions'),
+                ],
+            ),
+            'prd-studio' => new ManagedSurface(
+                id: 'prd-studio',
+                configKey: 'prd_studio',
+                routeFile: $r.'/routes/features/prd_studio.php',
+                ejectable: true,
+                paths: [
+                    $r.'/resources/js/pages/evolayer/admin/prd.tsx' => resource_path('js/pages/evolayer/admin/prd.tsx'),
+                ],
+            ),
+            'thread-studio' => new ManagedSurface(
+                id: 'thread-studio',
+                configKey: 'thread_studio',
+                routeFile: $r.'/routes/features/thread_studio.php',
+                ejectable: true,
+                paths: [
+                    $r.'/resources/js/pages/evolayer/ai/thread-studio.tsx' => resource_path('js/pages/evolayer/ai/thread-studio.tsx'),
+                    $r.'/resources/js/hooks/use-thread-studio-stream.ts' => resource_path('js/hooks/use-thread-studio-stream.ts'),
+                    $r.'/resources/js/hooks/use-typewriter.ts' => resource_path('js/hooks/use-typewriter.ts'),
+                ],
+            ),
+            'voice-input' => new ManagedSurface(
+                id: 'voice-input',
+                configKey: 'voice_input',
+                routeFile: $r.'/routes/features/voice_input.php',
+                ejectable: false,
+                paths: [],
+            ),
+            'ai-text-field' => new ManagedSurface(
+                id: 'ai-text-field',
+                configKey: 'ai_text_field',
+                routeFile: $r.'/routes/features/ai_text_field.php',
+                ejectable: false,
+                paths: [],
+            ),
+        ];
+    }
+
     public function packageRoot(): string
     {
         return dirname(__DIR__, 2);
@@ -52,29 +128,10 @@ class PublishMap
      */
     public function features(): array
     {
-        $r = $this->packageRoot();
-
-        return [
-            'thread-studio' => [
-                $r.'/resources/js/pages/evolayer/ai/thread-studio.tsx' => resource_path('js/pages/evolayer/ai/thread-studio.tsx'),
-                $r.'/resources/js/hooks/use-thread-studio-stream.ts' => resource_path('js/hooks/use-thread-studio-stream.ts'),
-                $r.'/resources/js/hooks/use-typewriter.ts' => resource_path('js/hooks/use-typewriter.ts'),
-            ],
-            'prd-studio' => [
-                $r.'/resources/js/pages/evolayer/admin/prd.tsx' => resource_path('js/pages/evolayer/admin/prd.tsx'),
-            ],
-            'admin-inbox' => [
-                $r.'/resources/js/pages/evolayer/admin/inbox' => resource_path('js/pages/evolayer/admin/inbox'),
-                $r.'/resources/js/pages/evolayer/admin/submissions' => resource_path('js/pages/evolayer/admin/submissions'),
-            ],
-            'contact-ai' => [
-                $r.'/resources/js/pages/evolayer/contact.tsx' => resource_path('js/pages/evolayer/contact.tsx'),
-                $r.'/resources/js/pages/evolayer/contact-thank-you.tsx' => resource_path('js/pages/evolayer/contact-thank-you.tsx'),
-            ],
-            'marketing-pages' => [
-                $r.'/resources/js/pages/evolayer/base.tsx' => resource_path('js/pages/evolayer/base.tsx'),
-            ],
-        ];
+        return collect($this->surfaces())
+            ->filter(fn (ManagedSurface $surface): bool => $surface->ejectable)
+            ->map(fn (ManagedSurface $surface): array => $surface->paths)
+            ->all();
     }
 
     /**

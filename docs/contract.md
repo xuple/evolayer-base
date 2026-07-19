@@ -27,7 +27,11 @@ The framework interacts with the host application through three core commands:
 
 ### `evolayer:profile`
 - **Purpose**: Toggles the posture of the starter (e.g., demo/kitchen-sink vs. lean).
-- **Rule**: Acts by toggling configuration flags. It does not overwrite app business logic.
+- **Rule**: Plans the complete transition before writing. It updates configuration
+  flags and may prune disabled framework-managed frontend files only when the
+  resync manifest proves they are pristine. Modified, unknown, and ejected files
+  are never overwritten or deleted; an unresolved ownership conflict aborts the
+  transition before any flag or file changes. Use `--dry-run` to inspect the plan.
 
 ## Anti-Scope (Do Not Do)
 - The framework does **not** assume control over host authentication routing, though it provides examples.

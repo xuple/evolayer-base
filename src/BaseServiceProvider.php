@@ -19,28 +19,18 @@ use Xuple\EvoLayer\Base\Console\Commands\ProfileCommand;
 use Xuple\EvoLayer\Base\Console\Commands\PromoteUserCommand;
 use Xuple\EvoLayer\Base\Console\Commands\ResyncCommand;
 use Xuple\EvoLayer\Base\Contracts\AdminGate;
+use Xuple\EvoLayer\Base\Contracts\ProfileTransitionContributor;
 use Xuple\EvoLayer\Base\Contracts\UserResolver;
 use Xuple\EvoLayer\Base\Http\Middleware\EnsureExampleEnabled;
 use Xuple\EvoLayer\Base\Http\Middleware\RequireAdmin;
 use Xuple\EvoLayer\Base\Support\OntologyRegistry;
 use Xuple\EvoLayer\Base\Support\PublishMap;
+use Xuple\EvoLayer\Base\Support\ProfileTransitions\EnvironmentProfileTransitionContributor;
+use Xuple\EvoLayer\Base\Support\ProfileTransitions\ManagedSurfaceProfileTransitionContributor;
+use Xuple\EvoLayer\Base\Support\ProfileTransitions\ProfileTransitionManager;
 
 class BaseServiceProvider extends ServiceProvider
 {
-    /**
-     * EVOLAYER_BASE_EXAMPLE_* flags that gate per-feature route files under routes/features/.
-     * Order matters only for route:list display; each file is independent.
-     */
-    private const FEATURE_ROUTES = [
-        'marketing_pages',
-        'contact_ai',
-        'admin_inbox',
-        'prd_studio',
-        'thread_studio',
-        'voice_input',
-        'ai_text_field',
-    ];
-
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/evolayer.php', 'evolayer');
@@ -56,9 +46,18 @@ class BaseServiceProvider extends ServiceProvider
         $this->app->singleton(AdminGate::class, SpatieAdminGate::class);
         $this->app->singleton(UserResolver::class, DefaultUserResolver::class);
         $this->app->singleton(OntologyRegistry::class);
+
+        $this->app->tag([
+            EnvironmentProfileTransitionContributor::class,
+            ManagedSurfaceProfileTransitionContributor::class,
+        ], ProfileTransitionManager::CONTRIBUTOR_TAG);
+
+        $this->app->when(ProfileTransitionManager::class)
+            ->needs(ProfileTransitionContributor::class)
+            ->giveTagged(ProfileTransitionManager::CONTRIBUTOR_TAG);
     }
 
-    public function boot(): void
+    public function boot(PublishMap $map): void
     {
         /** @var Router $router */
         $router = $this->app->make(Router::class);
@@ -71,9 +70,9 @@ class BaseServiceProvider extends ServiceProvider
         // flag is true. With all flags default-false, installing the package
         // adds zero routes to the host's route:list (the "zero routes on
         // install" principle).
-        foreach (self::FEATURE_ROUTES as $feature) {
-            if (config("evolayer.base.examples.{$feature}")) {
-                Route::middleware('evolayer')->group(__DIR__."/../routes/features/{$feature}.php");
+        foreach ($map->surfaces() as $surface) {
+            if (config("evolayer.base.examples.{$surface->configKey}")) {
+                Route::middleware('evolayer')->group($surface->routeFile);
             }
         }
 
@@ -102,11 +101,11 @@ class BaseServiceProvider extends ServiceProvider
                 ProfileCommand::class,
             ]);
 
-            $this->registerPublishables();
+            $this->registerPublishables($map);
         }
     }
 
-    private function registerPublishables(): void
+    private function registerPublishables(PublishMap $map): void
     {
         $this->publishes([
             __DIR__.'/../config/evolayer.php' => config_path('evolayer.php'),
@@ -116,8 +115,6 @@ class BaseServiceProvider extends ServiceProvider
         // ── Frontend: core (always-on UI primitives, no feature flag) ──────────
         // Blocks, command palette, shared hooks/types/config/layouts. Publish
         // this once; it has no cross-feature route dependencies.
-        $map = new PublishMap;
-
         $coreFrontend = $map->core();
         $this->publishes($coreFrontend, 'evolayer-base-frontend-core');
 

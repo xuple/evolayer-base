@@ -5,16 +5,20 @@ namespace Xuple\EvoLayer\Base\Console\Commands;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use Xuple\EvoLayer\Base\Support\ProfileTransitions\ProfileTransitionConflict;
+use Xuple\EvoLayer\Base\Support\ProfileTransitions\ProfileTransitionContext;
+use Xuple\EvoLayer\Base\Support\ProfileTransitions\ProfileTransitionManager;
 
 #[Signature('evolayer:profile
     {profile : The install profile to apply (demo|lean)}
-    {--path= : Path to the .env file to rewrite (defaults to the app .env)}')]
+    {--path= : Path to the .env file to rewrite (defaults to the app .env)}
+    {--dry-run : Show the complete transition plan without changing files}')]
 #[Description('Switch between the demo (kitchen-sink) and lean (examples off) install profiles by toggling EVOLAYER_BASE_EXAMPLE_* flags.')]
 class ProfileCommand extends Command
 {
     private const PROFILES = ['demo', 'lean'];
 
-    public function handle(): int
+    public function handle(ProfileTransitionManager $transitions): int
     {
         $profile = strtolower((string) $this->argument('profile'));
 
@@ -32,42 +36,28 @@ class ProfileCommand extends Command
             return self::FAILURE;
         }
 
-        // Demo is the kitchen-sink default (every example surface on); lean
-        // turns them all off for a production-credible baseline.
-        $value = $profile === 'demo' ? 'true' : 'false';
+        $current = collect((array) config('evolayer.base.examples'))
+            ->map(fn (mixed $enabled): bool => (bool) $enabled)
+            ->all();
+        $target = array_fill_keys(array_keys($current), $profile === 'demo');
+        $context = new ProfileTransitionContext($profile, $envPath, $current, $target);
 
-        $keys = array_map(
-            fn (string $key): string => 'EVOLAYER_BASE_EXAMPLE_'.strtoupper($key),
-            array_keys((array) config('evolayer.base.examples'))
-        );
+        try {
+            $result = $transitions->execute($context, (bool) $this->option('dry-run'));
+        } catch (ProfileTransitionConflict $exception) {
+            $this->components->error($exception->getMessage());
+            $this->components->bulletList($exception->conflicts);
 
-        $env = (string) file_get_contents($envPath);
-
-        foreach ($keys as $key) {
-            $env = $this->setEnvValue($env, $key, $value);
+            return self::FAILURE;
         }
 
-        file_put_contents($envPath, $env);
+        $verb = $result->dryRun ? 'Would apply' : 'Applied';
+        $this->components->info("{$verb} the '{$profile}' profile across ".count($result->affectedPaths).' file(s).');
 
-        $this->components->info("Applied the '{$profile}' profile: set ".count($keys)." EVOLAYER_BASE_EXAMPLE_* flag(s) to {$value}.");
-        $this->components->warn('Run `php artisan config:clear` to apply (rebuild assets if example routes changed).');
+        if (! $result->dryRun) {
+            $this->components->warn('Run `php artisan config:clear` to apply, then regenerate Wayfinder and rebuild assets.');
+        }
 
         return self::SUCCESS;
-    }
-
-    /**
-     * Set KEY=value in the .env contents, replacing an existing line or
-     * appending a new one.
-     */
-    private function setEnvValue(string $env, string $key, string $value): string
-    {
-        $line = "{$key}={$value}";
-        $pattern = '/^'.preg_quote($key, '/').'=.*$/m';
-
-        if (preg_match($pattern, $env)) {
-            return (string) preg_replace($pattern, $line, $env);
-        }
-
-        return rtrim($env, "\n")."\n".$line."\n";
     }
 }

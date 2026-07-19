@@ -6,6 +6,22 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Added typed managed-surface descriptors as the canonical source for example
+  config keys, route files, publish paths, and ejection policy. Route
+  registration, publishing, resync, and ejection now derive from the same map.
+- Added a contributor-based profile transition transaction with conflict
+  preflight, same-filesystem atomic writes, dry-run support, and exact rollback
+  of file contents, existence, and permissions after an apply failure.
+
+### Changed
+
+- `evolayer:profile lean` now removes disabled package-managed frontend files
+  only when the resync manifest proves they are pristine, and updates the
+  environment and manifest in the same transaction. Modified, unknown, or
+  ejected files abort the transition before any changes are made.
+
 ## [0.1.9] - 2026-07-03
 
 ### Changed

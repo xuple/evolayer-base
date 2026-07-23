@@ -14,20 +14,35 @@ use Xuple\EvoLayer\Base\Console\Commands\DoctorCommand;
 use Xuple\EvoLayer\Base\Console\Commands\EjectCommand;
 use Xuple\EvoLayer\Base\Console\Commands\FontsSelfHost;
 use Xuple\EvoLayer\Base\Console\Commands\InstallCommand;
+use Xuple\EvoLayer\Base\Console\Commands\ManifestAdoptCommand;
+use Xuple\EvoLayer\Base\Console\Commands\ManifestInspectCommand;
 use Xuple\EvoLayer\Base\Console\Commands\OntologyCompileCommand;
 use Xuple\EvoLayer\Base\Console\Commands\ProfileCommand;
+use Xuple\EvoLayer\Base\Console\Commands\ProfileStatusCommand;
+use Xuple\EvoLayer\Base\Console\Commands\ProfileVerifyCommand;
 use Xuple\EvoLayer\Base\Console\Commands\PromoteUserCommand;
 use Xuple\EvoLayer\Base\Console\Commands\ResyncCommand;
 use Xuple\EvoLayer\Base\Contracts\AdminGate;
 use Xuple\EvoLayer\Base\Contracts\ProfileTransitionContributor;
+use Xuple\EvoLayer\Base\Contracts\ProfileVerificationCheck;
 use Xuple\EvoLayer\Base\Contracts\UserResolver;
 use Xuple\EvoLayer\Base\Http\Middleware\EnsureExampleEnabled;
 use Xuple\EvoLayer\Base\Http\Middleware\RequireAdmin;
 use Xuple\EvoLayer\Base\Support\OntologyRegistry;
-use Xuple\EvoLayer\Base\Support\PublishMap;
+use Xuple\EvoLayer\Base\Support\ProfileTransitions\Checks\CommittedIntentVerificationCheck;
+use Xuple\EvoLayer\Base\Support\ProfileTransitions\Checks\EffectiveConfigurationVerificationCheck;
+use Xuple\EvoLayer\Base\Support\ProfileTransitions\Checks\ManagedRoutesVerificationCheck;
+use Xuple\EvoLayer\Base\Support\ProfileTransitions\Checks\ManagedSourceVerificationCheck;
+use Xuple\EvoLayer\Base\Support\ProfileTransitions\Checks\RouteCollisionsVerificationCheck;
 use Xuple\EvoLayer\Base\Support\ProfileTransitions\EnvironmentProfileTransitionContributor;
 use Xuple\EvoLayer\Base\Support\ProfileTransitions\ManagedSurfaceProfileTransitionContributor;
+use Xuple\EvoLayer\Base\Support\ProfileTransitions\ProfileDefinition;
+use Xuple\EvoLayer\Base\Support\ProfileTransitions\ProfileRegistry;
 use Xuple\EvoLayer\Base\Support\ProfileTransitions\ProfileTransitionManager;
+use Xuple\EvoLayer\Base\Support\ProfileTransitions\ProfileVerificationManager;
+use Xuple\EvoLayer\Base\Support\ProfileTransitions\ProjectMetadataProfileTransitionContributor;
+use Xuple\EvoLayer\Base\Support\PublishMap;
+use Xuple\EvoLayer\Base\Support\RouteCollisionInspector;
 
 class BaseServiceProvider extends ServiceProvider
 {
@@ -46,8 +61,35 @@ class BaseServiceProvider extends ServiceProvider
         $this->app->singleton(AdminGate::class, SpatieAdminGate::class);
         $this->app->singleton(UserResolver::class, DefaultUserResolver::class);
         $this->app->singleton(OntologyRegistry::class);
+        $this->app->singleton(ProfileRegistry::class, function (): ProfileRegistry {
+            $registry = new ProfileRegistry;
+            $exampleKeys = array_keys((array) config('evolayer.base.examples'));
+            $featureKeys = array_keys((array) config('evolayer.base.features'));
+
+            $registry->register(new ProfileDefinition(
+                id: 'demo',
+                schemaVersion: 1,
+                examples: array_fill_keys($exampleKeys, true),
+                features: array_fill_keys($featureKeys, true),
+                requiredCapabilities: ['profile.committed-intent', 'profile.environment-projection', 'profile.managed-surfaces'],
+                allowedOverrides: ['examples', 'features'],
+                verificationRequirements: ['generated-contracts'],
+            ));
+            $registry->register(new ProfileDefinition(
+                id: 'lean',
+                schemaVersion: 1,
+                examples: array_fill_keys($exampleKeys, false),
+                features: array_fill_keys($featureKeys, false),
+                requiredCapabilities: ['profile.committed-intent', 'profile.environment-projection', 'profile.managed-surfaces'],
+                allowedOverrides: ['examples', 'features'],
+                verificationRequirements: ['generated-contracts'],
+            ));
+
+            return $registry;
+        });
 
         $this->app->tag([
+            ProjectMetadataProfileTransitionContributor::class,
             EnvironmentProfileTransitionContributor::class,
             ManagedSurfaceProfileTransitionContributor::class,
         ], ProfileTransitionManager::CONTRIBUTOR_TAG);
@@ -55,9 +97,21 @@ class BaseServiceProvider extends ServiceProvider
         $this->app->when(ProfileTransitionManager::class)
             ->needs(ProfileTransitionContributor::class)
             ->giveTagged(ProfileTransitionManager::CONTRIBUTOR_TAG);
+
+        $this->app->tag([
+            CommittedIntentVerificationCheck::class,
+            EffectiveConfigurationVerificationCheck::class,
+            ManagedSourceVerificationCheck::class,
+            ManagedRoutesVerificationCheck::class,
+            RouteCollisionsVerificationCheck::class,
+        ], ProfileVerificationManager::CHECK_TAG);
+
+        $this->app->when(ProfileVerificationManager::class)
+            ->needs(ProfileVerificationCheck::class)
+            ->giveTagged(ProfileVerificationManager::CHECK_TAG);
     }
 
-    public function boot(PublishMap $map): void
+    public function boot(PublishMap $map, RouteCollisionInspector $routeCollisions): void
     {
         /** @var Router $router */
         $router = $this->app->make(Router::class);
@@ -70,9 +124,37 @@ class BaseServiceProvider extends ServiceProvider
         // flag is true. With all flags default-false, installing the package
         // adds zero routes to the host's route:list (the "zero routes on
         // install" principle).
-        foreach ($map->surfaces() as $surface) {
-            if (config("evolayer.base.examples.{$surface->configKey}")) {
+        if (! $this->app->routesAreCached()) {
+            foreach ($map->surfaces() as $surface) {
+                if (! config("evolayer.base.examples.{$surface->configKey}")) {
+                    continue;
+                }
+
+                $shadowed = [];
+
+                foreach ($surface->routes as $contract) {
+                    $shadowed[$contract->name] = $routeCollisions->matchingRoutes(
+                        $router->getRoutes(),
+                        $contract,
+                    );
+                }
+
                 Route::middleware('evolayer')->group($surface->routeFile);
+
+                foreach ($surface->routes as $contract) {
+                    $route = collect($routeCollisions->matchingRoutes(
+                        $router->getRoutes(),
+                        $contract,
+                    ))->first(fn ($candidate): bool => $candidate->getName() === $contract->name);
+
+                    if ($route !== null) {
+                        $routeCollisions->markPackageRoute(
+                            $route,
+                            $surface->id,
+                            $shadowed[$contract->name],
+                        );
+                    }
+                }
             }
         }
 
@@ -89,6 +171,8 @@ class BaseServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 InstallCommand::class,
+                ManifestInspectCommand::class,
+                ManifestAdoptCommand::class,
                 DoctorCommand::class,
                 AiProbeCommand::class,
                 AiSmokeTest::class,
@@ -99,6 +183,8 @@ class BaseServiceProvider extends ServiceProvider
                 ResyncCommand::class,
                 EjectCommand::class,
                 ProfileCommand::class,
+                ProfileStatusCommand::class,
+                ProfileVerifyCommand::class,
             ]);
 
             $this->registerPublishables($map);

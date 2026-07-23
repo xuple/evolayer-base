@@ -1,6 +1,7 @@
 <?php
 
 use Xuple\EvoLayer\Base\Support\PublishMap;
+use Xuple\EvoLayer\Base\Support\RouteCollisionInspector;
 
 test('every configured example has one canonical managed surface', function () {
     $map = app(PublishMap::class);
@@ -37,4 +38,28 @@ test('legacy feature and ejection maps are derived from canonical surfaces', fun
 
     expect($map->features())->toBe($expected)
         ->and($map->ejectableSurfaces())->toBe(array_keys($expected));
+});
+
+test('managed route contracts match the registered package routes', function () {
+    $map = app(PublishMap::class);
+    $routes = app('router')->getRoutes();
+    $missingOwnership = [];
+
+    foreach ($map->surfaces() as $surface) {
+        foreach ($surface->routes as $contract) {
+            $route = $routes->getByName($contract->name);
+
+            expect($route)->not->toBeNull()
+                ->and($route->methods())->toBe($contract->methods)
+                ->and(trim($route->uri(), '/'))->toBe(trim($contract->uri, '/'))
+                ->and($route->getDomain())->toBe($contract->domain);
+
+            if (($route->getAction()['evolayer_owner'] ?? null) !== RouteCollisionInspector::OWNER
+                || ($route->getAction()['evolayer_surface'] ?? null) !== $surface->id) {
+                $missingOwnership[] = $contract->name;
+            }
+        }
+    }
+
+    expect($missingOwnership)->toBe([]);
 });

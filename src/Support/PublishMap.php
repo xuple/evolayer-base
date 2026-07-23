@@ -32,6 +32,7 @@ class PublishMap
                 paths: [
                     $r.'/resources/js/pages/evolayer/base.tsx' => resource_path('js/pages/evolayer/base.tsx'),
                 ],
+                routes: [new ManagedRoute(['GET', 'HEAD'], 'about', 'evolayer.base.about')],
             ),
             'contact-ai' => new ManagedSurface(
                 id: 'contact-ai',
@@ -41,6 +42,12 @@ class PublishMap
                 paths: [
                     $r.'/resources/js/pages/evolayer/contact.tsx' => resource_path('js/pages/evolayer/contact.tsx'),
                     $r.'/resources/js/pages/evolayer/contact-thank-you.tsx' => resource_path('js/pages/evolayer/contact-thank-you.tsx'),
+                ],
+                routes: [
+                    new ManagedRoute(['GET', 'HEAD'], 'contact', 'evolayer.base.contact'),
+                    new ManagedRoute(['POST'], 'contact', 'evolayer.base.contact.store'),
+                    new ManagedRoute(['GET', 'HEAD'], 'contact/thank-you', 'evolayer.base.contact.thank-you'),
+                    new ManagedRoute(['GET', 'HEAD'], 'contact/subject-hints', 'evolayer.base.contact.subject-hints'),
                 ],
             ),
             'admin-inbox' => new ManagedSurface(
@@ -52,6 +59,15 @@ class PublishMap
                     $r.'/resources/js/pages/evolayer/admin/inbox' => resource_path('js/pages/evolayer/admin/inbox'),
                     $r.'/resources/js/pages/evolayer/admin/submissions' => resource_path('js/pages/evolayer/admin/submissions'),
                 ],
+                routes: [
+                    new ManagedRoute(['GET', 'HEAD'], 'admin/inbox', 'evolayer.base.admin.inbox.show'),
+                    new ManagedRoute(['GET', 'HEAD'], 'admin/inbox/search', 'evolayer.base.admin.inbox.search'),
+                    new ManagedRoute(['GET', 'HEAD'], 'admin/inbox/{submission}', 'evolayer.base.admin.inbox.detail'),
+                    new ManagedRoute(['GET', 'HEAD'], 'admin/submissions', 'evolayer.base.admin.submissions.index'),
+                    new ManagedRoute(['GET', 'HEAD'], 'admin/submissions/{submission}', 'evolayer.base.admin.submissions.show'),
+                    new ManagedRoute(['PATCH'], 'admin/submissions/{submission}/mark-read', 'evolayer.base.admin.submissions.mark-read'),
+                    new ManagedRoute(['PATCH'], 'admin/submissions/{submission}/archive', 'evolayer.base.admin.submissions.archive'),
+                ],
             ),
             'prd-studio' => new ManagedSurface(
                 id: 'prd-studio',
@@ -60,6 +76,10 @@ class PublishMap
                 ejectable: true,
                 paths: [
                     $r.'/resources/js/pages/evolayer/admin/prd.tsx' => resource_path('js/pages/evolayer/admin/prd.tsx'),
+                ],
+                routes: [
+                    new ManagedRoute(['GET', 'HEAD'], 'admin/prd', 'evolayer.base.admin.prd.show'),
+                    new ManagedRoute(['POST'], 'admin/prd/generate', 'evolayer.base.admin.prd.generate'),
                 ],
             ),
             'thread-studio' => new ManagedSurface(
@@ -72,6 +92,11 @@ class PublishMap
                     $r.'/resources/js/hooks/use-thread-studio-stream.ts' => resource_path('js/hooks/use-thread-studio-stream.ts'),
                     $r.'/resources/js/hooks/use-typewriter.ts' => resource_path('js/hooks/use-typewriter.ts'),
                 ],
+                routes: [
+                    new ManagedRoute(['GET', 'HEAD'], 'ai/thread-studio', 'evolayer.base.ai.thread-studio.show'),
+                    new ManagedRoute(['POST'], 'ai/thread-studio', 'evolayer.base.ai.thread-studio.store'),
+                    new ManagedRoute(['POST'], 'ai/thread-studio/stream', 'evolayer.base.ai.thread-studio.stream'),
+                ],
             ),
             'voice-input' => new ManagedSurface(
                 id: 'voice-input',
@@ -79,6 +104,9 @@ class PublishMap
                 routeFile: $r.'/routes/features/voice_input.php',
                 ejectable: false,
                 paths: [],
+                routes: [
+                    new ManagedRoute(['POST'], 'ai/voice-input/transcribe', 'evolayer.base.ai.voice-input.transcribe'),
+                ],
             ),
             'ai-text-field' => new ManagedSurface(
                 id: 'ai-text-field',
@@ -86,6 +114,9 @@ class PublishMap
                 routeFile: $r.'/routes/features/ai_text_field.php',
                 ejectable: false,
                 paths: [],
+                routes: [
+                    new ManagedRoute(['POST'], 'ai/text-assist/stream', 'evolayer.base.ai.text-assist.stream'),
+                ],
             ),
         ];
     }
@@ -150,6 +181,73 @@ class PublishMap
     public function manifestPath(): string
     {
         return base_path('.evolayer/resync.lock.json');
+    }
+
+    public function projectMetadataPath(): string
+    {
+        return $this->hostRoot().'/.evolayer/project.json';
+    }
+
+    public function verificationReceiptPath(): string
+    {
+        return $this->hostRoot().'/storage/framework/cache/data/evolayer-profile-verification.json';
+    }
+
+    public function hostRoot(): string
+    {
+        return base_path();
+    }
+
+    public function manifestKey(string $target): string
+    {
+        $root = rtrim(str_replace('\\', '/', $this->hostRoot()), '/');
+        $target = str_replace('\\', '/', $target);
+
+        if (! str_starts_with($target, $root.'/')) {
+            throw new ResyncManifestException("Managed target [{$target}] escapes the host root [{$root}].");
+        }
+
+        $key = substr($target, strlen($root) + 1);
+        $this->assertValidManifestKey($key);
+
+        return $key;
+    }
+
+    public function assertValidManifestKey(string $key): void
+    {
+        if ($key === ''
+            || str_contains($key, "\0")
+            || str_contains($key, '\\')
+            || str_starts_with($key, '/')
+            || preg_match('/^[A-Za-z]:\//', $key) === 1
+            || preg_match('#(^|/)(?:\.|\.\.)(?:/|$)#', $key) === 1
+            || preg_match('#(^|/)/#', $key) === 1) {
+            throw new ResyncManifestException("Invalid resync manifest path [{$key}].");
+        }
+    }
+
+    /**
+     * @return array<string, array{surface: string, source: string, target: string}>
+     */
+    public function managedFiles(): array
+    {
+        $files = [];
+
+        foreach (array_merge(['core' => $this->core()], $this->features()) as $surface => $pairs) {
+            foreach ($this->expand($pairs) as $source => $target) {
+                $key = $this->manifestKey($target);
+
+                if (isset($files[$key])) {
+                    throw new ResyncManifestException("Managed path [{$key}] is owned by more than one descriptor.");
+                }
+
+                $files[$key] = compact('surface', 'source', 'target');
+            }
+        }
+
+        ksort($files);
+
+        return $files;
     }
 
     /**

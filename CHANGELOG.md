@@ -14,6 +14,54 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 - Added a contributor-based profile transition transaction with conflict
   preflight, same-filesystem atomic writes, dry-run support, and exact rollback
   of file contents, existence, and permissions after an apply failure.
+- Added versioned profile definitions and contributor capability contracts with
+  dependency ordering, duplicate/cycle validation, and Starter-owned extension
+  points for the future `application` profile.
+- Added schema-v2 committed profile intent that keeps repository identity,
+  operational profile, overrides, applied package versions, and verification
+  evidence as separate concerns. Legacy Starter identity is migrated only after
+  an operator explicitly selects a profile.
+- Added repeatable, strictly validated `--example=key=true|false` and
+  `--feature=key=true|false` profile overrides. The command commits only the
+  explicit delta from the registered baseline and projects the selected profile
+  through `EVOLAYER_BASE_PROFILE` for effective-state drift comparison.
+- Added an immutable upgrade fixture extracted from Starter `v0.1.19` with its
+  exact Base `v0.1.9` pin. Reviewed tag commits, a complete extracted-file tree
+  hash, key distribution hashes, legacy identity, environment defaults, all 28
+  manifest records, the unrecorded Contact page, relevant Starter-owned source,
+  and absent generated outputs bind the fixture to the public release. Focused
+  tests now prove inspection, pair-bound exact-checksum adoption, explicit lean
+  selection, transactional pruning, profile-aware resync, re-enable, bounded
+  verification, idempotence, and fail-closed malformed/modified/ejected cases.
+- Added `evolayer:profile:status --json` to compare committed intent with
+  effective Laravel configuration and descriptor-constrained managed source
+  without exposing environment values or machine paths.
+- Added bounded `evolayer:profile:verify --json` current-state verification.
+  Base verifies committed intent, effective configuration, descriptor-owned
+  provenance and source, managed route state, and route collisions; selected
+  profiles may require host-provided verification capabilities through a small
+  versioned check contract. Successful runs write only a redacted, ignored,
+  hash- and version-bound local receipt, which status treats as stale whenever
+  any bound input or required check fingerprint changes.
+- Added redacted `evolayer:profile --json` plan/apply output with stable schema,
+  operation counts, verification state, conflict codes, and rollback-failure
+  counts. Machine output never includes local paths or environment values.
+- Added `evolayer:manifest:inspect --json` and the explicit
+  `evolayer:manifest:adopt --pristine-only` repair path for legacy public
+  distributions with incomplete provenance. Adoption accepts only reviewed,
+  exact historical checksums and binds that evidence to the manifest
+  transaction; similarity never grants managed-file authority.
+- Added a shared non-blocking mutation lock plus hostile-manifest, traversal,
+  link, hard-link, special-node, concurrent-change, and rollback-failure tests.
+- Added method/domain-aware managed route contracts and production collision
+  diagnostics. Package routes retain prior host-route evidence in cache-safe
+  action metadata; later host overrides are compared with the descriptor
+  contract, and only exact reviewed collision IDs may be allowlisted.
+- `evolayer:doctor --production --json` now includes committed/effective/managed
+  profile drift, route ownership, and the narrow Contact evidence invariant. An
+  enabled attachment feature fails production diagnostics when the effective
+  medialibrary disk is known-public; broader media delivery redesign remains
+  outside the profile-transition release.
 
 ### Changed
 
@@ -21,6 +69,27 @@ project aims to follow [Semantic Versioning](https://semver.org/).
   only when the resync manifest proves they are pristine, and updates the
   environment and manifest in the same transaction. Modified, unknown, or
   ejected files abort the transition before any changes are made.
+- Resync manifests now fail closed through one strict schema validator. Manifest
+  records can corroborate descriptor-owned targets but can never introduce a
+  mutation path; unknown, aliased, stale, or surface-mismatched records abort
+  profile, resync, and eject without mutation.
+- `evolayer:resync` now respects committed profile intent, skips disabled
+  surfaces, restores re-enabled surfaces from the current package, and applies
+  frontend plus manifest changes through the same preconditioned transaction as
+  profile transitions. It refuses to erase unresolved adoption evidence while
+  crossing a package version and avoids rewriting a semantically unchanged
+  manifest. Ejection uses the same transaction as well.
+- Profile application now supports `--no-env`; normal environment projection
+  rejects linked files and ambiguous duplicate keys while preserving UTF-8 BOM
+  and CRLF/LF newline style.
+- Managed mutations are explicitly unsupported on Windows until junction,
+  reparse-point, and atomic-replacement behavior is proven in Windows CI.
+- Dry-runs no longer create the shared mutation lock. Duplicate contributor
+  operations must carry identical preconditions, resync/eject revalidate
+  unchanged ownership evidence, environment projection rejects whitespace and
+  quoted duplicate keys, and route diagnostics catch both missing enabled
+  routes and stale cached routes for disabled surfaces. Matching profile intent
+  remains pending rather than claiming verification success.
 
 ## [0.1.9] - 2026-07-03
 

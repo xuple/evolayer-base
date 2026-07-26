@@ -230,6 +230,80 @@ test('lean profile atomically prunes pristine managed files', function () {
         ->and($manifest['files'])->toBe([]);
 });
 
+test('same-profile example re-enablement restores current package source atomically', function () {
+    file_put_contents($this->env, "EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO=true\n");
+    $this->artisan('evolayer:resync')->assertSuccessful();
+    $this->artisan('evolayer:profile', ['profile' => 'lean', '--path' => $this->env])->assertSuccessful();
+    file_put_contents($this->source, "PACKAGE v2\n");
+
+    $this->artisan('evolayer:profile', [
+        'profile' => 'lean',
+        '--path' => $this->env,
+        '--example' => ['thread_studio=true'],
+    ])->assertSuccessful();
+
+    $manifest = json_decode((string) file_get_contents($this->manifest), true, flags: JSON_THROW_ON_ERROR);
+    $sourceSha = hash('sha256', "PACKAGE v2\n");
+
+    $metadata = json_decode(
+        (string) file_get_contents($this->base.'/.evolayer/project.json'),
+        true,
+        flags: JSON_THROW_ON_ERROR,
+    );
+
+    expect(file_get_contents($this->env))->toContain('EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO=true')
+        ->and(file_get_contents($this->target))->toBe("PACKAGE v2\n")
+        ->and($metadata['profile'])->toBe('lean')
+        ->and($metadata['overrides']['examples'])->toBe(['thread_studio' => true])
+        ->and($manifest['files']['host/page.tsx'])->toBe([
+            'surface' => 'thread-studio',
+            'source_sha' => $sourceSha,
+            'installed_sha' => $sourceSha,
+        ]);
+
+    $before = [
+        file_get_contents($this->env),
+        file_get_contents($this->base.'/.evolayer/project.json'),
+        file_get_contents($this->target),
+        file_get_contents($this->manifest),
+    ];
+
+    $this->artisan('evolayer:profile', [
+        'profile' => 'lean',
+        '--path' => $this->env,
+        '--example' => ['thread_studio=true'],
+        '--dry-run' => true,
+    ])->expectsOutputToContain('across 0 file(s)')->assertSuccessful();
+
+    expect([
+        file_get_contents($this->env),
+        file_get_contents($this->base.'/.evolayer/project.json'),
+        file_get_contents($this->target),
+        file_get_contents($this->manifest),
+    ])->toBe($before);
+});
+
+test('same-profile example re-enablement never reclaims an absent ejected host file', function () {
+    file_put_contents($this->env, "EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO=false\n");
+    File::ensureDirectoryExists(dirname($this->manifest));
+    file_put_contents($this->manifest, json_encode([
+        'schema_version' => 1,
+        'surfaces' => ['thread-studio' => 'ejected'],
+        'files' => [],
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES).PHP_EOL);
+    $before = file_get_contents($this->manifest);
+
+    $this->artisan('evolayer:profile', [
+        'profile' => 'lean',
+        '--path' => $this->env,
+        '--example' => ['thread_studio=true'],
+    ])->assertSuccessful();
+
+    expect(file_get_contents($this->env))->toContain('EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO=true')
+        ->and(file_get_contents($this->manifest))->toBe($before)
+        ->and($this->target)->not->toBeFile();
+});
+
 test('a modified managed file aborts before changing flags or source', function () {
     $environment = "EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO=true\n";
     file_put_contents($this->env, $environment);

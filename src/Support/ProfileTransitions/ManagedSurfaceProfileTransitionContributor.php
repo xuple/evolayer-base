@@ -56,12 +56,55 @@ final readonly class ManagedSurfaceProfileTransitionContributor implements Profi
             return;
         }
 
-        $disabledSurfaces = collect($this->map->surfaces())
-            ->filter(fn (ManagedSurface $surface): bool => $surface->ejectable
-                && ! ($context->targetExamples[$surface->configKey] ?? false));
+        $surfaces = collect($this->map->surfaces())
+            ->filter(fn (ManagedSurface $surface): bool => $surface->ejectable);
+        $enabledSurfaces = $surfaces
+            ->filter(fn (ManagedSurface $surface): bool => $context->targetExamples[$surface->configKey] ?? false);
+        $disabledSurfaces = $surfaces
+            ->reject(fn (ManagedSurface $surface): bool => $context->targetExamples[$surface->configKey] ?? false);
+        $manifestChanged = false;
 
-        if ($disabledSurfaces->isEmpty()) {
-            return;
+        foreach ($enabledSurfaces as $surface) {
+            $ejected = ($manifest['surfaces'][$surface->id] ?? null) === 'ejected';
+
+            foreach ($this->map->expand($surface->paths) as $source => $target) {
+                if ($ejected) {
+                    continue;
+                }
+
+                try {
+                    $this->paths->assertDescriptorSource($source, $this->map);
+                    $this->paths->assertDescriptorTarget($target, $this->map);
+                } catch (ManagedPathException $exception) {
+                    $plan->conflict($exception->getMessage());
+
+                    continue;
+                }
+
+                $key = $this->map->manifestKey($target);
+                $precondition = FilePrecondition::capture($target);
+
+                if ($precondition->exists) {
+                    continue;
+                }
+
+                $contents = @file_get_contents($source);
+                $sourceSha = @hash_file('sha256', $source);
+
+                if ($contents === false || $sourceSha === false) {
+                    $plan->conflict("Managed source for [{$key}] is unreadable.");
+
+                    continue;
+                }
+
+                $plan->replace($target, $contents, $precondition);
+                $manifest['files'][$key] = [
+                    'surface' => $surface->id,
+                    'source_sha' => $sourceSha,
+                    'installed_sha' => $sourceSha,
+                ];
+                $manifestChanged = true;
+            }
         }
 
         foreach ($disabledSurfaces as $surface) {
@@ -87,6 +130,7 @@ final readonly class ManagedSurfaceProfileTransitionContributor implements Profi
 
                 if (! $precondition->exists) {
                     unset($manifest['files'][$key]);
+                    $manifestChanged = $manifestChanged || is_array($record);
 
                     continue;
                 }
@@ -107,10 +151,11 @@ final readonly class ManagedSurfaceProfileTransitionContributor implements Profi
 
                 $plan->delete($target, $precondition);
                 unset($manifest['files'][$key]);
+                $manifestChanged = true;
             }
         }
 
-        if (is_file($manifestPath)) {
+        if ($manifestChanged) {
             $plan->replace($manifestPath, $this->manifests->encode($manifest), $manifestPrecondition);
         }
     }

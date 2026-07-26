@@ -205,6 +205,14 @@ test('an unknown profile fails', function () {
     $this->artisan('evolayer:profile', ['profile' => 'wat', '--path' => $this->env])->assertFailed();
 });
 
+test('profile help describes host-extensible registered profiles', function () {
+    $this->artisan('help', ['command_name' => 'evolayer:profile'])
+        ->expectsOutputToContain('Switch to a registered operational profile.')
+        ->expectsOutputToContain('The registered operational profile to apply')
+        ->doesntExpectOutputToContain('demo|lean')
+        ->assertSuccessful();
+});
+
 test('a missing env file fails', function () {
     $this->artisan('evolayer:profile', ['profile' => 'lean', '--path' => '/no/such/path/.env'])->assertFailed();
 });

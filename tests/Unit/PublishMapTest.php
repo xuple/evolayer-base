@@ -40,6 +40,23 @@ test('legacy feature and ejection maps are derived from canonical surfaces', fun
         ->and($map->ejectableSurfaces())->toBe(array_keys($expected));
 });
 
+test('the canonical map excludes official Starter host integration source', function () {
+    $files = app(PublishMap::class)->managedFiles();
+
+    expect($files)
+        ->not->toHaveKeys([
+            'resources/js/config/navigation.ts',
+            'resources/js/layouts/public-layout.tsx',
+        ])
+        ->toHaveKeys([
+            'resources/js/config/command-palette.ts',
+            'resources/js/config/docs.ts',
+            'resources/js/pages/evolayer/contact.tsx',
+        ])
+        ->and($files['resources/js/pages/evolayer/contact.tsx']['surface'])
+        ->toBe('contact-ai');
+});
+
 test('managed route contracts match the registered package routes', function () {
     $map = app(PublishMap::class);
     $routes = app('router')->getRoutes();

@@ -16,14 +16,14 @@ use Xuple\EvoLayer\Base\Support\ProfileTransitions\ProfileTransitionManager;
 use Xuple\EvoLayer\Base\Support\PublishMap;
 
 #[Signature('evolayer:profile
-    {profile : The install profile to apply (demo|lean)}
+    {profile : The registered operational profile to apply}
     {--path= : Path to the .env file to rewrite (defaults to the app .env)}
     {--example=* : Override an example baseline with key=true or key=false}
     {--feature=* : Override a feature baseline with key=true or key=false}
     {--no-env : Update committed intent and managed state without editing an environment file}
     {--dry-run : Show the complete transition plan without changing files}
     {--json : Emit a redacted machine-readable plan or apply result}')]
-#[Description('Switch between the demo (kitchen-sink) and lean (examples off) install profiles by toggling EVOLAYER_BASE_EXAMPLE_* flags.')]
+#[Description('Switch to a registered operational profile.')]
 class ProfileCommand extends Command
 {
     public function handle(

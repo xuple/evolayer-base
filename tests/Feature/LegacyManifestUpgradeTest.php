@@ -340,9 +340,9 @@ test('the exact legacy fixture completes an idempotent lean transition and bound
 
     Artisan::call('evolayer:profile:status', ['--json' => true]);
     expect(Artisan::output())->toContain(
-        '"status": "drift"',
+        '"status": "pending-verification"',
         '"effective_drift": false',
-        '"managed_state": "absent"',
+        '"managed_state": "aligned"',
     );
 
     $this->artisan('evolayer:resync')->assertSuccessful();

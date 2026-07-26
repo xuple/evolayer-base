@@ -93,6 +93,13 @@ formatting support file, not a package publish target.
 
 ## AI provider policy gate
 
+For the `0.2` profile lifecycle, the exact tag candidate must also prove that
+re-enabling a descriptor-owned example restores an absent target from the
+installed package bytes in the same transaction. The regression must verify
+the target and manifest hashes, repeated-apply idempotence, and that present or
+ejected host files are never reclaimed. Run the full package suite after this
+focused scenario; a passing resync-only path is not equivalent evidence.
+
 Provider policy is package-owned and must not drift in unrelated releases:
 
 - Runtime-approved ThreadStudio providers remain `gemini` and `openai`.

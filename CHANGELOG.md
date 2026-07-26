@@ -69,6 +69,11 @@ project aims to follow [Semantic Versioning](https://semver.org/).
   only when the resync manifest proves they are pristine, and updates the
   environment and manifest in the same transaction. Modified, unknown, or
   ejected files abort the transition before any changes are made.
+- Profile example re-enablement now restores an absent, non-ejected managed
+  target from the currently installed package during the same transaction.
+  Present downstream files are never adopted or overwritten. Restored
+  provenance hashes the exact captured bytes staged for installation, keeping
+  target content and manifest evidence internally consistent.
 - Resync manifests now fail closed through one strict schema validator. Manifest
   records can corroborate descriptor-owned targets but can never introduce a
   mutation path; unknown, aliased, stale, or surface-mismatched records abort

@@ -88,16 +88,17 @@ final readonly class ManagedSurfaceProfileTransitionContributor implements Profi
                     continue;
                 }
 
-                $contents = @file_get_contents($source);
-                $sourceSha = @hash_file('sha256', $source);
+                $sourceContents = @file_get_contents($source);
 
-                if ($contents === false || $sourceSha === false) {
+                if ($sourceContents === false) {
                     $plan->conflict("Managed source for [{$key}] is unreadable.");
 
                     continue;
                 }
 
-                $plan->replace($target, $contents, $precondition);
+                $sourceSha = hash('sha256', $sourceContents);
+
+                $plan->replace($target, $sourceContents, $precondition);
                 $manifest['files'][$key] = [
                     'surface' => $surface->id,
                     'source_sha' => $sourceSha,

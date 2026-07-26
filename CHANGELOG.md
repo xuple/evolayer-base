@@ -6,6 +6,8 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0-rc.1]
+
 ### Added
 
 - Added typed managed-surface descriptors as the canonical source for example

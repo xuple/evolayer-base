@@ -70,8 +70,10 @@ immutable release tags, not a simplified reconstruction:
 
 | Evidence | Bound value |
 | --- | --- |
-| Starter tag commit | `ffa53f4c329c65c37e7b0977942bbb4368185f4e` |
-| Base tag commit | `a00984e5a8accff2ed6d35e7ae6f63d71c7cb5e4` |
+| Starter annotated tag object | `ffa53f4c329c65c37e7b0977942bbb4368185f4e` |
+| Starter peeled commit | `48b7d82200b3b1d96fc534cd912077f4d7eaabd4` |
+| Base annotated tag object | `a00984e5a8accff2ed6d35e7ae6f63d71c7cb5e4` |
+| Base peeled commit | `7aa60807b4a142ca49891be54f466e48dd281bc4` |
 | Extracted Starter file-tree SHA-256 | `cee6f0c3a426ad58f629684b8cdfcd39c4ae44bcf0ecfa6c5cfe7cf200074cae` |
 | Legacy manifest SHA-256 | `f142d18a2453841ed046ccd87ab01c0fd3fae79a6593e1238da887df3eada8a5` |
 

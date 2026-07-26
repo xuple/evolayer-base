@@ -151,7 +151,15 @@ class ResyncCommand extends Command
                 }
 
                 $key = $map->manifestKey($target);
-                $sourceSha = hash_file('sha256', $source);
+                $sourceContents = @file_get_contents($source);
+
+                if ($sourceContents === false) {
+                    $this->components->error("Unable to read managed source [{$source}].");
+
+                    return self::FAILURE;
+                }
+
+                $sourceSha = hash('sha256', $sourceContents);
                 $targetPrecondition = FilePrecondition::capture($target);
 
                 $action = $this->decide(
@@ -174,15 +182,7 @@ class ResyncCommand extends Command
                     $plan->guard($target, $targetPrecondition);
                 } else {
                     $counts[$action === 'create' ? 'created' : 'updated']++;
-                    $contents = file_get_contents($source);
-
-                    if ($contents === false) {
-                        $this->components->error("Unable to read managed source [{$source}].");
-
-                        return self::FAILURE;
-                    }
-
-                    $plan->replace($target, $contents, $targetPrecondition);
+                    $plan->replace($target, $sourceContents, $targetPrecondition);
                 }
 
                 // Managed file we now own the provenance of: record source +

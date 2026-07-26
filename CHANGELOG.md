@@ -16,7 +16,7 @@ project aims to follow [Semantic Versioning](https://semver.org/).
   of file contents, existence, and permissions after an apply failure.
 - Added versioned profile definitions and contributor capability contracts with
   dependency ordering, duplicate/cycle validation, and Starter-owned extension
-  points for the future `application` profile.
+  points for the official Starter's `application` profile.
 - Added schema-v2 committed profile intent that keeps repository identity,
   operational profile, overrides, applied package versions, and verification
   evidence as separate concerns. Legacy Starter identity is migrated only after
@@ -26,13 +26,14 @@ project aims to follow [Semantic Versioning](https://semver.org/).
   explicit delta from the registered baseline and projects the selected profile
   through `EVOLAYER_BASE_PROFILE` for effective-state drift comparison.
 - Added an immutable upgrade fixture extracted from Starter `v0.1.19` with its
-  exact Base `v0.1.9` pin. Reviewed tag commits, a complete extracted-file tree
-  hash, key distribution hashes, legacy identity, environment defaults, all 28
-  manifest records, the unrecorded Contact page, relevant Starter-owned source,
-  and absent generated outputs bind the fixture to the public release. Focused
-  tests now prove inspection, pair-bound exact-checksum adoption, explicit lean
-  selection, transactional pruning, profile-aware resync, re-enable, bounded
-  verification, idempotence, and fail-closed malformed/modified/ejected cases.
+  exact Base `v0.1.9` pin. Reviewed annotated tag objects and peeled release
+  commits, a complete extracted-file tree hash, key distribution hashes, legacy
+  identity, environment defaults, all 28 manifest records, the unrecorded
+  Contact page, relevant Starter-owned source, and absent generated outputs bind
+  the fixture to the public release. Focused tests now prove inspection,
+  pair-bound exact-checksum adoption, explicit lean selection, transactional
+  pruning, profile-aware resync, re-enable, bounded verification, idempotence,
+  and fail-closed malformed/modified/ejected cases.
 - Added `evolayer:profile:status --json` to compare committed intent with
   effective Laravel configuration and descriptor-constrained managed source
   without exposing environment values or machine paths.
@@ -74,6 +75,9 @@ project aims to follow [Semantic Versioning](https://semver.org/).
   Present downstream files are never adopted or overwritten. Restored
   provenance hashes the exact captured bytes staged for installation, keeping
   target content and manifest evidence internally consistent.
+- Resync and ejection now apply the same captured-byte provenance rule: each
+  managed source is read once, and the exact staged bytes determine the recorded
+  source and installed checksums.
 - Resync manifests now fail closed through one strict schema validator. Manifest
   records can corroborate descriptor-owned targets but can never introduce a
   mutation path; unknown, aliased, stale, or surface-mismatched records abort

@@ -120,8 +120,15 @@ test('resync creates a missing managed file and writes a manifest', function () 
 
     $this->artisan('evolayer:resync')->assertSuccessful();
 
-    expect(file_get_contents($this->dst.'/page.tsx'))->toBe("SOURCE v1\n");
-    expect(is_file($this->manifestPath))->toBeTrue();
+    $installedBytes = (string) file_get_contents($this->dst.'/page.tsx');
+    $installedSha = hash('sha256', $installedBytes);
+    $manifest = json_decode((string) file_get_contents($this->manifestPath), true, flags: JSON_THROW_ON_ERROR);
+
+    expect($installedBytes)->toBe("SOURCE v1\n")
+        ->and($manifest['files']['dst/page.tsx'])->toMatchArray([
+            'source_sha' => $installedSha,
+            'installed_sha' => $installedSha,
+        ]);
 });
 
 test('resync keeps a host-modified file but --force overrides it', function () {
@@ -148,6 +155,14 @@ test('resync updates a pristine file when the source changes', function () {
 
 test('eject makes a surface app-owned and resync stops touching it', function () {
     $this->artisan('evolayer:eject', ['surface' => 'demo'])->assertSuccessful();
+    $ejectedBytes = (string) file_get_contents($this->dst.'/page.tsx');
+    $ejectedSha = hash('sha256', $ejectedBytes);
+    $manifest = json_decode((string) file_get_contents($this->manifestPath), true, flags: JSON_THROW_ON_ERROR);
+
+    expect($manifest['files']['dst/page.tsx'])->toMatchArray([
+        'source_sha' => $ejectedSha,
+        'installed_sha' => $ejectedSha,
+    ]);
 
     file_put_contents($this->dst.'/page.tsx', "OWNED\n");
     file_put_contents($this->src.'/page.tsx', "SOURCE v9\n");

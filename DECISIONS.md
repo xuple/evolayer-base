@@ -569,12 +569,14 @@ formatted after publication. Parsing that manifest under current descriptors
 does not prove that the public upgrade journey is safe.
 
 **Decision.** Base supports one exact public legacy pair for the 0.2 migration:
-Starter `v0.1.19` at commit
-`ffa53f4c329c65c37e7b0977942bbb4368185f4e` with Base `v0.1.9` at commit
-`a00984e5a8accff2ed6d35e7ae6f63d71c7cb5e4`. An immutable fixture extracted
-from those tags binds the relevant release tree, manifest, environment defaults,
-legacy identity, Starter integration source, generated-output absence, and the
-known Contact gap by reviewed SHA-256 evidence.
+Starter `v0.1.19` at annotated tag object
+`ffa53f4c329c65c37e7b0977942bbb4368185f4e`, which peels to commit
+`48b7d82200b3b1d96fc534cd912077f4d7eaabd4`, with Base `v0.1.9` at annotated
+tag object `a00984e5a8accff2ed6d35e7ae6f63d71c7cb5e4`, which peels to commit
+`7aa60807b4a142ca49891be54f466e48dd281bc4`. An immutable fixture extracted
+from those tags binds the relevant release tree, manifest, environment
+defaults, legacy identity, Starter integration source, generated-output
+absence, and the known Contact gap by reviewed SHA-256 evidence.
 
 Legacy mode is repository identity only. Exact effective defaults may produce a
 non-authoritative `demo` suggestion; mixed state produces no suggestion. Schema

@@ -83,30 +83,31 @@ class EjectCommand extends Command
         $plan = new ProfileTransitionPlan;
 
         foreach ($map->expand($features[$surface]) as $source => $target) {
+            $sourceContents = @file_get_contents($source);
+
+            if ($sourceContents === false) {
+                $this->components->error("Unable to read managed source [{$source}].");
+
+                return self::FAILURE;
+            }
+
+            $sourceSha = hash('sha256', $sourceContents);
             $targetPrecondition = FilePrecondition::capture($target);
 
             // Make sure the host actually has the files before handing ownership
             // over; if they never published this surface, materialise it now.
             if (! $targetPrecondition->exists) {
-                $contents = file_get_contents($source);
-
-                if ($contents === false) {
-                    $this->components->error("Unable to read managed source [{$source}].");
-
-                    return self::FAILURE;
-                }
-
-                $plan->replace($target, $contents, $targetPrecondition);
+                $plan->replace($target, $sourceContents, $targetPrecondition);
             } else {
                 $plan->guard($target, $targetPrecondition);
             }
 
             $manifest['files'][$map->manifestKey($target)] = [
                 'surface' => $surface,
-                'source_sha' => hash_file('sha256', $source),
+                'source_sha' => $sourceSha,
                 'installed_sha' => $targetPrecondition->exists
                     ? $targetPrecondition->sha256
-                    : hash_file('sha256', $source),
+                    : $sourceSha,
             ];
         }
 

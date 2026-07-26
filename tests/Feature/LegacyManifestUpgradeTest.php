@@ -185,7 +185,17 @@ test('the fixture is bound to the exact public Starter and Base release evidence
 
     ksort($treeLines);
 
-    expect(hash('sha256', implode('', $treeLines)))->toBe($provenance['starter']['extracted_files_tree_sha256'])
+    expect($provenance['starter'])->toMatchArray([
+        'tag' => 'v0.1.19',
+        'tag_object' => 'ffa53f4c329c65c37e7b0977942bbb4368185f4e',
+        'commit' => '48b7d82200b3b1d96fc534cd912077f4d7eaabd4',
+    ])
+        ->and($provenance['base'])->toMatchArray([
+            'tag' => 'v0.1.9',
+            'tag_object' => 'a00984e5a8accff2ed6d35e7ae6f63d71c7cb5e4',
+            'commit' => '7aa60807b4a142ca49891be54f466e48dd281bc4',
+        ])
+        ->and(hash('sha256', implode('', $treeLines)))->toBe($provenance['starter']['extracted_files_tree_sha256'])
         ->and($composer['require']['xuple/evolayer-base'])->toBe('0.1.9')
         ->and(hash_file('sha256', $fixture.'/.evolayer/resync.lock.json'))->toBe($provenance['starter']['resync_manifest_sha256'])
         ->and($manifest['package_version'])->toBe('v0.1.9')

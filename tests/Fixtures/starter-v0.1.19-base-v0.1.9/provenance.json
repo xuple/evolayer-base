@@ -2,7 +2,8 @@
     "schema_version": 1,
     "starter": {
         "tag": "v0.1.19",
-        "commit": "ffa53f4c329c65c37e7b0977942bbb4368185f4e",
+        "tag_object": "ffa53f4c329c65c37e7b0977942bbb4368185f4e",
+        "commit": "48b7d82200b3b1d96fc534cd912077f4d7eaabd4",
         "extracted_files_tree_sha256": "cee6f0c3a426ad58f629684b8cdfcd39c4ae44bcf0ecfa6c5cfe7cf200074cae",
         "composer_sha256": "61a156264f0b6d05ff034ee760070147d1941542f2f05b482f350630de18c8c5",
         "environment_defaults_sha256": "2c6308e1b23249942b411f8a60d10372933e9beae21019167052027ba3a2bdbf",
@@ -11,7 +12,8 @@
     },
     "base": {
         "tag": "v0.1.9",
-        "commit": "a00984e5a8accff2ed6d35e7ae6f63d71c7cb5e4",
+        "tag_object": "a00984e5a8accff2ed6d35e7ae6f63d71c7cb5e4",
+        "commit": "7aa60807b4a142ca49891be54f466e48dd281bc4",
         "contact_source_sha256": "fd4168d98fe6c5f5e17883e801e75c02a169ffe080c5c843fe5eac208e5e356f"
     },
     "generated_project_metadata": {

@@ -91,7 +91,7 @@ releasing stub changes so host apps do not inherit format-only drift after
 the starter stylesheet for Prettier's Tailwind v4 class resolver; it is a
 formatting support file, not a package publish target.
 
-## AI provider policy gate
+## Profile lifecycle gate
 
 For the `0.2` profile lifecycle, the exact tag candidate must also prove that
 re-enabling a descriptor-owned example restores an absent target from the
@@ -99,6 +99,8 @@ installed package bytes in the same transaction. The regression must verify
 the target and manifest hashes, repeated-apply idempotence, and that present or
 ejected host files are never reclaimed. Run the full package suite after this
 focused scenario; a passing resync-only path is not equivalent evidence.
+
+## AI provider policy gate
 
 Provider policy is package-owned and must not drift in unrelated releases:
 

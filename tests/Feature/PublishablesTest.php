@@ -158,6 +158,8 @@ test('published command palette source restores focus to the exact opener on clo
 
     expect($provider)->toContain('openerRef.current = document.activeElement')
         ->and($provider)->toContain('restoreFocus')
+        ->and($provider)->toContain('isOpenRef')
+        ->and($provider)->toContain('if (!isOpenRef.current)')
         ->and($dialog)->toContain('onCloseAutoFocus')
         ->and($dialog)->toContain('event.preventDefault()')
         ->and($dialog)->toContain('restoreFocus()')

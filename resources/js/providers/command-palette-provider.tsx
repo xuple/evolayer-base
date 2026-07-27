@@ -21,12 +21,20 @@ const CommandPaletteContext = createContext<
 export function CommandPaletteProvider({ children }: { children: ReactNode }) {
     const [isOpen, setIsOpen] = useState(false);
     const openerRef = useRef<Element | null>(null);
+    const isOpenRef = useRef(false);
 
     const open = useCallback(() => {
-        openerRef.current = document.activeElement;
+        if (!isOpenRef.current) {
+            openerRef.current = document.activeElement;
+            isOpenRef.current = true;
+        }
+
         setIsOpen(true);
     }, []);
-    const close = useCallback(() => setIsOpen(false), []);
+    const close = useCallback(() => {
+        isOpenRef.current = false;
+        setIsOpen(false);
+    }, []);
 
     const restoreFocus = useCallback(() => {
         const opener = openerRef.current;

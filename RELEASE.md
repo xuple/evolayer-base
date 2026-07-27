@@ -12,10 +12,13 @@ For canonical definitions of the package vs starter identity and ownership bound
 
 ## Current public state
 
-- Current package release line: **v0.1.9**.
-- Current review candidate: **v0.2.0-rc.1** (not yet published).
+- Current public package release: **v0.2.0-rc.1**.
+- Current externally approved corrective candidate: **v0.2.0-rc.2** (pending
+  publication).
 - Public install path: `composer require xuple/evolayer-base`.
-- Starter consumption path: `xuple/evolayer-base-starter` exact-pins `xuple/evolayer-base` while `0.x` (currently `0.1.9`), and refreshes its lockfile through deliberate release PRs.
+- Starter consumption path: `xuple/evolayer-base-starter` exact-pins
+  `xuple/evolayer-base` to the published RC provenance, and refreshes its
+  lockfile through deliberate release PRs.
 - Public CI is live on `push`, `pull_request`, and `workflow_dispatch`.
 - This package is a library and has no `artisan` script. Package verification is
   `composer validate --strict`, `composer test`, and the npm-based frontend

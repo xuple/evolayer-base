@@ -6,6 +6,20 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0-rc.2]
+
+### Fixed
+
+- Closing the Base-owned command palette with Escape now restores focus to the
+  exact visible opener, or the element focused before Ctrl/Cmd+K. Search,
+  command execution, reopen, desktop, and mobile behavior remain intact.
+
+### Changed
+
+- Legacy-manifest coverage now records changed managed command-palette bytes
+  as stale package source, resyncs to current source, and proves repeated
+  resync idempotent.
+
 ## [0.2.0-rc.1]
 
 ### Added

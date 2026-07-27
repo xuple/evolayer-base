@@ -146,6 +146,26 @@ test('published page stubs reference the package controller namespace, not App',
         ->and($thread)->not->toContain('@/actions/App/Http/Controllers/');
 });
 
+test('published command palette source restores focus to the exact opener on close', function () {
+    $this->artisan('vendor:publish', [
+        '--tag' => 'evolayer-base-frontend-core',
+        '--force' => true,
+    ])->assertSuccessful();
+
+    $provider = File::get(resource_path('js/providers/command-palette-provider.tsx'));
+    $dialog = File::get(resource_path('js/components/command-palette-dialog.tsx'));
+    $command = File::get(resource_path('js/components/ui/command.tsx'));
+
+    expect($provider)->toContain('openerRef.current = document.activeElement')
+        ->and($provider)->toContain('restoreFocus')
+        ->and($provider)->toContain('isOpenRef')
+        ->and($provider)->toContain('if (!isOpenRef.current)')
+        ->and($dialog)->toContain('onCloseAutoFocus')
+        ->and($dialog)->toContain('event.preventDefault()')
+        ->and($dialog)->toContain('restoreFocus()')
+        ->and($command)->toContain('onCloseAutoFocus={onCloseAutoFocus}');
+});
+
 test('publishing evolayer-base-patches drops the structured streaming patch into the host', function () {
     $this->artisan('vendor:publish', [
         '--tag' => 'evolayer-base-patches',

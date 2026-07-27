@@ -350,12 +350,20 @@ test('the exact legacy fixture completes an idempotent lean transition and bound
 
     Artisan::call('evolayer:profile:status', ['--json' => true]);
     expect(Artisan::output())->toContain(
+        '"status": "drift"',
+        '"effective_drift": false',
+        '"managed_state": "stale-package-source"',
+    );
+
+    $this->artisan('evolayer:resync')->assertSuccessful();
+
+    Artisan::call('evolayer:profile:status', ['--json' => true]);
+    expect(Artisan::output())->toContain(
         '"status": "pending-verification"',
         '"effective_drift": false',
         '"managed_state": "aligned"',
     );
 
-    $this->artisan('evolayer:resync')->assertSuccessful();
     $afterResync = legacyUpgradeSnapshot($this->legacyHost);
     $this->artisan('evolayer:resync')->assertSuccessful();
 

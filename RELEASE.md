@@ -13,6 +13,7 @@ For canonical definitions of the package vs starter identity and ownership bound
 ## Current public state
 
 - Current package release line: **v0.1.9**.
+- Current review candidate: **v0.2.0-rc.1** (not yet published).
 - Public install path: `composer require xuple/evolayer-base`.
 - Starter consumption path: `xuple/evolayer-base-starter` exact-pins `xuple/evolayer-base` while `0.x` (currently `0.1.9`), and refreshes its lockfile through deliberate release PRs.
 - Public CI is live on `push`, `pull_request`, and `workflow_dispatch`.
@@ -42,8 +43,10 @@ Run this from the package repository.
    ```bash
    composer validate --strict
    composer test
+   composer audit
    npm ci --ignore-scripts
    npm run format:check
+   npm audit --audit-level=high
    cmp -s AGENTS.md CLAUDE.md && echo "AGENTS/CLAUDE mirrored"
    ```
 
@@ -51,22 +54,48 @@ Run this from the package repository.
    stubs, migrations, provider policy, or install flow, update `CHANGELOG.md`
    and any relevant notes in `README.md`, `CONTRIBUTING.md`, or `DECISIONS.md`.
 7. Commit the release-prep changes.
-8. Tag only after explicit maintainer approval:
+8. Preserve the exact candidate SHA for external bundle review. Obtain explicit
+   publication approval naming that exact SHA, and confirm the reviewed branch
+   still resolves to it before performing any release write.
+9. Merge the approved candidate according to repository policy, push the public
+   branch, and wait for public CI to pass on the exact resulting release commit.
+   If the merge changes release content, return the successor through external
+   bundle review rather than tagging unreviewed bytes.
+10. Only after public branch CI succeeds, check out the exact tested release
+    commit and create an annotated tag on it:
 
-   ```bash
-   git tag vX.Y.Z
-   git push origin vX.Y.Z
-   git push github vX.Y.Z
-   ```
+    ```bash
+    git tag -a vX.Y.Z -m "vX.Y.Z"
+    ```
 
-9. Confirm Packagist sees the tag:
+11. Record both immutable identities and confirm the peeled commit is the exact
+    release commit that passed public CI:
 
-   ```bash
-   composer show xuple/evolayer-base --all
-   ```
+    ```bash
+    git rev-parse vX.Y.Z
+    git rev-parse vX.Y.Z^{}
+    ```
 
-Do not tag from an unverified commit. Do not tag as part of a docs cleanup unless
-that tag was explicitly approved after reviewing the diff.
+12. Push only the confirmed public tag to the public remote:
+
+    ```bash
+    git push github vX.Y.Z
+    ```
+
+    Where repository policy requires it, mirror the tag to internal Forgejo
+    only after the public tag is successfully published. Forgejo staging is not
+    the public Composer provenance path.
+
+13. Confirm Packagist sees the tag and that its public source reference matches
+    the peeled release commit:
+
+    ```bash
+    composer show xuple/evolayer-base --all
+    ```
+
+Do not tag before public branch CI succeeds on the exact release commit. Do not
+tag from an unverified commit or as part of a docs cleanup unless the exact
+candidate SHA was externally reviewed and explicitly approved.
 
 ## Patch release notes
 
@@ -90,6 +119,15 @@ releasing stub changes so host apps do not inherit format-only drift after
 `composer evolayer:resync`. The package `resources/css/app.css` file mirrors
 the starter stylesheet for Prettier's Tailwind v4 class resolver; it is a
 formatting support file, not a package publish target.
+
+## Profile lifecycle gate
+
+For the `0.2` profile lifecycle, the exact tag candidate must also prove that
+re-enabling a descriptor-owned example restores an absent target from the
+installed package bytes in the same transaction. The regression must verify
+the target and manifest hashes, repeated-apply idempotence, and that present or
+ejected host files are never reclaimed. Run the full package suite after this
+focused scenario; a passing resync-only path is not equivalent evidence.
 
 ## AI provider policy gate
 

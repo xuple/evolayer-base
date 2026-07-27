@@ -34,7 +34,7 @@ test('publishing evolayer-base-config drops both config files into the host conf
         ->and(File::exists(config_path('evolayer-ai.php')))->toBeTrue();
 });
 
-test('publishing evolayer-base-frontend-core drops blocks, components, shared hooks, providers, layouts, config, types, lib — and NO feature pages', function () {
+test('publishing evolayer-base-frontend-core excludes Starter-owned host integration source', function () {
     $this->artisan('vendor:publish', [
         '--tag' => 'evolayer-base-frontend-core',
         '--force' => true,
@@ -45,8 +45,10 @@ test('publishing evolayer-base-frontend-core drops blocks, components, shared ho
         ->and(File::exists(resource_path('js/components/command-bar.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/components/ui/command.tsx')))->toBeTrue()
         ->and(File::exists(resource_path('js/providers/command-palette-provider.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/layouts/public-layout.tsx')))->toBeTrue()
-        ->and(File::exists(resource_path('js/config/navigation.ts')))->toBeTrue()
+        ->and(File::exists(resource_path('js/layouts/public-layout.tsx')))->toBeFalse()
+        ->and(File::exists(resource_path('js/config/navigation.ts')))->toBeFalse()
+        ->and(File::exists(resource_path('js/config/command-palette.ts')))->toBeTrue()
+        ->and(File::exists(resource_path('js/config/docs.ts')))->toBeTrue()
         ->and(File::exists(resource_path('js/hooks/use-evolayer-props.ts')))->toBeTrue()
         ->and(File::exists(resource_path('js/hooks/use-example-nav-items.ts')))->toBeTrue()
         ->and(File::exists(resource_path('js/types/evolayer.d.ts')))->toBeTrue()

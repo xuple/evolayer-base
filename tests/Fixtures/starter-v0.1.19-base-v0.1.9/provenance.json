@@ -1,0 +1,35 @@
+{
+    "schema_version": 1,
+    "starter": {
+        "tag": "v0.1.19",
+        "tag_object": "ffa53f4c329c65c37e7b0977942bbb4368185f4e",
+        "commit": "48b7d82200b3b1d96fc534cd912077f4d7eaabd4",
+        "extracted_files_tree_sha256": "cee6f0c3a426ad58f629684b8cdfcd39c4ae44bcf0ecfa6c5cfe7cf200074cae",
+        "composer_sha256": "61a156264f0b6d05ff034ee760070147d1941542f2f05b482f350630de18c8c5",
+        "environment_defaults_sha256": "2c6308e1b23249942b411f8a60d10372933e9beae21019167052027ba3a2bdbf",
+        "resync_manifest_sha256": "f142d18a2453841ed046ccd87ab01c0fd3fae79a6593e1238da887df3eada8a5",
+        "identity_finalizer_sha256": "0d31c0c171b3f46daf0fe1026285959166828f378a54711dbe97a593dc5b40d3"
+    },
+    "base": {
+        "tag": "v0.1.9",
+        "tag_object": "a00984e5a8accff2ed6d35e7ae6f63d71c7cb5e4",
+        "commit": "7aa60807b4a142ca49891be54f466e48dd281bc4",
+        "contact_source_sha256": "fd4168d98fe6c5f5e17883e801e75c02a169ffe080c5c843fe5eac208e5e356f"
+    },
+    "generated_project_metadata": {
+        "derived_from_identity_finalizer": true,
+        "sha256": "175ff6a945f3259e15eecf35b0a294e65bd1e6396f27ac4368d1db85afeb3051",
+        "dynamic_fields_fixed_for_fixture": [
+            "generated_app.install_directory",
+            "generated_app.suggested_package_name",
+            "created_at"
+        ]
+    },
+    "known_contact_gap": {
+        "path": "resources/js/pages/evolayer/contact.tsx",
+        "starter_installed_sha256": "f0f1e6bc09931c1ca1ba0422dfe2c75c0d5bc37792880f212c49e6efb8d5f88d",
+        "recorded_in_legacy_manifest": false,
+        "reviewed_base_source_sha256": "fd4168d98fe6c5f5e17883e801e75c02a169ffe080c5c843fe5eac208e5e356f"
+    },
+    "ignored_generated_outputs_present": false
+}

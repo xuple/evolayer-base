@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Route;
 use Xuple\EvoLayer\Base\Contracts\AdminGate;
 
 test('evolayer:install publishes assets, migrates, and compiles the ontology', function () {
@@ -75,4 +77,51 @@ test('evolayer:doctor without --strict stays informational and exits success eve
     $this->artisan('evolayer:doctor')
         ->expectsOutputToContain('advisory item(s)')
         ->assertExitCode(0);
+});
+
+test('evolayer:doctor production fails on an unallowlisted host package route collision', function () {
+    Route::get('/contact', fn () => 'host')->name('host.contact');
+
+    $exitCode = Artisan::call('evolayer:doctor', [
+        '--production' => true,
+        '--json' => true,
+    ]);
+    $output = Artisan::output();
+
+    expect($exitCode)->toBe(1)
+        ->and($output)->toContain('host-shadows-package')
+        ->and($output)->toContain('route-collision:');
+});
+
+test('evolayer:doctor production rejects a known-public contact evidence disk', function () {
+    config()->set('evolayer.base.features.contact_attachments', true);
+    config()->set('media-library.disk_name', 'public');
+    config()->set('filesystems.disks.public', [
+        'driver' => 'local',
+        'root' => public_path('storage'),
+        'visibility' => 'public',
+    ]);
+
+    Artisan::call('evolayer:doctor', ['--production' => true, '--json' => true]);
+    $output = Artisan::output();
+
+    expect($output)->toContain('Contact evidence storage is known-public')
+        ->and($output)->toContain('Configure the effective medialibrary disk as private');
+});
+
+test('evolayer:doctor production accepts a non-public contact evidence disk', function () {
+    config()->set('evolayer.base.features.contact_attachments', true);
+    config()->set('media-library.disk_name', 'private-evidence');
+    config()->set('filesystems.disks.private-evidence', [
+        'driver' => 'local',
+        'root' => storage_path('app/private-evidence'),
+        'visibility' => 'private',
+    ]);
+
+    Artisan::call('evolayer:doctor', ['--production' => true, '--json' => true]);
+    $payload = json_decode(Artisan::output(), true, flags: JSON_THROW_ON_ERROR);
+    $check = collect($payload['checks'])->firstWhere('label', 'Contact evidence storage is not known-public');
+
+    expect($check['ok'])->toBeTrue()
+        ->and($check['corrective_action'])->toBeNull();
 });

@@ -490,6 +490,118 @@ The terms below are the canonical vocabulary for provider status. Use them with 
 
 ---
 
+## ADR-022 — Repository identity and operational profile are separate contracts
+
+**Status:** Accepted for 0.2
+
+**Context.** The legacy `.evolayer/project.json` field `mode: application` identifies a repository generated from the official Starter. It does not prove that the repository's effective configuration, managed source, generated contracts, or security posture match the future `application` profile. Treating that field as profile intent would silently turn ambiguous legacy state into a verified claim.
+
+**Decision.** Schema v2 separates repository identity from operational intent. Identity answers what the repository is (for example, `kind: generated-application`); `profile` and explicit overrides answer which supported baseline it intends. Committed metadata is canonical intent. Environment files and process variables are deployment projections, not the intent record.
+
+Legacy inspection may report `selection-required`, but that is an inspection result rather than valid committed schema-v2 metadata. No schema-v2 file is written until the operator explicitly selects a profile. An exact, versioned legacy baseline may be offered as a recommendation, but mixed or unprovable state is never silently adopted. Unknown keys are preserved where the active schema permits them; unsupported future schema versions fail closed.
+
+Verification evidence is non-authoritative. Receipts are ignored local output or CI artifacts, contain no secrets or machine-specific absolute paths, and are valid only while every bound input hash still matches. A stored `verified` value never substitutes for computing current status.
+
+---
+
+## ADR-023 — Profile transitions use plan, transactional apply, verify, and status
+
+**Status:** Accepted for 0.2
+
+**Context.** The package can transactionally mutate supported files and metadata, but it cannot reliably roll back Composer/npm commands, Laravel caches, generated Wayfinder or ontology output, or build products. Calling the entire application transition atomic would overstate the guarantee.
+
+**Decision.** The lifecycle is explicit:
+
+1. **Plan** computes deterministic operations, conflicts, and preconditions without writes.
+2. **Apply** transactionally changes supported files and committed intent under a shared mutation lock.
+3. **Verify** evaluates current application state after required generated state has been rebuilt by its owner.
+4. **Status** compares intent, effective configuration, descriptor-constrained ownership, generated state, and current verification evidence.
+
+After apply, the honest state is `pending-verification` until verification succeeds. Verification failure does not attempt a broad file rollback. The transaction guarantee is deliberately bounded to content, existence, and supported mode restoration for paths actually mutated in the current process. It does not promise crash durability or preservation of inode identity, ownership, timestamps, ACLs, extended attributes, or hard-link identity. Rollback attempts every restoration, retains the original failure as the cause, and reports all rollback failures.
+
+`--no-env` is supported: it updates committed intent and managed state while leaving deployment projection to the operator; status then reports any effective-state drift. Environment editing must reject ambiguous duplicate definitions and linked/non-regular files while preserving BOM and newline style where possible.
+
+---
+
+## ADR-024 — Descriptors own paths; versioned profiles own requirements
+
+**Status:** Accepted for 0.2
+
+**Context.** A resync manifest records provenance, but provenance is not authority to invent a mutation path. Profiles also span generic Base mechanics and Starter-specific requirements, so neither a single package command nor numeric contributor priority can safely encode the whole transition.
+
+**Decision.** Typed descriptors are the exclusive authority for managed source and target paths. A manifest is evidence about an exact descriptor-derived target. Mutating operations iterate the descriptor inventory and join corroborating manifest records onto it; extra, aliased, stale, traversal, or absolute manifest keys conflict and remain untouched. One strict parser, validator, migrator, and atomic writer serves profile, resync, eject, and adoption operations. Malformed or unsupported manifests fail closed.
+
+For 0.2, managed mutations accept regular files only. Leaf links, linked or junction-like ancestors below a trusted root, non-regular nodes, and files with multiple hard links are rejected. Lexical normalization precedes filesystem inspection. Preconditions are revalidated immediately before mutation. Windows profile mutation is supported only if junction/reparse and replacement behavior is demonstrated in Windows CI; otherwise mutation fails clearly as unsupported while non-mutating Base functionality remains available.
+
+Base owns transition mechanics, package surfaces, and generic profile capabilities. The official Starter owns host requirements of the `application` profile, including registration, seeding, inherited frontend source, and generated guidance. A profile definition declares a stable ID and schema version, baseline feature/example state, required capabilities, allowed overrides, and verification requirements.
+
+Contributors declare stable IDs, API versions, provided and required capabilities, and side-effect-free plans. Capability validation and a dependency graph determine semantic order; numeric priority and stable ID are deterministic tie-breakers only. Duplicate IDs, missing capabilities, cycles, unsupported API versions, and incompatible canonical-path operations are conflicts. Operations are deduplicated only when their complete semantics and preconditions match.
+
+The released 0.1 malformed-manifest behavior receives a separate threat assessment. The uncommitted descriptor-bypass implementation is corrected privately and is not itself a released vulnerability. Public issue/advisory handling depends on whether a lower-privileged actor can influence a higher-privileged mutation.
+
+---
+
+## ADR-025 — Profile verification is bounded, extensible current-state evidence
+
+**Status:** Accepted for 0.2
+
+**Context.** Transactional profile apply deliberately ends at `pending-verification`. Base can prove its own intent, configuration, provenance, managed source, and route contracts, but the official Starter owns generated contracts, inherited host source, registration, seeding, guidance, and frontend build policy. Making Base execute arbitrary commands would collapse that ownership boundary and turn a package verifier into a deployment orchestrator.
+
+**Decision.** `evolayer:profile:verify` is read-only with respect to committed intent, deployment projection, and managed source. Base always requires its own stable capabilities: committed intent, effective configuration, managed source, managed routes, and route collisions. A profile may additionally name required verification capabilities. A host supplies those through the versioned `ProfileVerificationCheck` contract: stable check ID, one provided capability, deterministic result, redacted corrective action, and canonical fingerprint material. Missing capabilities and unsupported or ambiguous check registrations fail closed. Check exceptions are attributed by stable ID and reduced to a redacted error code.
+
+Base does not hardcode npm, Wayfinder, ontology, Vite, Starter paths, or arbitrary shell execution. A Starter-owned verifier may invoke its reviewed project scripts, but Base sees only its result and fingerprint. Verification failure does not roll back apply.
+
+A successful run writes a non-authoritative receipt beneath ignored local framework cache storage. It contains profile/effective/manifest/managed hashes, Base and host version references, verifier contract version, successful check IDs, and check-input hashes. It contains no environment values, secrets, absolute paths, complete output, or independently trusted status boolean. `profile:status` reports `verified` only while the current required check set and every binding match exactly; otherwise evidence is missing, invalid, or stale and lifecycle status remains `pending-verification` (or the stronger current drift/conflict state). A stored receipt is evidence of a previous run, not deployment certification.
+
+**Deferred.** Generic workflow execution, automatic verification rollback, committed receipts, deployment/infrastructure certification, browser automation, crash-recovery journaling, and universal OS/filesystem guarantees remain outside 0.2.
+
+---
+
+## ADR-026 — The supported legacy migration is exact, pair-bound, and explicit
+
+**Status:** Accepted for 0.2
+
+**Context.** Starter `v0.1.19` exact-pins Base `v0.1.9`, records legacy
+`mode: application`, and ships incomplete Contact provenance: the thank-you page
+is recorded while the Contact page is not. The starter-installed Contact bytes
+also differ from the package source bytes because the released distribution was
+formatted after publication. Parsing that manifest under current descriptors
+does not prove that the public upgrade journey is safe.
+
+**Decision.** Base supports one exact public legacy pair for the 0.2 migration:
+Starter `v0.1.19` at annotated tag object
+`ffa53f4c329c65c37e7b0977942bbb4368185f4e`, which peels to commit
+`48b7d82200b3b1d96fc534cd912077f4d7eaabd4`, with Base `v0.1.9` at annotated
+tag object `a00984e5a8accff2ed6d35e7ae6f63d71c7cb5e4`, which peels to commit
+`7aa60807b4a142ca49891be54f466e48dd281bc4`. An immutable fixture extracted
+from those tags binds the relevant release tree, manifest, environment
+defaults, legacy identity, Starter integration source, generated-output
+absence, and the known Contact gap by reviewed SHA-256 evidence.
+
+Legacy mode is repository identity only. Exact effective defaults may produce a
+non-authoritative `demo` suggestion; mixed state produces no suggestion. Schema
+v2 is written only by explicit profile selection. Legacy adoption is authorized
+only when descriptor ownership, the exact Starter/Base pair, and an explicitly
+catalogued installed checksum all agree. Both released Contact byte variants are
+catalogued with the same reviewed Base source checksum. No fuzzy, semantic, path,
+or nearest-version inference is permitted.
+
+Resync must not cross from the legacy package version while an unrecorded
+descriptor target remains present, because doing so would discard the historical
+source version needed to evaluate adoption. The operator must adopt exact
+pristine bytes, eject host-owned source, or reconcile it manually first. After
+selection, profile apply remains transactional within the documented file
+boundary; resync installs only current enabled source; bounded verification proves
+the resulting Base-owned state. Every step is idempotent, and expected failures
+preserve intent, environment projection, provenance, and managed targets.
+
+**Deferred.** The fixture does not claim a live Packagist archive, Composer lock,
+official Starter `application` contributor, generated frontend contracts, npm/
+TypeScript/Vite/SSR execution, or browser behavior. Those remain coordinated
+Starter RC and real-distribution gates.
+
+---
+
 ## Cross-cutting lesson
 
 Almost every painful cascade — namespacing breaking imports, opt-in breaking tests, per-feature routes breaking type-checks, the ontology collision — was caught by **thin Phase D probes on a real fresh starter, not by the package's own test suite** (which was green throughout at 120–129 tests). The package tests prove the code is internally coherent; only an integration run proves it installs and composes. This is the strongest argument for completing a full Phase D and the Phase E starter template before considering Base "done."

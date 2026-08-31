@@ -482,6 +482,45 @@ test('unsupported future project metadata fails before changing environment or m
         ->and($this->target)->not->toBeFile();
 });
 
+test('a recorded starter version survives transitions after the app claims its own package name', function () {
+    file_put_contents($this->env, "EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO=true\n");
+    File::ensureDirectoryExists($this->base.'/.evolayer');
+    file_put_contents($this->base.'/.evolayer/project.json', json_encode([
+        'schema_version' => 2,
+        'kind' => 'generated-application',
+        'profile' => 'demo',
+        'overrides' => ['examples' => [], 'features' => []],
+        'applied_with' => ['base' => 'v0.1.0', 'starter' => 'v0.2.0-rc.2'],
+    ], JSON_PRETTY_PRINT).PHP_EOL);
+
+    $this->artisan('evolayer:profile', ['profile' => 'lean', '--path' => $this->env])->assertSuccessful();
+
+    $metadata = json_decode((string) file_get_contents($this->base.'/.evolayer/project.json'), true);
+
+    // The root package here is never the starter, so the starter version cannot
+    // be re-derived — exactly the position a renamed generated application is in
+    // permanently. The install-time record must survive.
+    expect($metadata['applied_with']['starter'])->toBe('v0.2.0-rc.2');
+});
+
+test('an unrecorded starter version stays absent rather than being invented', function () {
+    file_put_contents($this->env, "EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO=true\n");
+    File::ensureDirectoryExists($this->base.'/.evolayer');
+    file_put_contents($this->base.'/.evolayer/project.json', json_encode([
+        'schema_version' => 2,
+        'kind' => 'generated-application',
+        'profile' => 'demo',
+        'overrides' => ['examples' => [], 'features' => []],
+        'applied_with' => [],
+    ], JSON_PRETTY_PRINT).PHP_EOL);
+
+    $this->artisan('evolayer:profile', ['profile' => 'lean', '--path' => $this->env])->assertSuccessful();
+
+    $metadata = json_decode((string) file_get_contents($this->base.'/.evolayer/project.json'), true);
+
+    expect($metadata['applied_with'])->not->toHaveKey('starter');
+});
+
 test('repeating an applied profile produces an empty dry-run plan', function () {
     file_put_contents($this->env, "EVOLAYER_BASE_EXAMPLE_THREAD_STUDIO=true\n");
     $this->artisan('evolayer:profile', ['profile' => 'lean', '--path' => $this->env])->assertSuccessful();

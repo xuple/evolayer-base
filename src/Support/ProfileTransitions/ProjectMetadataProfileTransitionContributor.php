@@ -72,9 +72,18 @@ final readonly class ProjectMetadataProfileTransitionContributor implements Prof
             'examples' => $context->exampleOverrides,
             'features' => $context->featureOverrides,
         ];
+        $recordedStarterVersion = $metadata['applied_with']['starter'] ?? null;
+
         $metadata['applied_with'] = array_filter([
             'base' => $this->packageVersion('xuple/evolayer-base'),
-            'starter' => $this->rootPackageVersion('xuple/evolayer-base-starter'),
+            // The starter version is only derivable while the root package is
+            // still the starter. Once a generated application claims its own
+            // Composer name — the documented `composer config name app/<app>`
+            // step — derivation becomes impossible, so fall back to the value
+            // recorded at install time. The starter an application was
+            // generated from is a historical fact and cannot change later.
+            'starter' => $this->rootPackageVersion('xuple/evolayer-base-starter')
+                ?? (is_string($recordedStarterVersion) ? $recordedStarterVersion : null),
         ], fn (?string $version): bool => $version !== null);
 
         $plan->replace($path, $this->metadata->encode($metadata), $precondition);

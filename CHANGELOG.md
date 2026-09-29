@@ -6,6 +6,18 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `evolayer:profile` no longer discards `applied_with.starter` from
+  `.evolayer/project.json`. The block was recomputed and overwritten on every
+  transition, and the starter version is only derivable while the root package
+  is still the starter. Once a generated application claims its own Composer
+  name — the documented `composer config name app/<app>` step — derivation
+  became impossible and the key was silently dropped. The install-time record is
+  now preserved when it cannot be re-derived. A side effect of the same bug: a
+  renamed application already in its target profile never reported a clean
+  `--dry-run`, always showing one pending metadata operation.
+
 ## [0.2.0-rc.2]
 
 ### Fixed

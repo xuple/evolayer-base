@@ -608,13 +608,19 @@ Almost every painful cascade — namespacing breaking imports, opt-in breaking t
 
 ---
 
+## Resolved decisions
+
+Recorded here once settled, so the list below stays a list of genuinely open
+questions.
+
+- **AI provider roster** — *Resolved by ADR-020 (Verified Runtime Strategy):* runtime-approved = directly verified = `['gemini', 'openai']`; Anthropic blocked for ThreadStudio runtime / pending re-verification; NVIDIA/OpenCode/OpenRouter reclassified as router-backed diagnostic-eligible probe candidates. ADR-018 fixed the tiering policy; ADR-019 shipped the abstractions + `ThreadStudioProviderPolicy` seam; ADR-020 made the roster decision.
+- **Explanatory provider rejection** — *Done:* `ThreadStudioProviderPolicy::explain(provider)` returns a `ProviderAvailability` (runtime-approved / blocked / candidate / unknown) with a per-provider reason, wired into `ComposeThreadStudioRequest`. Model-level `availability(provider, model)` (capability-ledger gating) remains future / adaptive mode.
+
 ## Open decisions
 
 - **Full Phase D** — a live ThreadStudio compose round-trip on a fresh starter (the thin probes covered install/build/types, not a live AI call). Blocked on a provider API key.
 - **Anthropic structured-streaming verification** — blocked on credits.
 - **Upstream `laravel/ai` PR** — deferred; tracked in `patches/README.md`.
-- **AI provider roster** — *Resolved by ADR-020 (Verified Runtime Strategy):* runtime-approved = directly verified = `['gemini', 'openai']`; Anthropic blocked for ThreadStudio runtime / pending re-verification; NVIDIA/OpenCode/OpenRouter reclassified as router-backed diagnostic-eligible probe candidates. ADR-018 fixed the tiering policy; ADR-019 shipped the abstractions + `ThreadStudioProviderPolicy` seam; ADR-020 made the roster decision.
-- **Explanatory provider rejection** — *Done:* `ThreadStudioProviderPolicy::explain(provider)` returns a `ProviderAvailability` (runtime-approved / blocked / candidate / unknown) with a per-provider reason, wired into `ComposeThreadStudioRequest`. Model-level `availability(provider, model)` (capability-ledger gating) remains future / adaptive mode.
 - **`AiProbeCommand` iteration direction** — still iterates the runtime-approved list (`runtimeApprovedProviders()`) in the all-providers path. The `TODO (Step 2+)` comment is gone (the probe logic is now the shared `AiCapabilityProbe` service and the persist no-op is an explicit contract), but the direction-of-flow point stands: the probe should iterate diagnostic-eligible providers and write conditions, with runtime approval as the *output* of probing, not the input. Coupled to enabling `--persist` for non-OpenCode providers — both wait on the diagnostic-iteration decision.
 - **Next family member** — Commerce Core is slated to follow Base's public release; not yet started.
 

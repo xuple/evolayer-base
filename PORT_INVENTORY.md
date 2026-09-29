@@ -147,6 +147,12 @@ The sidebar/header/branding layer the EvoDevOps shell sits on:
 
 ## Open scoping questions
 
+> **Historical — all six were settled during the port.** Retained to show what
+> was undecided in May 2026, not as live questions. In summary: publishable
+> assets (1), explicit upstream version constraints (2), Fortify + `admin` role documented
+> as an assumption (3), SQLite + PostgreSQL with lane detection (4), Spatie
+> declared in the package (5), package ships its own Pest suite (6).
+
 1. **Frontend distribution**: Publishable assets (copy into host `resources/js/`) vs an npm sibling package (`@xuple/evolayer-base-blocks`)? Publishable is the Laravel idiom, npm is cleaner long-term. **Recommendation**: publishable for v1, npm later if it gains traction.
 2. **Starter version pinning**: Does the package require a minimum `laravel/framework` / `inertia` / `react` version, or does it gracefully detect what's there? **Recommendation**: pin to the same minor as upstream main (`laravel/framework: ^13.7`, `react: ^19.2`).
 3. **Auth assumption**: The package assumes Fortify-based auth with an `admin` role. Document this explicitly; do not try to abstract over multiple auth packages.
@@ -156,10 +162,18 @@ The sidebar/header/branding layer the EvoDevOps shell sits on:
 
 ## Recommended phasing
 
+> **Historical — Phases B and C are complete**, and Phase E (the
+> `xuple/evolayer-base-starter` template) shipped; see ADR-015 and ADR-016 in
+> `DECISIONS.md`. Thin Phase D integration probes ran; the item still outstanding is the full
+> Phase D live compose round-trip, tracked under "Open decisions" in
+> `DECISIONS.md` rather than here.
+
 1. **Phase B — Skeleton** (1 session): Create `composer.json`, service provider, namespace, publishable asset tags, empty migration directory, basic test setup. Verify `composer require xuple/evolayer-base` works on a fresh starter.
 2. **Phase C1 — Move backend** (2-3 sessions): Migrate `app/Ai/`, `app/Support/`, `app/Models/`, `app/Jobs/`, controllers, requests, middleware with namespace rewrites (`App\` → `Xuple\EvoLayer\Base\`). Move migrations, seeders, factories, config. Run tests.
 3. **Phase C2 — Move frontend** (1-2 sessions): Move blocks, pages, hooks, providers as publishable assets. Document the host-side wiring (app.tsx layout resolver, sidebar nav entries, HandleInertiaRequests additions).
 4. **Phase C3 — Ontology + patches** (1 session): Move `ontology.yaml`, the compiler, and the composer-patches setup. Decide whether the ontology compiler runs from host or package.
 5. **Phase D — Integration test** (1 session): `laravel new evo-test --react` on the latest starter. `composer require xuple/evolayer-base` via path repository. `php artisan evolayer:install`. Verify a full thread-studio compose works end to end.
+
+*Original estimate, recorded 2026-05-21 before the work began:*
 
 Estimated total: **6-9 focused sessions** — possibly more depending on what falls out of the modified-starter list.

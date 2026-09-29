@@ -149,7 +149,7 @@ The sidebar/header/branding layer the EvoDevOps shell sits on:
 
 > **Historical — all six were settled during the port.** Retained to show what
 > was undecided in May 2026, not as live questions. In summary: publishable
-> assets (1), pinned to upstream minors (2), Fortify + `admin` role documented
+> assets (1), explicit upstream version constraints (2), Fortify + `admin` role documented
 > as an assumption (3), SQLite + PostgreSQL with lane detection (4), Spatie
 > declared in the package (5), package ships its own Pest suite (6).
 
@@ -162,9 +162,9 @@ The sidebar/header/branding layer the EvoDevOps shell sits on:
 
 ## Recommended phasing
 
-> **Historical — Phases B through D are complete**, and Phase E (the
+> **Historical — Phases B and C are complete**, and Phase E (the
 > `xuple/evolayer-base-starter` template) shipped; see ADR-015 and ADR-016 in
-> `DECISIONS.md`. The one item still outstanding from this plan is the full
+> `DECISIONS.md`. Thin Phase D integration probes ran; the item still outstanding is the full
 > Phase D live compose round-trip, tracked under "Open decisions" in
 > `DECISIONS.md` rather than here.
 

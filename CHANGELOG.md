@@ -18,6 +18,15 @@ project aims to follow [Semantic Versioning](https://semver.org/).
   renamed application already in its target profile never reported a clean
   `--dry-run`, always showing one pending metadata operation.
 
+### Changed
+
+- Refreshed the `laravel/ai` vendor patch dossier (`patches/README.md`) to the
+  `v0.8.1` target and recorded the 2026-10-02 upstream check: the
+  structured-streaming guard is still present through `laravel/ai` `v1.0.1`,
+  the patch stops applying from `v0.10.0`, and the upstream PR is now
+  recommended rather than deferred. Corrected the `scripts/apply-patches.php`
+  header, which described hosts shipping a patched vendor file.
+
 ## [0.2.0-rc.2]
 
 ### Fixed

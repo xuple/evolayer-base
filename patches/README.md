@@ -6,7 +6,7 @@
 
 ## `laravel-ai-structured-streaming.patch`
 
-**Target:** `laravel/ai` v0.6.5 through v0.8.1 — `src/Providers/Concerns/StreamsText.php`
+**Target:** `laravel/ai` v0.8.1 (the ceiling of this package's `^0.8.1` constraint) — `src/Providers/Concerns/StreamsText.php`. Written against v0.6.5; the hunks apply unchanged to v0.8.x and v0.9.x and **fail from v0.10.0** (see Status below).
 
 **What it does:** Removes the hard guard that prevented `agent->stream()` on agents implementing `HasStructuredOutput`, and forwards the agent's schema through to `streamText()`. The guard threw:
 
@@ -21,7 +21,7 @@ InvalidArgumentException: Streaming structured output is not currently supported
 
 **Why we need it:** ThreadStudio's `streamCompose()` path emits real token-level `field_delta` / `field_complete` SSE events parsed from a streaming JSON object. Without the patch, structured-output agents fall back to a non-streaming round trip, and the UI has to fake progressive disclosure with a typewriter timer.
 
-**Verification:** Live-tested end-to-end where provider streaming currently works via `php artisan evolayer:ai:stream-check {provider}`:
+**Verification:** Live-tested end-to-end (recorded when the patch was written, against v0.6.5) where provider streaming currently works via `php artisan evolayer:ai:stream-check {provider}`:
 
 | Provider | First token | Total  | TextDelta events | All 6 fields |
 | -------- | ----------- | ------ | ---------------- | ------------ |
@@ -34,20 +34,26 @@ from `php artisan evolayer:ai:stream-check anthropic`. The command-level tests
 cover that failure mode so it cannot be mistaken for a green structured-streaming
 provider.
 
-## Upstream PR — deferred
+## Status — checked 2026-10-02 against upstream `laravel/ai`
 
-The fix belongs upstream in `laravel/ai`. We deferred filing it because:
+**Still required.** The guard is present, unchanged, in every tagged release from v0.8.1 through v1.0.1 (2026-09-30), and v1.0.1 ships no alternative structured-streaming API — `agent->stream()` on a `HasStructuredOutput` agent still throws. `ThreadStudioComposer::streamCompose()` streams `ThreadStudioAgent`, which implements `HasStructuredOutput`, so the package cannot drop the patch until upstream lands the fix. This check compared source only; it did not re-run the live provider smoke.
 
-- It's a tiny two-line change in a fast-moving SDK; upstream may already have a parallel design in flight.
-- The repo's correctness is fully covered locally by the patch and the `ThreadStudioStreamTest` suite.
-- Pursuing it costs more than the value of removing the patch in the short term.
+| `laravel/ai`      | Patch applies? | Notes                                                                                                                  |
+| ----------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| v0.8.1 – v0.9.1   | ✅             | `StreamsText.php` differs from v0.8.1 by one line                                                                      |
+| v0.10.0 – v0.11.2 | ❌             | `StreamsText.php` rewritten (+58/−11 by v0.10.0); the hunks no longer match                                            |
+| v1.0.0 – v1.0.1   | ❌             | Rewritten further (+119/−41 vs v0.8.1); 1.x also requires `laravel/mcp` ≥ 1.0 and the 1.0 conversation-table migration |
 
-**Current status:** The patch still applies cleanly to `laravel/ai` v0.8.1. That means v0.8.1 does not remove the package's structured-output streaming patch requirement yet.
+**Drift protection:** this package requires `laravel/ai` `^0.8.1` (i.e. `<0.9.0`), so neither the package's own `composer update` nor a host that honours the constraint can move onto a version the patch does not fit. Lifting that cap is the moment this patch must be re-authored against the new `StreamsText.php` — or the fix landed upstream first. Expect `scripts/apply-patches.php` here, and the patches plugin in the starter, to report a failed apply at that point.
 
-**When to revisit:** When a new `laravel/ai` release lands after v0.8.1. At that point:
+## Upstream PR — not yet filed
 
-1. Run `composer update laravel/ai`. In this package repo, watch for `scripts/apply-patches.php` reporting a failure to apply — that means upstream changed `StreamsText.php` and may have shipped the fix. In a host like the starter using `cweagans/composer-patches`, the equivalent signal is the patches plugin reporting `FAILED to patch`.
-2. Re-run `vendor/bin/testbench evolayer:ai:stream-check gemini` and `openai` against the unpatched vendor copy (or `php artisan evolayer:ai:stream-check ...` from a host app). Also re-check Anthropic once its structured-streaming path emits `TextDelta` events. If runtime-approved providers pass without the patch, delete `patches/laravel-ai-structured-streaming.patch` here AND coordinate removal from any host project's patch configuration (the starter's `extra.patches` entry, for example).
-3. If upstream did **not** ship the fix and the patch still applies cleanly, file the PR. Reference the test suite in this repo and the smoke command for verification evidence.
+The fix belongs upstream in `laravel/ai`. Filing was deferred when the patch was written (v0.6.5) on the expectation that a fast-moving SDK would ship a parallel design. That has not happened: three minor releases and the 1.0 line have landed with the guard intact. **Filing the PR now is recommended**, rebased onto the 1.x `StreamsText.php`, before the next `laravel/ai` bump forces the patch to be rewritten anyway. Reference the `ThreadStudioStreamTest` suite in this repo and the `evolayer:ai:stream-check` command as verification evidence.
 
 **Where to file it:** https://github.com/laravel/ai
+
+**When to revisit:** on every `laravel/ai` bump, and whenever this package lifts its `^0.8.1` cap:
+
+1. Run `composer update laravel/ai`. In this package repo, watch for `scripts/apply-patches.php` reporting a failure to apply; in a host like the starter using `cweagans/composer-patches`, the equivalent signal is the patches plugin reporting `FAILED to patch`. From v0.10.0 a failed apply is expected and does **not** by itself mean upstream shipped the fix — check the new `StreamsText.php` for the guard string `Streaming structured output is not currently supported.` first.
+2. If the guard is gone, re-run `vendor/bin/testbench evolayer:ai:stream-check gemini` and `openai` against the unpatched vendor copy (or `php artisan evolayer:ai:stream-check ...` from a host app). Also re-check Anthropic once its structured-streaming path emits `TextDelta` events. If runtime-approved providers pass without the patch, delete `patches/laravel-ai-structured-streaming.patch` here, drop the `apply-patches` Composer hook and the `evolayer:doctor` marker check, AND coordinate removal from any host project's patch configuration (the starter's `extra.patches` entry and `patches.lock.json`, for example).
+3. If the guard is still there, re-author the patch against the new file, verify with the same smoke commands, update the **Target** line and the table above, and republish the patch so hosts pick up the new hunks.

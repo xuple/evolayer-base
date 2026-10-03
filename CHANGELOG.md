@@ -18,6 +18,16 @@ project aims to follow [Semantic Versioning](https://semver.org/).
   renamed application already in its target profile never reported a clean
   `--dry-run`, always showing one pending metadata operation.
 
+### Changed
+
+- Regenerated the Boost guidelines block in `AGENTS.md`/`CLAUDE.md` with
+  `vendor/bin/testbench boost:install --guidelines` on PHP 8.4 using Laravel
+  Boost `2.10.1`, the version a fresh resolve of the `^2.2` constraint (and the
+  package's CI) now installs. The block drops the skills-activation section,
+  consistent with `boost.json`'s empty skills list, and records the PHP floor
+  it was generated on. Corrected the stale note that the starter is
+  "PHPUnit-first": both repositories are Pest-first.
+
 ## [0.2.0-rc.2]
 
 ### Fixed

@@ -17,6 +17,14 @@ project aims to follow [Semantic Versioning](https://semver.org/).
   recommended rather than deferred (laravel/ai#1197, a third-party attempt,
   was closed on process grounds). Corrected the `scripts/apply-patches.php`
   header, which described hosts shipping a patched vendor file.
+- Regenerated the Boost guidelines block in `AGENTS.md`/`CLAUDE.md` with
+  `vendor/bin/testbench boost:install --guidelines` on PHP 8.4 using Laravel
+  Boost `2.10.1`; re-running it on 2026-11-25 with `2.10.4`, the version a
+  fresh resolve of the `^2.2` constraint (and the package's CI) now installs,
+  produces identical output. The block drops the skills-activation section,
+  consistent with `boost.json`'s empty skills list, and records the PHP floor
+  it was generated on. Corrected the stale note that the starter is
+  "PHPUnit-first": both repositories are Pest-first.
 
 ## [0.2.0] - 2026-10-01
 

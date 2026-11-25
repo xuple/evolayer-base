@@ -52,7 +52,7 @@ Decision rule before any edit: read the [EvoLayer Framework Contract](docs/contr
 
 ## Hard rules
 
-- **Test runner is Pest**, not PHPUnit. `composer test` runs `vendor/bin/pest`; tests use the `test('description', function() { ... })` callable style. Do not introduce PHPUnit-style `extends TestCase` in this repo. (The starter is PHPUnit-first by inheritance from `laravel/react-starter-kit` — that divergence is intentional pending a starter-side decision.)
+- **Test runner is Pest**, not PHPUnit. `composer test` runs `vendor/bin/pest`; tests use the `test('description', function() { ... })` callable style. Do not introduce PHPUnit-style `extends TestCase` in this repo. (The starter made the same call: it is Pest-first for new tests, with inherited PHPUnit-style `extends TestCase` classes converted opportunistically rather than mass-rewritten — see its `CLAUDE.md` and `CONTRIBUTING.md`.)
 - **Do not break the `evolayer.base.*` config shape** without a deprecation cycle. Downstream apps (starter included) read these keys.
 - **Do not edit `vendor/`** during development. Patches go via `patches/` + `scripts/apply-patches.php`.
 - **`composer.lock` is gitignored** here too (`.gitignore` excludes it). Tests re-resolve from `composer.json` on every CI run. If a transient resolution issue surfaces locally — symptom: `composer test` after a `composer require`/`remove` fails with setup errors that didn't exist before — nuke `vendor/` and `composer.lock` and `composer install` again to re-resolve cleanly.
@@ -174,17 +174,13 @@ This package currently ships **no committed Boost skills** (`boost.json` has `"s
 
 # Laravel Boost Guidelines
 
-The Laravel Boost guidelines are specifically curated by Laravel maintainers for this application. These guidelines should be followed closely to ensure the best experience when building Laravel applications.
-
 ## Foundational Context
 
-This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
+This application is a Laravel application running on PHP 8.4. Always use the APIs that match the installed major version of each package — do not assume a version.
 
-- php - 8.4
-
-## Skills Activation
-
-This project has domain-specific skills available in `**/skills/**`. You MUST activate the relevant skill whenever you work in that domain—don't wait until you're stuck.
+Before relying on a package's API, confirm its installed version:
+- PHP packages: run `composer show --direct` to list direct dependencies with versions, or `composer show <vendor/package>` for a single package.
+- JS packages: check `package.json` for the installed versions.
 
 ## Conventions
 
@@ -203,19 +199,19 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 ## Frontend Bundling
 
-- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. Ask them.
+- If a frontend change doesn't show in the UI or you get a "Unable to locate file in Vite manifest" error, run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
 
 ## Documentation Files
 
 - You must only create documentation files if explicitly requested by the user.
 
-## Replies
-
-- Be concise in your explanations - focus on what's important rather than explaining obvious details.
-
 === boost rules ===
 
 # Laravel Boost
+
+## Project Rules
+
+- This project contains committed, area-grouped rules in `.ai/rules` when that directory exists, including path-scoped framework guidelines under `.ai/rules/boost`. Before you enter plan mode or create/edit any file, you MUST first: open @.ai/rules/index.md (it maps file globs to rule files), read every rule file whose globs cover the path(s) in scope, and run `grep -rin 'keyword' .ai/rules` to catch what a path match alone misses. Do not write code until you have read and are following every matching rule. If `.ai/rules` does not exist, continue without it.
 
 ## Artisan
 

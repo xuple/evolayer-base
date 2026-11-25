@@ -6,8 +6,9 @@
  * the package's own dev test suite can rely on the patched behaviour.
  *
  * Production consumers (host projects, starter templates) handle the patch
- * themselves — either via their own composer-patches declaration or by
- * shipping the patched vendor file in the starter template.
+ * themselves — the starter declares it under `extra.patches` for
+ * cweagans/composer-patches; other hosts may apply it any way that leaves the
+ * marker in place. `evolayer:doctor` checks for that marker.
  *
  * Marker check makes this idempotent.
  */

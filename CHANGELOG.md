@@ -10,6 +10,13 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 - CI now tests on PHP 8.5 as well as PHP 8.4, and uses Node 24 in place of
   Node 22.
+- Refreshed the `laravel/ai` vendor patch dossier (`patches/README.md`) to the
+  `v0.8.1` target and recorded the 2026-11-25 upstream check: the
+  structured-streaming guard is still present through `laravel/ai` `v1.4.2`,
+  the patch stops applying from `v0.10.0`, and the upstream PR is now
+  recommended rather than deferred (laravel/ai#1197, a third-party attempt,
+  was closed on process grounds). Corrected the `scripts/apply-patches.php`
+  header, which described hosts shipping a patched vendor file.
 
 ## [0.2.0] - 2026-10-01
 
@@ -33,15 +40,6 @@ commit; there are no code changes between them. The entries below are what
   now preserved when it cannot be re-derived. A side effect of the same bug: a
   renamed application already in its target profile never reported a clean
   `--dry-run`, always showing one pending metadata operation.
-
-### Changed
-
-- Refreshed the `laravel/ai` vendor patch dossier (`patches/README.md`) to the
-  `v0.8.1` target and recorded the 2026-10-02 upstream check: the
-  structured-streaming guard is still present through `laravel/ai` `v1.0.1`,
-  the patch stops applying from `v0.10.0`, and the upstream PR is now
-  recommended rather than deferred. Corrected the `scripts/apply-patches.php`
-  header, which described hosts shipping a patched vendor file.
 
 ## [0.2.0-rc.2]
 

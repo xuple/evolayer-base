@@ -34,21 +34,21 @@ from `php artisan evolayer:ai:stream-check anthropic`. The command-level tests
 cover that failure mode so it cannot be mistaken for a green structured-streaming
 provider.
 
-## Status — checked 2026-10-02 against upstream `laravel/ai`
+## Status — checked 2026-11-25 against upstream `laravel/ai`
 
-**Still required.** The guard is present, unchanged, in every tagged release from v0.8.1 through v1.0.1 (2026-09-30), and v1.0.1 ships no alternative structured-streaming API — `agent->stream()` on a `HasStructuredOutput` agent still throws. `ThreadStudioComposer::streamCompose()` streams `ThreadStudioAgent`, which implements `HasStructuredOutput`, so the package cannot drop the patch until upstream lands the fix. This check compared source only; it did not re-run the live provider smoke.
+**Still required.** The guard is present, unchanged, in every tagged release from v0.8.1 through v1.4.2 (2026-11-24), and no release ships an alternative structured-streaming API — `agent->stream()` on a `HasStructuredOutput` agent still throws. `ThreadStudioComposer::streamCompose()` streams `ThreadStudioAgent`, which implements `HasStructuredOutput`, so the package cannot drop the patch until upstream lands the fix. This check compared source only; it did not re-run the live provider smoke.
 
 | `laravel/ai`      | Patch applies? | Notes                                                                                                                  |
 | ----------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | v0.8.1 – v0.9.1   | ✅             | `StreamsText.php` differs from v0.8.1 by one line                                                                      |
-| v0.10.0 – v0.11.2 | ❌             | `StreamsText.php` rewritten (+58/−11 by v0.10.0); the hunks no longer match                                            |
-| v1.0.0 – v1.0.1   | ❌             | Rewritten further (+119/−41 vs v0.8.1); 1.x also requires `laravel/mcp` ≥ 1.0 and the 1.0 conversation-table migration |
+| v0.10.0 – v0.11.3 | ❌             | `StreamsText.php` rewritten (+58/−11 by v0.10.0); the hunks no longer match                                            |
+| v1.0.0 – v1.4.2   | ❌             | Rewritten further (+119/−41 vs v0.8.1); 1.x also requires `laravel/mcp` ≥ 1.0 and the 1.0 conversation-table migration. Since v1.0.1 only two tool-approval lines changed (v1.4.x); the guard block is identical |
 
 **Drift protection:** this package requires `laravel/ai` `^0.8.1` (i.e. `<0.9.0`), so neither the package's own `composer update` nor a host that honours the constraint can move onto a version the patch does not fit. Lifting that cap is the moment this patch must be re-authored against the new `StreamsText.php` — or the fix landed upstream first. Expect `scripts/apply-patches.php` here, and the patches plugin in the starter, to report a failed apply at that point.
 
 ## Upstream PR — not yet filed
 
-The fix belongs upstream in `laravel/ai`. Filing was deferred when the patch was written (v0.6.5) on the expectation that a fast-moving SDK would ship a parallel design. That has not happened: three minor releases and the 1.0 line have landed with the guard intact. **Filing the PR now is recommended**, rebased onto the 1.x `StreamsText.php`, before the next `laravel/ai` bump forces the patch to be rewritten anyway. Reference the `ThreadStudioStreamTest` suite in this repo and the `evolayer:ai:stream-check` command as verification evidence.
+The fix belongs upstream in `laravel/ai`. Filing was deferred when the patch was written (v0.6.5) on the expectation that a fast-moving SDK would ship a parallel design. That has not happened: three 0.x minor releases and the 1.0–1.4 lines have landed with the guard intact. Upstream has worked around the gap rather than closing it: laravel/ai#1117 (merged) runs structured sub-agents unstreamed when their parent streams. A third-party PR that removed the guard, laravel/ai#1197 ("Stream agents that have structured output"), was closed on 2026-10-31 by a maintainer as an unreviewed AI-generated submission, not on its design, so the approach is still open to a reviewed PR. **Filing the PR now is recommended**, rebased onto the 1.x `StreamsText.php`, before the next `laravel/ai` bump forces the patch to be rewritten anyway. Reference the `ThreadStudioStreamTest` suite in this repo and the `evolayer:ai:stream-check` command as verification evidence.
 
 **Where to file it:** https://github.com/laravel/ai
 

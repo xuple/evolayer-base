@@ -6,6 +6,22 @@ project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- CI now tests on PHP 8.5 as well as PHP 8.4, and uses Node 24 in place of
+  Node 22.
+
+## [0.2.0] - 2026-10-01
+
+Stable promotion of `v0.2.0-rc.3` (2026-09-29). Both tags point to the same
+commit; there are no code changes between them. The entries below are what
+`v0.2.0-rc.3` added after `v0.2.0-rc.2`.
+
+### Changed
+
+- Resolved decisions are filed separately, and archived sections of the port
+  documentation are marked as historical.
+
 ### Fixed
 
 - `evolayer:profile` no longer discards `applied_with.starter` from
